@@ -1,0 +1,24 @@
+A binary distribution for the Raspberry Pi can be downloaded from:
+
+http://hedmanshome.se/bridge-dist.img
+
+It will fill a 4GB SD Card with a ready-to-go system.
+
+Install with:
+# dd if=bridge-dist.img of=/dev/<your-disk> bs=4M
+
+Move it to the Pi and boot.
+
+Passwords: "raspi"
+SSH is enabled: user pi and root.
+Graphical console is enabled.
+Serial console is enabled (requires a USB level converter for the serial pin header).
+
+There is two usable IP-addresses to use from eth0:
+192.168.2.58 and 192.168.1.50
+You can find the web pages there.
+
+You may pre-edit the file /etc/network/interfaces on the SD card to get an IP address that suits you.
+
+As soon as you have the GUI pages going, go to SETUP page and choose mode and review the IP addresses.
+
