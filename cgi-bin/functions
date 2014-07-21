@@ -46,6 +46,11 @@ do_nlist()
 {
     if=$3
     nw=`ifconfig ${if} | grep "inet addr" | cut -d: -f2 | cut -d. -f1-3`
+    if [ -z ${nw} ]; then
+        echo "" > /tmp/hostopts
+        return
+    fi
+
     nbtscan -e ${nw}.1-253 | awk '{printf "<option value=%s%s%s>%s</option>","\"",$1,"\"",tolower($2)}' >/tmp/hostopts &
 }
 
