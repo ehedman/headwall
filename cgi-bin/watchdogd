@@ -1,0 +1,278 @@
+#!/bin/bash
+# 
+# These variables are dynamically overridden
+# by /etc/default/watchdog.dest:
+#######################################
+DDEST=`route -n | grep UG | awk '{print $2}'`
+INTERFACES="wlan0"
+#######################################
+# User defined action to repair service
+# return 0 = OK, !0 = ERROR
+#######################################
+do_action()
+{
+   let ret=0
+   do_log "Attempting to take down network interface(s)"
+   ifdown $INTERFACES >/tmp/null 2>&1;
+   let ret=$ret+$?
+   if [ -s /tmp/null ]; then
+      do_log "`cat /tmp/null`"
+   fi
+   sleep 1
+   do_log "Attempting to bring up interface(s)"
+   ifup $INTERFACES >/tmp/null 2>&1;
+   let ret=$ret+$?
+   if [ -s /tmp/null ]; then
+      do_log "`cat /tmp/null`"
+   fi
+   sleep 3
+   return $ret
+}
+#######################################
+
+ARG2=$2
+
+WD_MOD="bcm2708_wdog"
+
+PRG="$(dirname "$0")/$(basename "$0")"
+NAME="$(basename "$0")"
+WD="/dev/watchdog"
+LOG="/var/log/${NAME}.log"
+RUN="/run/${NAME}.pid"
+
+# Poll for health period
+POLL=3
+# Keep-alive period for hardware watchdog
+TICK=6
+
+MAX_E_LOG=100
+let MAX_E_CNT=0
+let MAX_E_REP=0
+let MAX_E_REB=0
+
+inint_vars()
+{
+   let MAX_E_CNT=3
+   let MAX_E_REP=6
+   let MAX_E_REB=14
+}
+
+let E_CNT=0
+let E_LOG=0
+let HAS_WD=1
+
+do_log()
+{
+   # toggle fg - bg mode
+   if [ "$ARG2" = "bg" ]; then
+      LOGDEV=$LOG
+   else
+      if [ "$SHELL" = "/bin/bash" ]; then
+         case $(ps -o stat= -p $$) in
+            *+*) LOGDEV="`tty`"; E_LOG=0 ;;
+            *) LOGDEV=$LOG ;;
+         esac
+      else
+         LOGDEV="`tty`"
+         E_LOG=0
+      fi
+   fi
+   
+   let E_LOG=$E_LOG+1
+   if [ $E_LOG -gt $MAX_E_LOG ]; then
+      echo "${NAME}: `date +%H:%M:%S:` " "log rotaded" > $LOGDEV
+      E_LOG=0
+   fi
+   echo "${NAME}: `date +%H:%M:%S:` " "$*" >> $LOGDEV
+}
+
+if [ `id -u` -ne 0 ]; then
+   echo "Must be root"
+   exit 1
+fi
+
+start_check()
+{
+if [ -f /etc/default/watchdog.dest ]; then
+   . /etc/default/watchdog.dest
+   sleep 20
+   ping -n -c 2 -W 3 $DEST >/dev/null 2>&1
+   if [ $? -gt 0 ]; then
+      do_log "No valid ($DEST) destiantion to probe"
+      exit 1
+   fi
+else
+   if [ -z "$DEST" ]; then
+       sleep 20
+       DDEST=`route -n | grep UG | awk '{print $2}'`
+   fi
+fi
+
+if [ -z "$DEST" ]; then
+      DEST=$DDEST;
+fi
+if [ -z "$DEST" ]; then
+      do_log "No destiantion to probe"
+      exit 1
+fi
+}
+
+control_c()
+{
+   do_log "*** $PRG Exiting ***"
+   if [ $HAS_WD -eq 1 ]; then
+      do_log "*** System reboot due to watchdog expiration ***"
+      kill -9 `cat $RUN`
+   fi
+   rm -f $RUN
+   exit 0
+}
+
+
+trap control_c INT
+
+do_tick()
+{
+   $PRG tick &
+}
+
+
+do_kill()
+{
+   do_log "Unrecoverable errors of service"
+   if [ $HAS_WD -eq 0 ]; then
+      do_log "No watchdog device on this system!"
+      do_log "Perhaps the watchdog mudule must be loaded first"
+      do_log "Trying reboot again"
+      sleep 1
+      reboot&
+      sleep 6
+   fi
+   control_c
+}
+
+do_shutdown()
+{
+   do_log "Attempting to reboot gracefully after $E_CNT failures"
+   sleep 1
+   reboot&
+   do_log "Awaiting reboot to be completed"
+   sleep 10
+   do_kill
+}
+
+wd_tick()
+{
+   echo $$ > $RUN
+   chrt -p 55 $$  >/dev/null 2>&1
+
+   exec 3<>$WD
+ 
+   while true
+   do
+      echo "1" >&3
+      sleep $TICK
+   done
+}
+
+do_repair()
+{
+   do_log "Attempting to repair service due to repeated errors"
+   do_action
+   ret=$?
+   if [ $E_CNT -gt $MAX_E_REB ]; then
+      do_shutdown
+   fi
+   do_log "Repair service function exited with $ret"
+   let MAX_E_CNT=$MAX_E_CNT+3
+   let MAX_E_REP=$MAX_E_REP+3
+}
+
+do_check()
+{
+   while true
+   do
+      if [ -f /etc/default/watchdog.dest ]; then
+      . /etc/default/watchdog.dest
+      else
+         DEST=$DDEST
+      fi
+      do_log "Checking health of service at $DEST ($E_CNT)"
+      if [ -f /tmp/keep_wd ]; then
+         do_log "Holding watchdog alive due to system reconfiguration"
+         res=0
+      else
+         ping -n -c 2 -W 3 $DEST >/dev/null 2>&1
+         res=$?
+      fi
+      if [ $res -gt 0 ]; then
+         do_log "Assuming temporarily service failure"
+         let E_CNT=$E_CNT+1
+         if [ $E_CNT -gt $MAX_E_CNT ]; then
+            do_repair
+         fi
+      else
+         E_CNT=0
+         inint_vars
+      fi
+      sleep $POLL
+   done
+}
+
+case $1 in
+   start)
+      if [ -f "$RUN" ]; then
+         if [ -f /tmp/keep_wd ]; then
+            rm -f /tmp/keep_wd
+            exit 0
+         fi
+         echo "Already running"
+         exit 2
+      fi
+      start_check
+      rm -f $RUN
+      inint_vars
+      modprobe $WD_MOD > /dev/null 2>&1
+      sleep 3
+      if [ ! -c $WD ]; then
+         HAS_WD=0
+         do_log "No watchdog device on this system!"
+         do_log "Perhaps the watchdog mudule must be loaded first"
+      else
+         do_tick
+      fi
+      do_check
+   ;;
+   tick)
+      wd_tick
+   ;;
+   status)
+      if [ -f /etc/default/watchdog.dest ]; then
+         . /etc/default/watchdog.dest
+      fi
+      if [ "$DEST" = "127.0.0.1" ]; then echo 1; exit 1; fi
+      if [ -f "$RUN" ]; then
+         if [ -f /tmp/keep_wd ]; then
+            echo 1
+            exit 1
+         else
+            echo 0
+            exit 0
+         fi
+      else
+         echo 1
+         exit 1
+      fi
+   ;;
+   probe)
+      if [ -f /etc/default/watchdog.dest ]; then
+         . /etc/default/watchdog.dest
+      fi
+         echo $DEST
+      exit 0
+   ;;
+   *)
+      echo "Usage: $PRG start"
+      exit 1
+   ;;
+esac

@@ -1,0 +1,6 @@
+# Shorewall version 4.0 - Sample Masq file for two-interface configuration.
+#------------------------------------------------------------------------------
+# For information about entries in this file, type "man shorewall-masq"
+###############################################################################
+#INTERFACE		SOURCE		ADDRESS		PROTO	PORT(S)	IPSEC	MARK
+wlan0			192.168.2.0/24

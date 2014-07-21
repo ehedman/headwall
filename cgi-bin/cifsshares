@@ -1,0 +1,11 @@
+#!/bin/bash
+
+shares=`grep -B2 path /etc/samba/smb.conf | awk '{printf "%s ", $0}' | sed -e 's/path = //g;s/valid users = //g;s/\[//g;s/\]//g;s/--//g;s/guest ok = yes/PUBLIC/g;'`
+
+let i=0
+for s in ${shares}
+do
+    echo -n $s
+    let i=${i}+1
+    if [ ${i} -gt 2 ]; then echo ""; i=0; else echo -n ","; fi
+done

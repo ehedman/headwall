@@ -1,0 +1,17 @@
+$ORIGIN .
+$TTL 604800	; 1 week
+2.168.192.in-addr.arpa	IN SOA	panda.home.lan. root.home.lan. (
+				228        ; serial
+				604800     ; refresh (1 week)
+				86400      ; retry (1 day)
+				2419200    ; expire (4 weeks)
+				604800     ; minimum (1 week)
+				)
+			NS	panda.
+$ORIGIN 2.168.192.in-addr.arpa.
+$TTL 86400	; 1 day
+10			PTR	vindlek.home.lan.
+11			PTR	vindlek-w.home.lan.
+20			PTR	odroid.home.lan.
+$TTL 604800	; 1 week
+3			PTR	panda.home.lan.

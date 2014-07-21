@@ -1,0 +1,76 @@
+#!/bin/bash
+
+if [ -f /var/lib/dhcp/dhcpd.leases ]; then
+    dest=/var/lib/dhcp/dhcpd.leases
+fi
+if [ -f /var/lib/dhcpd/dhcpd.leases ]; then
+    dest=/var/lib/dhcpd/dhcpd.leases
+fi
+
+tmpf=${dest}
+tmpf1=/tmp/onedhlist
+tmpf2=/tmp/duplist
+tmpf3=/tmp/slist
+
+if [ -z "${2}" ]; then echo "two argument is required"; exit 1; fi
+
+dm=${2}
+net=`ifconfig ${1} | grep "inet addr:" | cut -d: -f2 | cut -d. -f1`
+end=`grep -n "}" $tmpf |cut -d: -f1| awk '{printf "%s ", $NF}'| awk '{print $NF}'`
+let end=$end+1
+str=`grep -n "lease ${net}" $tmpf | cut -d: -f1 | awk '{printf "%s ", $NF}'`
+lines=(`echo -n "${str}${end}"`)
+
+str1=`grep "lease ${net}" $tmpf | cut -d{ -f1 |  awk '{printf "%s ", $NF}'`
+ipa=(`echo -n "${str1}"`)
+
+let cell=1                                                                      
+let nlines="${lines[$cell]}"                                                    
+let nlines=$nlines-${lines[0]}
+let nlines=$nlines-1
+
+function doItem()
+{
+    grep -q "binding state active;" $tmpf1
+
+    if [ $? -eq 0 ]; then
+        hwe=`grep -m1 "hardware ethernet" $tmpf1 | awk '{print $3}' | cut -d\; -f1 | tr -d '\n'`
+        grep -q ${hwe} $tmpf2
+        if [ $? -eq 0 ]; then return; fi
+        echo -n "${hwe},"
+        grep -m1 "lease ${net}" $tmpf1 | cut -d" " -f2 | tr -d '\n'
+        echo -n ,
+        grep -m1 "client-hostname" $tmpf1 | cut -d\" -f2 | cut -d\" -f1 | cut -d. -f1 | tr -d '\n'
+        echo ",0"
+        echo $hwe >> $tmpf2
+    fi
+}
+
+echo > $tmpf2
+for cells in $str
+do
+    let cnx=$cell-1
+    celln="${ipa[$cnx]}"
+    grep -A ${nlines} "${celln}" $tmpf > $tmpf1
+    if [ -s $tmpf1 ]; then
+        doItem $celln
+    fi
+    let nextcell=$cell+1
+    let nlines="${lines[$nextcell]}"-"${lines[$cell]}"
+    let cell=$cell+1
+    let nlines=$nlines-1
+done
+
+grep -A2 "host " /etc/dhcp/dhcpd.conf |sed 's/host//g;s/ //g;s/{//;s/hardware//;s/fixed-address//;s/ethernet//;s/--//' >${tmpf3}
+
+items=(`cat ${tmpf3}`)
+cnt=`echo "${items[@]}" | wc -w`
+let i=0;
+for item in "${items[@]}"
+do
+    echo "${items[$i+1]},${items[$i]},${items[$i+2]},1" | sed s/\;//g | sed s/".${dm}"//g
+    let i=$i+3
+    if [ ${i} -ge ${cnt} ]; then break; fi
+done
+
+rm -f $tmpf1 $tmpf2 $tmpf3

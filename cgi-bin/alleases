@@ -1,0 +1,29 @@
+#!/bin/bash
+if [ -z "${1}" ]; then echo "an argument is required"; exit 1; fi
+dm=$1
+pidof -s named > /dev/null
+if [ $? -gt 0 ]; then exit 0; fi
+
+host -W 2 -l $dm 127.0.0.1 > /tmp/alist0
+if [ $? -gt 0 ]; then exit 0; fi
+
+cat /tmp/alist0 | awk 'NR>6{gsub(".'${dm}'", "");printf "%s,%s,0\n",$1,$4}' | sort -f > /tmp/alist1
+
+pidof -s dhcpd  > /dev/null
+if [ $? -gt 0 ]; then dh=false; else dh=true; fi
+
+while read d; do
+    host=`echo $d | cut -d, -f1`
+    if [ "${host}" = "`uname -n`" ]; then continue; fi
+    if [ $dh = true ]; then
+        grep -q -m1 "host ${host}.${dm}" /etc/dhcp/dhcpd.conf
+        if [ $? -ne 0 ]; then
+            echo $d | sed s/",0"/",1"/
+        else
+            echo $d;
+        fi
+    else
+        echo $d;
+    fi
+done < /tmp/alist1
+

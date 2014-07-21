@@ -1,0 +1,56 @@
+#!/bin/bash
+if [ -f /var/lib/dhcp/dhcpd.leases ]; then
+    dest=/var/lib/dhcp/dhcpd.leases
+fi
+if [ -f /var/lib/dhcpd/dhcpd.leases ]; then
+    dest=/var/lib/dhcpd/dhcpd.leases
+fi
+if [ -z "${dest}" ]; then exit 0; fi
+if [ -z "${2}" ]; then exit 0; fi
+
+tmpf=${dest}
+tmpf1=/tmp/onedhlist
+
+net=`ifconfig ${2} | grep "inet addr:" | cut -d: -f2 | cut -d. -f1`
+end=`grep -n "}" $tmpf |cut -d: -f1| awk '{printf "%s ", $NF}'| awk '{print $NF}'`
+let end=$end+1
+str=`grep -n "lease ${net}" $tmpf | cut -d: -f1 | awk '{printf "%s ", $NF}'`
+lines=(`echo -n "${str}${end}"`)
+
+str1=`grep "lease ${net}" $tmpf | cut -d{ -f1 |  awk '{printf "%s ", $NF}'`
+ipa=(`echo -n "${str1}"`)
+
+let cell=1                                                                      
+let nlines="${lines[$cell]}"                                                    
+let nlines=$nlines-${lines[0]}
+let nlines=$nlines-1
+
+function doItem()
+{
+#    grep -q "lease ${1} {" $tmpf1
+    grep -q "hardware ethernet ${1};" $tmpf1
+    if [ $? -eq 0 ]; then return; fi
+        cat $tmpf1 >>/tmp/dhcpd.leases
+}
+
+grep  "\# " ${dest} >/tmp/dhcpd.leases
+echo >> /tmp/dhcpd.leases
+
+for cells in $str
+do
+    let cnx=$cell-1
+    celln="${ipa[$cnx]}"
+    grep -A ${nlines} "${celln}" $tmpf > $tmpf1
+    if [ -s $tmpf1 ]; then
+        doItem ${1}
+    fi
+    let nextcell=$cell+1
+    let nlines="${lines[$nextcell]}"-"${lines[$cell]}"
+    let cell=$cell+1
+    let nlines=$nlines-1
+done
+grep server-duid ${dest} >>/tmp/dhcpd.leases
+echo >> /tmp/dhcpd.leases
+cp /tmp/dhcpd.leases ${dest}
+
+rm -f $tmpf1

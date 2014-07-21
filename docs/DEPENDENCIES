@@ -1,0 +1,69 @@
+
+List of dependencies of other software packages as of June 2014
+
+Application Specific:
+************************************************************
+HTTPD:
+    lighthttpd with PHP exetnsions
+    Veryfied with version 1.4.32 
+    Patch: to allow lighthttpd with root privileges
+
+PHP:
+    Veryfied with version 5.4.12
+    Comment: Must support at least "pcntl_fork" and possible other pcntl_* functions,
+             usually disabled in (/etc/php5/cgi) php.ini
+             Extension (/usr/lib) pcntl.so must exist.
+
+DHCPD:
+    Veryfied with isc-dhcpd-4.2.2
+
+BIND9:
+    Veryfied with version 1:9.8.1
+
+NBTSCAN:
+    Veryfied with version 1.5.1
+
+SHOREWALL:
+    Veryfied with shorewall: 4.5.5.3
+
+VPN:
+    ppp                                                      
+    pptp-linux                                               
+    pptpd   
+
+
+General:
+************************************************************
+iwtools, wpasupplicant, host, nslookup, ip, ifconfig, ifup, ipcalc, iptables, nfs-server, sshd
+samba, parted
+************************************************************
+
+System platforms as of June 2014:
+************************************************************
+Development Host: Linux Mint 14
+    Crosstools: buildroot-2013.05 for the ARM architecture
+
+Target systems (the actual bridge/gateway):
+    Rasperry Pi:
+        Linux 3.12.23+ Debian wheezy version 7
+    Pandaboard:
+        Linux 3.10.36 Debian wheezy version 7
+        (internal wlan not used)
+
+Comment:
+    Target systems have /var/www NFS exported during development for
+    convenient access to web pages for editing.
+************************************************************
+
+Hardware used as of June 2014:
+************************************************************
+USB WLAN:
+   ASUSTek Computer, Inc. USB-N13 802.11n Network Adapter (rev. B1) [Realtek RTL8192CU]   1)
+   Edimax Technology Co., Ltd EW-7811Un 802.11n Wireless Adapter [Realtek RTL8188CUS]   1)
+   ZyXEL Communications Corp. NWD211AN 802.11abgn Wireless Adapter [Ralink RT2870] 
+USB Ethernet (eth1):
+   MosChip Semiconductor MCS7830 10/100 Mbps Ethernet adapter
+   Huawei Technologies E3276 LTE (3G/4G) USB adapter (cdc_ether)
+
+NOTE:
+ 1) Capable to do "Access Point" duties

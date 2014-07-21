@@ -1,0 +1,54 @@
+#!/bin/bash
+# format # 0C:96:BF:B7:72:9B,bukefalos,Infrastructure,3,TKIP,WPA2-PSK,68%
+tmpf=/tmp/allwlist
+tmpf1=/tmp/onewlist
+/sbin/iwlist $1 scan > $tmpf
+
+end=`wc -l $tmpf | awk '{print $1}'`
+str=`grep -n Cell $tmpf | cut -d: -f1 | awk '{printf "%s ", $NF}'`
+lines=(`echo -n "${str} ${end}"`)
+
+let cell=1
+let nlines="${lines[$cell]}"
+let nlines=$nlines-3
+
+function doCell()
+{
+    grep "Address:" $tmpf1 | cut -d: -f2-7 | sed s/" "//g | tr -d '\n'
+    echo -n ,
+    grep "ESSID:" $tmpf1 | cut -d: -f2 | sed s/\"//g | tr -d '\n'
+    echo -n ,
+    grep "Mode:" $tmpf1 | cut -d: -f2 | tr -d '\n'
+    echo -n ,
+    grep "(Channel" $tmpf1 | cut -d\( -f2 | sed s/"Channel "//g | cut -d\) -f1 | tr -d '\n'
+    echo -n ,
+    grep "Group Cipher" $tmpf1 | cut -d: -f2 | uniq | sed s/" "//g | tr -d '\n'
+    echo -n ,
+    grep -q WPA2 $tmpf1
+    if [ $? -eq 0 ]; then IE=WPA2-; else IE=WEP; fi
+    echo -n "$IE"
+    grep "Authentication Suites" $tmpf1 | uniq | sed s/" "//g | cut -d: -f2 | tr -d '\n'
+    echo -n ,
+    grep "Quality=" $tmpf1 | cut -d= -f2 | cut -d/ -f1 | tr -d '\n'
+    echo "%"
+    rm -f $tmpf1
+}
+
+for cells in $str
+do
+
+    celln=`echo ${cell} | awk '{printf "Cell %02d", $NF}'`
+    grep -A ${nlines} "${celln}" $tmpf > $tmpf1
+    if [ -s $tmpf1 ]; then
+        doCell
+    fi
+    let nextcell=$cell+1
+    if [ -z "${lines[$nextcell]}" ]; then break; fi
+
+    let nlines="${lines[$nextcell]}"-"${lines[$cell]}"
+    let nlines=$nlines-1
+    let cell=$cell+1
+done
+
+rm -f $tmpf
+rm -f $tmpf1
