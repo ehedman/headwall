@@ -1,6 +1,6 @@
 <? 
     /*
-     * advanced.php
+     * storage.php
      *
      *  Copyright (C) 2013-2014 by Erland Hedman <erland@hedmanshome.se>
      *
@@ -26,6 +26,9 @@
             echo "</pre>\n"; exit;
         } else if (!$pid) {
             // We are the child
+            @system("/usr/sbin/service transmission-daemon stop");
+            @system("/usr/sbin/update-rc.d transmission-daemon disable");
+
             if ($_POST["disk_uuid"] != "0" &&  $_POST["disk_action"] > 0)
                 do_cifs_disk(implode(" ", $_POST));
 
@@ -33,8 +36,9 @@
                 $ret=1;
                 if ($_POST['disk_inuse'] != "0") {
                     @system("grep -q ".$_POST['disk_inuse']." /proc/mounts", $ret);
-                    if ($ret != 0)
+                    if ($ret != 0) {
                         unlink($_SERVER["DOCUMENT_ROOT"]."/inc/disk-uuid");
+                    }
                 }
             } else {
                 $ret=1;
@@ -44,12 +48,13 @@
                         exec("echo ".$_POST['disk_uuid']." > ".$_SERVER["DOCUMENT_ROOT"]."/inc/disk-uuid");
                         $_POST['disk_inuse'] = $_POST['disk_uuid'];
                     }
-                } else if ($_POST["disk_action"] >0) {unlink($_SERVER["DOCUMENT_ROOT"]."/inc/disk-uuid");}
+                } else if ($_POST["disk_action"] >0) {
+                    unlink($_SERVER["DOCUMENT_ROOT"]."/inc/disk-uuid");     
+                }
 
                 if ($_POST['disk_inuse'] != "0")
                     do_cifs(implode(" ", $_POST));
             }
-
         } else {
             // We are the parent
             if ($_POST["disk_action"] == 3) $tmo=40; else $tmo=20;
@@ -336,6 +341,7 @@ function rm_row(rowIndx)
                     <div class="leftNavLink">
                         <ul style="width: 100%">                           
                             <li><div id="left" class="navThis">Storage</div></li>
+                            <li><div class="leftnavLink"><a href="/transmission.php">Tramsmission</a></div></li>
                         </ul>
                     </div>                 
 	            </td>
@@ -492,7 +498,7 @@ function rm_row(rowIndx)
                         </table>
                     </div><div class="vbr"></div>
                     <div class="actionBox" style="overflow-y:auto;max-height:500px;">
-	                    <h2 class="actionHeader">Avaiable Network Sharess</h2>
+	                    <h2 class="actionHeader">Avaiable Network Shares</h2>
                         This section show publiched network shares.<br><br>
 			            <table id="cifs-shares">      
 			               <tbody>                 

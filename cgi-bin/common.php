@@ -689,6 +689,17 @@ function do_cifs_disk($args)
     bash("setcifsdisk $args");
 }
 
+function do_transmission($args)
+{
+    bash("settransmission $args");
+}
+
+function g_trcfg()
+{
+    $p=trim(exec("grep CONFIG_DIR= /etc/default/transmission-daemon | awk -F\\\" '{print $2}'"));
+    return $p."/settings.json";
+}
+
 function g_spamfmode()
 {
     system("grep -q blacklist /etc/bind/named.conf.local",$var);

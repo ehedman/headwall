@@ -107,6 +107,10 @@ case $1 in
     setdhcpd)
         do_dhcpd $*
     ;;
+    settransmission)
+        shift 2
+        do_transmission $*
+    ;;
     *)
         echo -n "illegal command"
 esac
