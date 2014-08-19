@@ -31,6 +31,9 @@ VPN:
     pptp-linux                                               
     pptpd   
 
+TRANSMISSION:
+    Verifyed with transmission-daemon 2.52
+
 
 General:
 ************************************************************
