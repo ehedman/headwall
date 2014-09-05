@@ -1,6 +1,6 @@
 <? 
     /*
-     * storage.php
+     * advanced.php
      *
      *  Copyright (C) 2013-2014 by Erland Hedman <erland@hedmanshome.se>
      *
@@ -42,7 +42,7 @@
                 }
             } else {
                 $ret=1;
-                if (strlen($_POST['disk_uuid']) > 10 && $_POST["disk_action"] >0) {
+                if (strlen($_POST['disk_uuid']) > 7 && $_POST["disk_action"] >0) {
                     @system("grep -q ".$_POST['disk_uuid']." /proc/mounts", $ret);
                     if ($ret == 0) {
                         exec("echo ".$_POST['disk_uuid']." > ".$_SERVER["DOCUMENT_ROOT"]."/inc/disk-uuid");
@@ -386,7 +386,8 @@ function rm_row(rowIndx)
         $str=trim(fgets($fd));
         if ($str == "") continue;
   
-        $a=explode(",", $str);
+        $a=explode('|', $str);
+
         $script=$name=$rdfs=$rd="";
 
         $status=$sts=trim($a[0]); $dev=trim($a[1]); $siz=trim($a[2]); $lfs=trim($a[3]); $uuid=trim($a[4]); $usage=trim($a[5]);

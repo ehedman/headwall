@@ -27,13 +27,17 @@ SHOREWALL:
     Veryfied with shorewall: 4.5.5.3
 
 VPN:
-    ppp                                                      
-    pptp-linux                                               
-    pptpd   
+    ppp
+    pptp-linux
+    pptpd
 
 TRANSMISSION:
     Verifyed with transmission-daemon 2.52
 
+HOSTAPD:
+    In general version 2+ for all but raperry pi
+    Raspberry Pi a special built one:
+      http://dl.dropbox.com/u/1663660/hostapd/hostapd
 
 General:
 ************************************************************

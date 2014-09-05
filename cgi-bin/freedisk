@@ -1,11 +1,11 @@
 #!/bin/bash
 
-all=`fdisk -l | grep "Disk /dev/" | awk -F: '{print $1}' | awk -F' ' '{printf "%s ", $2}'`
+all=`fdisk -l 2>/dev/null | grep "Disk /dev/" | grep -v "mmc" |  awk -F: '{print $1}' | awk -F' ' '{printf "%s ", $2}'`
 muuid=${1}
 
 pidof `basename /tmp/mkfs.*` > /dev/null
 if [ $? -eq 0 ]; then
-    echo "3,N/A,0,none,0,0%"
+    echo "3|N/A|0|none|0|0%"
     exit
 fi
 
@@ -21,7 +21,7 @@ do
                 fs=`grep ${1} /proc/mounts | awk '{printf "%s", $3}'`
                 sz=`df -h ${dev} | awk 'NR==2{print $2}'`
                 usage=`df -h ${dev} | awk 'NR==2{print $5}'`
-                echo "${type},${dev},${sz},${fs},${1},${usage}"
+                echo "${type}|${dev}|${sz}|${fs}|${1}|${usage}"
                 unset muuid
             fi
         fi
@@ -48,8 +48,8 @@ do
                 else
                     type="2"
                 fi
-                echo -n "${type},${d}${cnt},"
-                grep " ${cnt} " /tmp/partlist | awk '{ printf "%s,", $4}'
+                echo -n "${type}|${d}${cnt}|"
+                grep " ${cnt} " /tmp/partlist | awk '{ printf "%s|", $4}'
                 tdir=$RANDOM
                 mkdir -p /tmp/${tdir}
                 mount -o ro ${d}${cnt} /tmp/${tdir} 2> /dev/null
@@ -61,7 +61,7 @@ do
                 fi
                 rmdir /tmp/${tdir}
                 
-                echo "${fs},${uuid},${usage}"
+                echo "${fs}|${uuid}|${usage}"
 
             let cnt=${cnt}+1         
         done
@@ -69,7 +69,7 @@ do
         type="3"
         size=`grep "Disk ${d}:" /tmp/partlist | awk -F: '{printf "%s", $2}'`
         uuid=`uuid`
-        echo "${type},${d},${size},none,${uuid},0%"
+        echo "${type}|${d}|${size}|none|${uuid}|0%"
     fi
 done
 rm -f /tmp/partlist
