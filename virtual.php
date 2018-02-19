@@ -12,7 +12,7 @@
 
     include 'cgi-bin/common.php';
 
-    define('MPRF',dnat_);
+    define('MPRF','dnat_');
 
     //if (count($_POST)) {echo "<pre>"; print_r($_POST); echo "</pre>";exit;}
 

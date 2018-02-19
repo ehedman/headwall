@@ -48,8 +48,8 @@ function resize()	// Set font relative to window width.
 //return;
     if (W <= 800) return;
 //	P =  Math.floor (W/38);				// ca. 3 percent constant
-	P =  Math.floor (f_Factor*(8+W/95));		// Linear function
-	if (P<8)P=8;					// Smallest size.
+	P =  Math.floor (f_Factor*(8+W/160));		// Linear function
+	if (P<12)P=12;					// Smallest size.
 	document.body.style.fontSize=P + 'px';
 }
 
@@ -81,8 +81,9 @@ function initPage()
         </script> 
     </head>
     <body onload="initPage();"><script>onbody();</script>
-        <input type="hidden" id="secs" name="secs" value="<? echo $_GET[secs] >0? $_GET[secs]:$TMO; ?>">
-        <input type="hidden" id="timeout" name="timeout" value="<? echo $_GET[timeout] >0? $_GET[timeout]:'0' ; ?>">
+    <input type="hidden" id="secs" name="secs" value="<? if (isset($_GET['secs'])) {echo intval($_GET['secs']) >0? $_GET['secs']:$TMO;} else echo $TMO; ?>">
+    <input type="hidden" id="timeout" name="timeout" value="0<? if (isset($_GET['timeout'])) {echo intval($_GET['timeout']) >0? $_GET['timeout']:'0';} ?>">
+
         <table id="topContainer">
             <tr>
 	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<? p_productHome(); ?>" target=_blank><? p_serverName(); ?></a></td>
@@ -234,9 +235,13 @@ function initPage()
 				                <td class="raCB">Default Gateway&nbsp;:</td>
 				                <td class="laCB">&nbsp;<? p_gateway(); ?></td>
 			                </tr>
-                            <tr>
+                                        <tr>
 				                <td class="raCB">Traffic&nbsp;:</td>
 				                <td class="laCB">&nbsp;<? p_lanStat(g_wan()); ?></td>
+			                </tr>
+                                        <tr>
+				                <td class="raCB">Signal Quality&nbsp;:</td>
+				                <td class="laCB">&nbsp;<? p_signalQuality(); ?></td>
 			                </tr>
 			            </table>
 		            </div><?if (g_wlanif() !=NULL) { ?><div class="vbr"></div>
@@ -269,7 +274,7 @@ function initPage()
 			                </tr>
 			                <tr>
 				                <td class="raCB">Security Type&nbsp;:</td>
-				                <td class="laCB">&nbsp;<? p_keyType(); ?></td>
+				                <td class="laCB">&nbsp;<? p_keyType(g_wlanif()); ?></td>
 			                </tr>
 			            </table>
 		            </div><?}?>

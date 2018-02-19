@@ -16,7 +16,11 @@
     //if (count($_POST)) {echo "<pre>"; print_r($_POST); echo "</pre>"; exit;}
     //echo "<pre>"; print_r($_GET); echo "</pre>";
 
-    if ( (count($_POST) && $_POST["POST_ACTION"] == "OK") || $_GET[connect] == "1" ) {
+    $connect = 0;
+
+    isset($_GET['connect']) ?  $connect = $_GET['connect'] : $connect = 0;
+
+    if ( (count($_POST) && $_POST["POST_ACTION"] == "OK") || $connect == "1" ) {
 
         if (! function_exists('pcntl_fork')) die('PCNTL functions not available on this PHP installation');
         $pid = pcntl_fork();
@@ -102,11 +106,11 @@ function initPage()
 {
 	var f=getObj("form");
    
-	f.enable.checked = <? echo g_wlanif()? 'true':'false'; ?>;
+	f.enable.checked = <? echo empty(g_wlanif())==true? 'false':'true'; ?>;
 	f.ssid.value = "<? p_wssid(); ?>";
 		
      // WPA or WEP
-    f.securityType.selectedIndex = <? echo g_security(); ?>;	
+    f.securityType.selectedIndex = <? echo g_security()==1? "0":"1"; ?>;	
     f.wepKeyLenght.selectedIndex = 0;
     f.wepPPHstring.value = "<? g_passph('wep',1); ?>";
     f.chiperType.selectedIndex=<? echo g_cipher(); ?>;
@@ -227,7 +231,7 @@ function checkPage()
     <form name="form" id="form" method="post" action="<? echo $_SERVER['SCRIPT_NAME']; ?>" onsubmit="return checkPage();">
         <input type="hidden" name="POST_ACTION" value="" >
         <input type="hidden" name="f_enable"    value="">
-        <input type="hidden" name="f_ssid"	    value="">
+        <input type="hidden" name="f_ssid"      value="">
         <input type="hidden" name="f_auth_type" value="">
         <input type="hidden" name="f_cipher"    value="">
         <input type="hidden" name="f_wep_pw"    value="">

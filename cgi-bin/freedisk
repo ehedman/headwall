@@ -1,6 +1,6 @@
 #!/bin/bash
 
-all=`fdisk -l 2>/dev/null | grep "Disk /dev/" | grep -v "mmc" |  awk -F: '{print $1}' | awk -F' ' '{printf "%s ", $2}'`
+all=`fdisk -l 2>/dev/null | grep "Disk /dev/" |  egrep -v 'ram|mmc' |  awk -F: '{print $1}' | awk -F' ' '{printf "%s ", $2}'`
 muuid=${1}
 
 pidof `basename /tmp/mkfs.*` > /dev/null

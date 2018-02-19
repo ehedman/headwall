@@ -176,11 +176,11 @@ function g_wstatus($if="wlan0")
 
 function g_haswifi()
 {
-    $val = trim(exec("cat /proc/net/wireless 2> /dev/null | wc -l"));
-    if ($val > 2)
-        return true;
+    $val = trim(exec("/sbin/iwconfig 2>/dev/null | grep 802.11"));
+    if (empty($val))
+        return false;
 
-    return false;
+    return true;
 }
 function do_wifilist()
 {
@@ -252,15 +252,33 @@ function  g_iftype($if)
     return $rval;
 }
 
-function p_keyType()
+function g_wmode($if)
 {
-    bash("keytype");
+    $val=exec("iwconfig $if | grep Mode: | cut -d: -f2 | awk '{printf \"%s\", $1}'");
+    if ($val == "Master") $val="Access Point";
+    return $val;
+}
+
+
+function p_keyType($if)
+{
+    if (g_wmode($if) == "Access Point") {
+        $res=exec("grep wpa_key_mgmt /etc/hostapd/hostapd.conf | cut -d= -f2");
+        echo trim($res);
+    } else 
+        bash("keytype");
 }
 
 function p_lanStat($if)
 {
    $res=exec("ifconfig ".$if."|egrep 'RX pa|TX pa'|awk '{print $1\"&nbsp;\"$2}'|sed ':a;N;$!ba;s/\\n/ /g'");
    echo trim($res);
+}
+
+function p_signalQuality()
+{
+    $res=exec("[ -x /usr/bin/mmcli ] && mmcli -m 0 --simple-status 2>/dev/null |grep \"signal quality:\"|awk -F\' '{print $2, $3}'");
+    echo trim($res);
 }
 
 function g_nclients($if)
@@ -348,11 +366,6 @@ function p_gateway()
 function p_wstatus()
 {
     bash("connect ". g_wlanif());
-}
-function g_wmode($if)
-{
-    $val=exec("iwconfig $if | grep Mode: | cut -d: -f2 | awk '{printf \"%s\", $1}'");
-    return $val;
 }
 
 function g_wssid()

@@ -290,6 +290,7 @@ function checkPage()
     $i=1;
     while (!feof($fd)) {     
         $a=explode("," ,trim(fgets($fd)));
+        if (count($a) <2) continue;
         $dpre="";
         $d=trim($a[1]);
         if (!strlen($d)) continue;

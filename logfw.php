@@ -26,7 +26,7 @@
         } else if (!$pid) {
             // We are the child
             do_fwlog(implode(" ", $_POST));
-            @system("mkdir -p /var/log/ulog; /usr/sbin/service ulogd restart");
+            @system("/usr/sbin/service ulogd restart");
             @system("/sbin/shorewall restart");
         } else { 
             header('Location: http://'. $_SERVER["SERVER_ADDR"]. '/wait.php?seconds=10&loc='.$_SERVER['SCRIPT_NAME']);
@@ -38,7 +38,7 @@
     $rej=$rej==0? 1:0;
     $drp=$drp==0? 1:0;   
 
-    @exec('tail -n 300 /var/log/ulog/syslogemu.log | sed s/"Shorewall:net2fw:"/" "/g | sed s/"Shorewall:loc2fw:"/" "/g | awk '."'".'{printf "%s,[%s] %s %s %s %s,\n",$3,$5,$9,$17,$18,$19}'."' >/tmp/fwlog"); 
+    @exec('tail -n 300 /var/log/firewall | sed s/"Shorewall:*:"/" "/g | awk '."'".'{printf "%s,[%s] %s %s %s\n",$3,$5,$9,$17,$18}'."' >/tmp/fwlog"); 
    
     $totlines=@exec("wc -l /tmp/fwlog | awk '{print $1}'");
 
@@ -282,6 +282,7 @@ function checkPage()
     $i=1;
     while (!feof($fd)) {     
         $a=explode("," ,trim(fgets($fd)));
+        if (count($a) <2) continue;
         echo "			                <tr id='item-".$i."' style='display:none'><td>".$a[0]."</td>";
         echo "<td><input name='".$i."' id='msg_".$i."' value='".$a[1]."' type='hidden'>".$a[1]."</td></tr>\n";
         $i++;    

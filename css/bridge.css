@@ -1,8 +1,8 @@
 html, body, div, h1, h2, h3, h4, p, ul, ol, li, dl, dt, dd, td, input, select, a, textarea
 {
-	font-family: Tahoma, Helvetica, Geneva, Arial, sans-serif;
-	font-size: 0.9em;
-	empty-cells: show;
+    font-family: Tahoma, Helvetica, Geneva, Arial, sans-serif;
+    font-size: 0.9em;
+    empty-cells: show;
 }
 
 html>body
@@ -18,7 +18,7 @@ html>body
 }
 
 input, select, textarea, button {
-  font-size: 0.8em;
+    font-size: 0.8em;
 }
 
 #form
@@ -56,16 +56,16 @@ div.img
 
 #topContainer
 {
-	background-color: #404343;
-	border-color: #FFFFFF;
-	border-width: 2px;
-	border-style: none solid none solid;
-	height: 26px;
+    background-color: #404343;
+    border-color: #FFFFFF;
+    border-width: 2px;
+    border-style: none solid none solid;
+    height: 26px;
     width: 100%;
     padding: 0  8px 0 8px;
     margin-left:auto;
     margin-right:auto;
-	color: white;
+    color: white;
     border-spacing: 0;
     border-collapse: separate;
     font-size: 0.7em;
@@ -85,8 +85,8 @@ div.img
 
 #topBarLeft
 {
-	border-left: #ffffff 1px solid;
-	border-bottom: #ffffff 10px;
+    border-left: #ffffff 1px solid;
+    border-bottom: #ffffff 10px;
     border-collapse: separate;
     background-image: url(/img/head_center.gif);
     background-size: 100% 86px;
@@ -95,7 +95,7 @@ div.img
 
 #logo
 {
-    background-image: url(/img/head_logo2.png); 
+    background-image: url(/img/head_logo1.png); 
     display: block;
     margin: 0 auto;
     width: 162px;
@@ -109,7 +109,7 @@ div.img
     background-image: url(/img/head_right.gif);
     background-repeat:no-repeat;
     background-size: 100% 86px;
-	border-right: #ffffff 1px solid;
+    border-right: #ffffff 1px solid;
     padding: 0px;
     border-spacing: 0;
     border-collapse: separate;
@@ -126,11 +126,11 @@ div.img
 
 .topMenuLink
 {
-	font-weight: bold;
+    font-weight: bold;
     font-size: 0.7em;
-	letter-spacing: 2px;
+    letter-spacing: 2px;
     width: 12%;
-	border-color: #ffffff;
+    border-color: #ffffff;
     background-color: #679ee3;
     border-style:solid;
     border-style: none solid none none;
@@ -139,40 +139,40 @@ div.img
 
 .topMenuLink a:link, .topMenuLink a:visited, .topMenuLink a:active
 {
-	display: block;
-	color: #FFFFFF;
-	background-color: transparent;
-	font-size: 0.7em;
-	font-weight: bold;
-	text-decoration: none;
-	letter-spacing: 2px;
-	padding: 5px;
-	text-transform: uppercase;
-	text-align: center;
-	border-color: #000000;
+    display: block;
+    color: #FFFFFF;
+    background-color: transparent;
+    font-size: 0.7em;
+    font-weight: bold;
+    text-decoration: none;
+    letter-spacing: 2px;
+    padding: 5px;
+    text-transform: uppercase;
+    text-align: center;
+    border-color: #000000;
 }
 
 .topMenuLink a:hover
 {
-	display: block;
-	color:  #FFFFFF;
-	background-color:  #5f95e5;
+    display: block;
+    color:  #FFFFFF;
+    background-color:  #5f95e5;
     background:url('/img/light1_blue.gif') 0 0 repeat-x;
-	font-size: 0.7em;
-	font-weight: bold;
-	text-decoration: underline;
-	padding: 5px;
-	text-transform: uppercase;
-	text-align: center;
+    font-size: 0.7em;
+    font-weight: bold;
+    text-decoration: underline;
+    padding: 5px;
+    text-transform: uppercase;
+    text-align: center;
 }
 
 .topMenuThis
 {
-	font-size: 0.7em;
-	font-weight: bold;
-	letter-spacing: 2px;
+    font-size: 0.7em;
+    font-weight: bold;
+    letter-spacing: 2px;
     width: 12%;
-	border-color: #ffffff;
+    border-color: #ffffff;
     background-color: #5f95e5;
     border-style:solid;
     border-style: none solid none none;
@@ -182,38 +182,38 @@ div.img
 
 .topMenuThis a:link, .topMenuThis a:visited, .topMenuThis a:active
 {
-	display: block;
-	color: #FFFFFF;
-	background-color: transparent;
-	font-size: 0.7em;
-	font-weight: bold;
-	text-decoration: none;
-	letter-spacing: 2px;
-	padding: 5px;
-	text-transform: uppercase;
-	text-align: center;
-	border-color: #000000;
+    display: block;
+    color: #FFFFFF;
+    background-color: transparent;
+    font-size: 0.7em;
+    font-weight: bold;
+    text-decoration: none;
+    letter-spacing: 2px;
+    padding: 5px;
+    text-transform: uppercase;
+    text-align: center;
+    border-color: #000000;
 }
 
 .topMenuThis a:hover
 {
-	display: block;
-	color:  #FFFFFF;
-	background-color:  #5f95e5;
+    display: block;
+    color:  #FFFFFF;
+    background-color:  #5f95e5;
     background:url('/img/light1_blue.gif') 0 0 repeat-x;
-	font-size: 0.7em;
-	font-weight: bold;
-	text-decoration: underline;
-	padding: 5px;
-	text-transform: uppercase;
-	text-align: center;
+    font-size: 0.7em;
+    font-weight: bold;
+    text-decoration: underline;
+    padding: 5px;
+    text-transform: uppercase;
+    text-align: center;
 }
 
 .ledPanel
 {
     width: 12%;
     height: 32px;
-	border-color: #ffffff;
+    border-color: #ffffff;
     background-color: #c4c4c4;
     border-style:solid;
     border-style: none solid none none;
@@ -243,30 +243,30 @@ div.img
 
 .leftMenyContatiner
 {
-	background-color: #404343;
+    background-color: #404343;
     width: 16%;
 }
 
 .leftNavLink ul
 {
-	margin: 0;
-	padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 .leftNavLink li
 {
-	list-style: none;
-	text-transform: uppercase;
+    list-style: none;
+    text-transform: uppercase;
     border: 1px solid #F1F1F1;
 }
 
 #left.navThis
-{		
-	text-transform: uppercase;
-	color: #404343;
-	background-color: #F1F1F1;
-	font-size: 1em;
-	padding: 5px;
+{        
+    text-transform: uppercase;
+    color: #404343;
+    background-color: #F1F1F1;
+    font-size: 1em;
+    padding: 5px;
     border: 1px solid #404343;
     border-style: solid;
 }
@@ -274,104 +274,104 @@ div.img
 
 .leftNavLink li a:link, .leftNavLink li a:visited, .leftNavLink li a:active
 {
-	display: block;
-	color: #FFFFFF;
-	background-color: transparent;
-	font-size: 1em;
-	text-decoration: none;
-	padding: 5px;
+    display: block;
+    color: #FFFFFF;
+    background-color: transparent;
+    font-size: 1em;
+    text-decoration: none;
+    padding: 5px;
 }
 
 .leftNavLink li a:hover
 {
-	display: block;
-	color: #404343;
-	background-color: #F1F1F1;
-	font-size: 1em;
-	text-decoration: underline;
-	padding: 5px;
+    display: block;
+    color: #404343;
+    background-color: #F1F1F1;
+    font-size: 1em;
+    text-decoration: underline;
+    padding: 5px;
 }
 
 #contentHeading
 {
-	color: #000000;
-	background-color: #FFFFFF;
-	padding: 0px 5px 5px 5px;
+    color: #000000;
+    background-color: #FFFFFF;
+    padding: 0px 5px 5px 5px;
     font-size: 0.9em;
 }
 
 #contentBox
 {
-	border: 1px solid #5b85be;
-	padding: 0 9px 9px 9px;
-	background-color: #DEDEDE;
+    border: 1px solid #5b85be;
+    padding: 0 9px 9px 9px;
+    background-color: #DEDEDE;
     font-size: 0.8em;
 }
 
 h1
 {
-	color: #000000;
-	background-color: #5b85be;
-	font-size: 0.9em;
-	font-weight: bold;
-	letter-spacing: 2px;
-	text-transform: uppercase;
-	margin: 0 -9px 5px -9px;
-	padding: 4px 4px 4px 9px;
+    color: #000000;
+    background-color: #5b85be;
+    font-size: 0.9em;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin: 0 -9px 5px -9px;
+    padding: 4px 4px 4px 9px;
 }
 
 .actionBox
 {
-	border: 1px solid #5b85be;
-	padding: 0 9px 9px 9px;
-	background-color: #FFFFFF;
+    border: 1px solid #5b85be;
+    padding: 0 9px 9px 9px;
+    background-color: #FFFFFF;
 }
 
 h2.actionHeader
 {
-	color: #FFFFFF;
-	background-color: #004c9e;
-	font-size: 0.9em;
-	font-weight: bold;
-	letter-spacing: 2px;
-	text-transform: none ;
-	margin: 0 -9px 4px -9px;
-	padding: 4px 4px 4px 9px;
+    color: #FFFFFF;
+    background-color: #004c9e;
+    font-size: 0.9em;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: none ;
+    margin: 0 -9px 4px -9px;
+    padding: 4px 4px 4px 9px;
 }
 
 .laCN
 {
-	font-family: Tahoma, Helvetica, Geneva, Arial, sans-serif;
-	font-size: 0.9em;
-	text-align:left;
+    font-family: Tahoma, Helvetica, Geneva, Arial, sans-serif;
+    font-size: 0.9em;
+    text-align:left;
 }
 .raCN
 {
-	font-family: Tahoma, Helvetica, Geneva, Arial, sans-serif;
-	font-size: 0.9em;
-	text-align:right;
+    font-family: Tahoma, Helvetica, Geneva, Arial, sans-serif;
+    font-size: 0.9em;
+    text-align:right;
 }
 .raCB
 {
-	font-family: Tahoma, Helvetica, Geneva, Arial, sans-serif;
-	font-size: 0.9em;
-	text-align:right;
-	font-weight: bold;
+    font-family: Tahoma, Helvetica, Geneva, Arial, sans-serif;
+    font-size: 0.9em;
+    text-align:right;
+    font-weight: bold;
     height: 22px;
 }
 .laCB
 {
-	font-family: Tahoma, Helvetica, Geneva, Arial, sans-serif;
-	font-size: 0.9em;
-	text-align:left;
-	font-weight: bold;
+    font-family: Tahoma, Helvetica, Geneva, Arial, sans-serif;
+    font-size: 0.9em;
+    text-align:left;
+    font-weight: bold;
 }
 
 #quickHelpContent
 {
-	background-color: #404343;
-	color: #FFFFFF;
-	font-size: 0.7em;
+    background-color: #404343;
+    color: #FFFFFF;
+    font-size: 0.7em;
     width: 16%;
     padding: 1px;
     padding-left: 4px;
@@ -382,7 +382,7 @@ h2.actionHeader
     text-align:left;
 }
 
-.quickHelp a:link {	background-color: #404343; color: #cc6600; text-decoration: none}
+.quickHelp a:link {    background-color: #404343; color: #cc6600; text-decoration: none}
 .quickHelp a:visited {background-color: #404343; color: #cc6600; text-decoration: none}
 .quickHelp a:hover {background-color: #cc6600; color: #404343; text-decoration: none}
 .quickHelp a:active {background-color: #cc6600; color: #404343; text-decoration: none}
@@ -437,7 +437,6 @@ h2.actionHeader
     color: #dfdfdf;
     text-align: center;
     font-size: 0.7em;
-   
 }
 
 #footer a

@@ -49,12 +49,15 @@
             exit;
         }
     }
+    $nfssts="";
+    $vpnsts="";
+    $sshsts="";
     $ret=exec("grep -m1 'SSH(ACCEPT)' /etc/shorewall/rules | awk '{printf \"%s%s\",\$2,\$3}'");
-    if ($ret == 'loc$FW') $sshsts="checked "; else $sshsts="";
+    if ($ret == 'loc$FW') $sshsts="checked ";
     $ret=exec("grep -m1 portmap /etc/shorewall/rules | awk '{printf \"%s%s%s\", \$1,\$2,\$3}'");
-    if ($ret == 'ACCEPTloc$FW') $nfssts="checked "; else $nfssts=="";
+    if ($ret == 'ACCEPTloc$FW') $nfssts="checked ";
     if (stat("/etc/shorewall/tunnels") != false)
-        $vpnsts="checked "; else $vpnsts=="";
+        $vpnsts="checked ";
 ?>
 <!DOCTYPE html>
 <html>
@@ -194,7 +197,7 @@ function do_ts()
         <input name="ACTION_DO_TS"  value="0"   type="hidden" > 
         <input name="ssh_enabled"   value="0"   id="ssh_enabled" type="hidden">
         <input name="nfs_enabled"   value="0"   id="nfs_enabled" type="hidden">
-		<input name="vpn_enabled"   value="0"   id="vpn_enabled" type="hidden">
+	<input name="vpn_enabled"   value="0"   id="vpn_enabled" type="hidden">
         <input name="activate"      value=""    id="activate" type="hidden">
         <input name="SUPER_PASSWD"  value="00000000" id="SUPER_PASSWD"  type="hidden">
         <table id="topContainer">
@@ -263,7 +266,7 @@ function do_ts()
                                 echo '<b style="color:#090;">Firewall: active</b>&nbsp;&nbsp;';
                                 echo '<input type="button" onclick="do_stop()" value="Stop">';
                             }
-							if (stat("/tmp/shwlog") != false) {
+							if (@stat("/tmp/shwlog") != false) {
 								echo "<pre>\n";
 								@system("grep -i error /tmp/shwlog;");
 								echo "</pre>\n";
@@ -271,7 +274,7 @@ function do_ts()
                         ?>                  
                         </td></tr></table>
                                               
-                        <? if ($_GET["msg"] == "noauth") { ?>
+                        <? if (count($_GET)>0 && $_GET["msg"] == "noauth") { ?>
 	                    <b>Super Admin Authorization failed</b>
                         <?}?>
 		            </div><div class="vbr"></div>
@@ -351,7 +354,7 @@ function do_ts()
         </table>
     </form>
     <?
-    if (stat("/tmp/shwlog") != false) {
+    if (@stat("/tmp/shwlog") != false) {
         echo '<script>getObj("showTs").style.display = "block"; getObj("showAcc").style.display = "block";</script>';
         unlink("/tmp/shwlog");							}
     ?>
