@@ -30,7 +30,7 @@
         }
     } else {
         session_destroy();
-        if (!strlen(trim($_POST["USER_ADMIN"])) && count($_POST))
+        if (count($_POST) && !strlen(trim($_POST["USER_ADMIN"])))
             $msg = "<b>Error: Java Script must be enabled</b>";
     }
 ?>

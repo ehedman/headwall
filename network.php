@@ -291,7 +291,7 @@ function changeIPassignement(val)
                                 <tr>
 				                    <td class="raCB">Wireless Home Bridge :</td>
                                     <td class="laCB">&nbsp;
-                                        <input type="radio" <? echo g_haswifi()? "":'disabled="disbaled "' ?>id="hb" name="mode" onclick="setMode()">
+                                        <input type="radio" <? echo g_haswifi()? "":'disabled="disbaled"' ?> id="hb" name="mode" onclick="setMode()">
                                     </td>
                                     <td style="text-align:center"><img alt="wifipic" style="width:70%; height:auto" src="/img/wifi.png"></td>
                                 </tr>

@@ -12,8 +12,8 @@ function resize()	// Set font relative to window width.
 
     if (W <= 800) return;
 //	P =  Math.floor (W/38);				// ca. 3 percent constant
-	P =  Math.floor (f_Factor*(8+W/96));		// Linear function
-	if (P<8)P=8;					// Smallest size.
+	P =  Math.floor (f_Factor*(8+W/160));		// Linear function
+	if (P<12)P=12;					// Smallest size.
 	document.body.style.fontSize=P + 'px';
 }
 
