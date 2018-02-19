@@ -46,7 +46,7 @@
                             $_POST["LAN1"]);
             }
             if (($fd = fopen($_SERVER["DOCUMENT_ROOT"]."/cgi-bin/netif.php", "w")) != NULL) {
-                fwrite($fd, '<?phpphp $THEWAN="'.$_POST["WAN"].'"; $THELAN="'.$_POST["LAN"].'"; $THESRV="'.$_POST["SRVLANassignement"].':srv"; $THESRVIP="'.$_POST["staticSRVIP"].'"; $THEMODE="'.$_POST["stationMode"].'"; ?>'."\n");
+                fwrite($fd, '<?php $THEWAN="'.$_POST["WAN"].'"; $THELAN="'.$_POST["LAN"].'"; $THESRV="'.$_POST["SRVLANassignement"].':srv"; $THESRVIP="'.$_POST["staticSRVIP"].'"; $THEMODE="'.$_POST["stationMode"].'"; ?>'."\n");
                 fclose($fd);
                 sleep(5);
                 ifsrv($_POST["SRVLANassignement"].":srv", $_POST["staticSRVIP"]);

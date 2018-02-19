@@ -399,19 +399,19 @@ function checkPage()
 				                <td class="raCB" style="width: 40%">Wireless Channel :&nbsp;</td>
 				                <td class="laCB">
 					                <select id="WChannel" name="WChannel">
-					                    <option value="1"<?phpp_chansel(1)?>>1</option>
-                                        <option value="2"<?phpp_chansel(2)?>>2</option>
-                                        <option value="3"<?phpp_chansel(3)?>>3</option>
-                                        <option value="4"<?phpp_chansel(4)?>>4</option>
-                                        <option value="5"<?phpp_chansel(5)?>>5</option>
-                                        <option value="6"<?phpp_chansel(6)?>>6</option>
-                                        <option value="7"<?phpp_chansel(7)?>>7</option>
-                                        <option value="8"<?phpp_chansel(8)?>>8</option>
-                                        <option value="9"<?phpp_chansel(9)?>>9</option>
-                                        <option value="10"<?phpp_chansel(10)?>>10</option>
-                                        <option value="11"<?phpp_chansel(11)?>>11</option>
-                                        <option value="12"<?phpp_chansel(12)?>>12</option>
-                                        <option value="13"<?phpp_chansel(13)?>>13</option>
+					                    <option value="1"<?php p_chansel(1)?>>1</option>
+                                        <option value="2"<?php p_chansel(2)?>>2</option>
+                                        <option value="3"<?php p_chansel(3)?>>3</option>
+                                        <option value="4"<?php p_chansel(4)?>>4</option>
+                                        <option value="5"<?php p_chansel(5)?>>5</option>
+                                        <option value="6"<?php p_chansel(6)?>>6</option>
+                                        <option value="7"<?php p_chansel(7)?>>7</option>
+                                        <option value="8"<?php p_chansel(8)?>>8</option>
+                                        <option value="9"<?php p_chansel(9)?>>9</option>
+                                        <option value="10"<?php p_chansel(10)?>>10</option>
+                                        <option value="11"<?php p_chansel(11)?>>11</option>
+                                        <option value="12"<?php p_chansel(12)?>>12</option>
+                                        <option value="13"<?php p_chansel(13)?>>13</option>
 					                </select>
 				                </td>
 			                </tr>
@@ -419,10 +419,10 @@ function checkPage()
 				                <td class="raCB" style="width: 40%">Wireless Mode :&nbsp;</td>
 				                <td class="laCB">
 					                <select id="WMode" name="WMode">
-                                        <option value="a"<?phpp_modesel("a")?>>802.11a only</option>
-                                        <option value="b"<?phpp_modesel("b")?>>802.11b only</option>
-                                        <option value="g"<?phpp_modesel("g")?>>802.11g only</option>
-					                    <option value="gn"<?phpp_modesel("gn")?>>Mixed 802.11g and 802.11n</option>    
+                                        <option value="a"<?php p_modesel("a")?>>802.11a only</option>
+                                        <option value="b"<?php p_modesel("b")?>>802.11b only</option>
+                                        <option value="g"<?php p_modesel("g")?>>802.11g only</option>
+					                    <option value="gn"<?php p_modesel("gn")?>>Mixed 802.11g and 802.11n</option>    
 					                </select>
 				                </td>
 			                </tr>
