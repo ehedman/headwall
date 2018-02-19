@@ -1,4 +1,4 @@
-<?
+<?php
 
 $ccodes = array(
     "AU" => "Australia",

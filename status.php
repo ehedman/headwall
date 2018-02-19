@@ -1,4 +1,4 @@
-<?
+<?php
     /*
      * status.php
      *
@@ -31,7 +31,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link rel="stylesheet" type="text/css" href="/css/bridge.css">
-        <title><? p_title(); ?></title>
+        <title><?php p_title(); ?></title>
         <script>
 
 function onbody()			// Executed only once.
@@ -62,12 +62,12 @@ function re_scan()
     secs=secs-1;
     document.getElementById("timer").innerHTML="Logout "+ secs + " s";  
    
-    if (++timeout > <? echo $TMO ?>) {
+    if (++timeout > <?php echo $TMO ?>) {
         clearInterval(counter);
         self.location.href="/logout.php";
     } else if (--refresh < 0)  {
         clearInterval(counter);
-        var str="<? echo $_SERVER['SCRIPT_NAME']; ?>?secs="+secs+"&timeout="+timeout;
+        var str="<?php echo $_SERVER['SCRIPT_NAME']; ?>?secs="+secs+"&timeout="+timeout;
 	    self.location.href=str;
     }                 
 }
@@ -81,27 +81,27 @@ function initPage()
         </script> 
     </head>
     <body onload="initPage();"><script>onbody();</script>
-    <input type="hidden" id="secs" name="secs" value="<? if (isset($_GET['secs'])) {echo intval($_GET['secs']) >0? $_GET['secs']:$TMO;} else echo $TMO; ?>">
-    <input type="hidden" id="timeout" name="timeout" value="0<? if (isset($_GET['timeout'])) {echo intval($_GET['timeout']) >0? $_GET['timeout']:'0';} ?>">
+    <input type="hidden" id="secs" name="secs" value="<?php if (isset($_GET['secs'])) {echo intval($_GET['secs']) >0? $_GET['secs']:$TMO;} else echo $TMO; ?>">
+    <input type="hidden" id="timeout" name="timeout" value="0<?php if (isset($_GET['timeout'])) {echo intval($_GET['timeout']) >0? $_GET['timeout']:'0';} ?>">
 
         <table id="topContainer">
             <tr>
-	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<? p_productHome(); ?>" target=_blank><? p_serverName(); ?></a></td>
-	            <td class="raCN">Version&nbsp;:&nbsp;<? p_firmware("-ro");?>&nbsp;</td>
+	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<?php p_productHome(); ?>" target=_blank><?php p_serverName(); ?></a></td>
+	            <td class="raCN">Version&nbsp;:&nbsp;<?php p_firmware("-ro");?>&nbsp;</td>
             </tr>
         </table>
         <table id="topTable">
             <tr>
-	            <td id="topBarLeft"><a id="logo" href="<? p_productHome(); ?>"></a></td>	            
+	            <td id="topBarLeft"><a id="logo" href="<?php p_productHome(); ?>"></a></td>	            
 	            <td id="topBarRight"></td>
             </tr>
         </table>
         <table id="topMenuTable">
             <tr>
 	            <td class="ledPanel">
-                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<? echo g_srvstat("shorewall")? "on":"off" ?>.png">
-                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<? echo g_srvstat("named")? "on":"off" ?>.png">
-                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<? echo g_srvstat("dhcpd")? "on":"off" ?>.png">
+                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<?php echo g_srvstat("shorewall")? "on":"off" ?>.png">
+                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<?php echo g_srvstat("named")? "on":"off" ?>.png">
+                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<?php echo g_srvstat("dhcpd")? "on":"off" ?>.png">
                 </td>
 	            <td class="topMenuLink"><a href="/network.php">Setup</a></td>
 	            <td class="topMenuLink"><a href="/advanced.php">Advanced</a></td>
@@ -122,162 +122,162 @@ function initPage()
 	            <td id="contentHeading">
                     <div id="contentBox">
 		                <h1>Device Information</h1>
-                        Connection details for your <? p_mode(); ?> are displayed on this page.
+                        Connection details for your <?php p_mode(); ?> are displayed on this page.
 		            </div><div class="vbr"></div>
 		            <div class="actionBox">
 			            <h2 class="actionHeader">System Information</h2>
                         <table>
 				            <tr>
 					            <td class="raCB" style="width:40%"><b>Firmware Version&nbsp;:</b></td>
-					            <td class="laCB"><b>&nbsp;<? p_firmware("-rv"); ?></b></td>
+					            <td class="laCB"><b>&nbsp;<?php p_firmware("-rv"); ?></b></td>
 				            </tr>
 				            <tr>
 					            <td class="raCB"><b>Uptime&nbsp;:</b></td>
-					            <td class="laCB"><b>&nbsp;<? p_uptime(); ?></b></td>
+					            <td class="laCB"><b>&nbsp;<?php p_uptime(); ?></b></td>
 				            </tr>
                             <tr>
 					            <td class="raCB"><b>System&nbsp;:</b></td>
-					            <td class="laCB"><b>&nbsp;<? p_serverName(); ?></b></td>
+					            <td class="laCB"><b>&nbsp;<?php p_serverName(); ?></b></td>
 				            </tr>
 							<tr>
 					            <td class="raCB"><b>Firewall&nbsp;:</b></td>
-					            <td class="laCB"><b>&nbsp;<? echo g_srvstat("shorewall")==true? "Enabled":"Disabled"; ?></b></td>
+					            <td class="laCB"><b>&nbsp;<?php echo g_srvstat("shorewall")==true? "Enabled":"Disabled"; ?></b></td>
 				            </tr>
 			            </table>
                     </div><div class="vbr"></div>
                     <div class="actionBox">
-			            <h2 class="actionHeader"><? echo g_iftype(g_lan())==1? "Ethernet":"Wireless"; ?> LAN Connection</h2>
+			            <h2 class="actionHeader"><?php echo g_iftype(g_lan())==1? "Ethernet":"Wireless"; ?> LAN Connection</h2>
 			            <table>
 			                <tr>
 				                <td class="raCB" style="width:40%">Connection Type&nbsp;:</td>
 				                <td class="laCB">&nbsp;
-				                <? p_connectionType(g_lan()); ?> IP&nbsp;</td>
+				                <?php p_connectionType(g_lan()); ?> IP&nbsp;</td>
 			                </tr>
 			                <tr>
 				                <td class="raCB">MAC Address&nbsp;:</td>
-				                <td class="laCB">&nbsp;<? p_mac(g_lan()) ?></td>
+				                <td class="laCB">&nbsp;<?php p_mac(g_lan()) ?></td>
 			                </tr>
 			                <tr>
 				                <td class="raCB">IP Address&nbsp;:</td>
-				                <td class="laCB">&nbsp;<? p_ip(g_lan()); ?></td>
+				                <td class="laCB">&nbsp;<?php p_ip(g_lan()); ?></td>
 			                </tr>
 			                <tr>
 				                <td class="raCB">Subnet Mask&nbsp;:</td>
-				                <td class="laCB">&nbsp;<? p_mask(g_lan()); ?></td>
+				                <td class="laCB">&nbsp;<?php p_mask(g_lan()); ?></td>
 			                </tr>
 						    <tr>
 				                <td class="raCB">Connected Clients&nbsp;:</td>
-				                <td class="laCB">&nbsp;<? echo g_nclients(g_lan()); ?></td>
+				                <td class="laCB">&nbsp;<?php echo g_nclients(g_lan()); ?></td>
 			                </tr>
 			            </table>
                     </div><div class="vbr"></div>
 
-                    <? if ($vpnifs > 0) { ?>
+                    <?php if ($vpnifs > 0) { ?>
 
                     <div class="actionBox">
 			            <h2 class="actionHeader"> VPN Connections</h2>
 			            <table>
                             <tr>
                                 <td class="raCB">LAN Gateway IP&nbsp;:</td>
-				                <td class="laCB">&nbsp;<? echo $ppgw; ?></td>
+				                <td class="laCB">&nbsp;<?php echo $ppgw; ?></td>
                             </tr>
-                            <? if ($pubip !=NULL) { ?>
+                            <?php if ($pubip !=NULL) { ?>
 
                             <tr>
                                 <td class="raCB">Public DDNS IP&nbsp;:</td>
-				                <td class="laCB">&nbsp;<? echo $pubip; ?></td>
+				                <td class="laCB">&nbsp;<?php echo $pubip; ?></td>
                             </tr>
 
-                            <?}?>
+                            <?php }?>
 
                             <tr>
                                 <td class="raCB" style="width:40%">Connected Clients&nbsp;:</td>
-				                <td class="laCB">&nbsp;<? echo $vpnifs; ?></td>
+				                <td class="laCB">&nbsp;<?php echo $vpnifs; ?></td>
                             </tr>       
                         </table>
                     </div><div class="vbr"></div>
-                    <?}?>
+                    <?php }?>
 
-                    <div class="actionBox" style="display:<? echo g_ifip(g_lan1())? "block":"none"; ?>">
+                    <div class="actionBox" style="display:<?php echo g_ifip(g_lan1())? "block":"none"; ?>">
 			            <h2 class="actionHeader">Blacklist Filter and Redirector</h2>
 			            <table>
                             <tr>
 			                    <td class="raCB" style="width:40%">To Host IP Address&nbsp;:</td>
-                                <td class="laCB">&nbsp;<? p_ip(g_lan1()); if(g_spfhere()) {echo " on this "; p_mode();} ?></td>
+                                <td class="laCB">&nbsp;<?php p_ip(g_lan1()); if(g_spfhere()) {echo " on this "; p_mode();} ?></td>
 			                </tr>
-                            <? if(g_spfhere()) { ?><tr>
+                            <?php if(g_spfhere()) { ?><tr>
 				                <td class="raCB">URLs rejected&nbsp;:</td>
-				                <td class="laCB">&nbsp;<? p_denycount(); ?></td>
-			                 </tr><?}?>
+				                <td class="laCB">&nbsp;<?php p_denycount(); ?></td>
+			                 </tr><?php }?>
 			            </table>
                     </div><div class="vbr"></div>
                     <div class="actionBox">
-			            <h2 class="actionHeader"><? echo g_mode()==2? "Wireless WAN Connection":"Ethernet WAN Connection"; ?></h2>
+			            <h2 class="actionHeader"><?php echo g_mode()==2? "Wireless WAN Connection":"Ethernet WAN Connection"; ?></h2>
 			            <table>
 			                <tr>
 				                <td class="raCB" style="width:40%">Connection Type&nbsp;:</td>
 				                <td class="laCB">&nbsp;
-				                <? p_connectionType(g_wan()); ?> IP&nbsp;</td>
+				                <?php p_connectionType(g_wan()); ?> IP&nbsp;</td>
 			                </tr>
 			                <tr>
 				                <td class="raCB">MAC Address&nbsp;:</td>
-				                <td class="laCB">&nbsp;<? p_mac(g_wan()) ?></td>
+				                <td class="laCB">&nbsp;<?php p_mac(g_wan()) ?></td>
 			                </tr>
 			                <tr>
 				                <td class="raCB">IP Address&nbsp;:</td>
-				                <td class="laCB">&nbsp;<? p_ip(g_wan()); ?></td>
+				                <td class="laCB">&nbsp;<?php p_ip(g_wan()); ?></td>
 			                </tr>
 			                <tr>
 				                <td class="raCB">Subnet Mask&nbsp;:</td>
-				                <td class="laCB">&nbsp;<? p_mask(g_wan()); ?></td>
+				                <td class="laCB">&nbsp;<?php p_mask(g_wan()); ?></td>
 			                </tr>
 			                <tr>
 				                <td class="raCB">Default Gateway&nbsp;:</td>
-				                <td class="laCB">&nbsp;<? p_gateway(); ?></td>
+				                <td class="laCB">&nbsp;<?php p_gateway(); ?></td>
 			                </tr>
                                         <tr>
 				                <td class="raCB">Traffic&nbsp;:</td>
-				                <td class="laCB">&nbsp;<? p_lanStat(g_wan()); ?></td>
+				                <td class="laCB">&nbsp;<?php p_lanStat(g_wan()); ?></td>
 			                </tr>
                                         <tr>
 				                <td class="raCB">Signal Quality&nbsp;:</td>
-				                <td class="laCB">&nbsp;<? p_signalQuality(); ?></td>
+				                <td class="laCB">&nbsp;<?php p_signalQuality(); ?></td>
 			                </tr>
 			            </table>
-		            </div><?if (g_wlanif() !=NULL) { ?><div class="vbr"></div>
+		            </div><?php if (g_wlanif() !=NULL) { ?><div class="vbr"></div>
                     <div class="actionBox">
 			            <h2 class="actionHeader">Wireless Connection</h2>
 			            <table>
 			                <tr>
 				                <td class="raCB" style="width:40%">Wireless Radio&nbsp;:</td>
-				                <td class="laCB">&nbsp;<? echo g_wstatus(g_wlanif())? 'Enabled':'Disabled'; ?></td>
+				                <td class="laCB">&nbsp;<?php echo g_wstatus(g_wlanif())? 'Enabled':'Disabled'; ?></td>
 			                </tr>
                             <tr>
 				                <td class="raCB" style="width:40%">Wireless Mode&nbsp;:</td>
-				                <td class="laCB">&nbsp;<? echo g_wmode(g_wlanif()) ?></td>
+				                <td class="laCB">&nbsp;<?php echo g_wmode(g_wlanif()) ?></td>
 			                </tr>                     		
 			                <tr>
 				                <td class="raCB">Network Name(SSID)&nbsp;:</td>
-				                <td class="laCB">&nbsp;<? p_wssid(); ?></td>
+				                <td class="laCB">&nbsp;<?php p_wssid(); ?></td>
                             </tr>
-                            <tr><? if (g_mode()==2) {?>
+                            <tr><?php if (g_mode()==2) {?>
 				                <td class="raCB">Status&nbsp;:</td>
-				                <td class="laCB">&nbsp;<? p_wstatus(); ?></td>
+				                <td class="laCB">&nbsp;<?php p_wstatus(); ?></td>
 			                </tr>	
 			                <tr>
 				                <td class="raCB">Bit Rate&nbsp;:</td>
-				                <td class="laCB">&nbsp;<? p_wbitrate(); ?></td>
-			                </tr><?}?>
+				                <td class="laCB">&nbsp;<?php p_wbitrate(); ?></td>
+			                </tr><?php }?>
                             <tr>
 				                <td class="raCB">Link Quality&nbsp;:</td>
-				                <td class="laCB">&nbsp;<? p_wquality(); ?></td>
+				                <td class="laCB">&nbsp;<?php p_wquality(); ?></td>
 			                </tr>
 			                <tr>
 				                <td class="raCB">Security Type&nbsp;:</td>
-				                <td class="laCB">&nbsp;<? p_keyType(g_wlanif()); ?></td>
+				                <td class="laCB">&nbsp;<?php p_keyType(g_wlanif()); ?></td>
 			                </tr>
 			            </table>
-		            </div><?}?>
+		            </div><?php }?>
                 </td>
 	            <td id="quickHelpContent"><strong>Help...</strong><br>
                   <br>
@@ -286,7 +286,7 @@ function initPage()
             </tr>
             <tr>
 	            <td colspan="3" id="footer">
-                    Copyright &copy; <? p_copyRight(); ?>
+                    Copyright &copy; <?php p_copyRight(); ?>
                 </td>                   
             </tr>
         </table>

@@ -1,4 +1,4 @@
-<? 
+<?php 
     /*
      * dhcp.php
      *
@@ -78,12 +78,12 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link rel="stylesheet" type="text/css" href="/css/bridge.css">
-        <title><? p_title(); ?></title>
+        <title><?php p_title(); ?></title>
         <script>
 
-<? setTimeout(); ?>
+<?php setTimeout(); ?>
 
-<? include 'inc/general.js.php' ?>
+<?php include 'inc/general.js.php' ?>
 
 function onchange_dhcp()
 {
@@ -163,7 +163,7 @@ function checkPage()
         return false;
     }
 
-    if (isSubnetSame("<?echo VPNET.".0" ?>", f.server_ip.value, f.server_nmsk.value) == false) {
+    if (isSubnetSame("<?php echo VPNET.".0" ?>", f.server_ip.value, f.server_nmsk.value) == false) {
         alert("The Server IP address ("+f.server_ip.value+") conflicts with the LAN's VPN subnet.\nUse another subnet.");
         f.server_ip.select();
         return false;
@@ -181,8 +181,8 @@ function checkPage()
         return false;
     }
 
-    if (isSubnetSame("<? p_ip(g_wan()) ?>", f.server_ip.value, f.server_nmsk.value) == false) {
-        alert("The Server IP address ("+f.server_ip.value+") conflicts with the WAN's subnet (<? p_ip(g_wan()) ?>).\nUse another subnet.");
+    if (isSubnetSame("<?php p_ip(g_wan()) ?>", f.server_ip.value, f.server_nmsk.value) == false) {
+        alert("The Server IP address ("+f.server_ip.value+") conflicts with the WAN's subnet (<?php p_ip(g_wan()) ?>).\nUse another subnet.");
         return false;
     }
 
@@ -220,21 +220,21 @@ function checkPage()
             return false;
         }
 
-        if (<? echo g_srvstat("named")? "1":"0" ?>) {
+        if (<?php echo g_srvstat("named")? "1":"0" ?>) {
             if (f.domain_dns1.value != f.server_ip.value) {
                 f.domain_dns1.select();
-                if (confirm('The Primary DNS Server is not set to\n this <? p_mode(); ?>s\' running DNS Server. Correct?')) {
+                if (confirm('The Primary DNS Server is not set to\n this <?php p_mode(); ?>s\' running DNS Server. Correct?')) {
                     f.domain_dns1.value = f.server_ip.value;
                 } else return false;
             }
-            if (<? echo g_spfhere()? "1":"0" ?>) {
-                if (f.server_ip.value != "<? p_ip(g_lan()) ?>")
+            if (<?php echo g_spfhere()? "1":"0" ?>) {
+                if (f.server_ip.value != "<?php p_ip(g_lan()) ?>")
                     alert("The Redirect spam to I.P property\nin the DNS page needs to be updated");
             }
         } else {
-            if (f.domain_dns1.value == "<? p_ip(g_lan()) ?>" || f.domain_dns2.value == "<? p_ip(g_lan()) ?>") {
+            if (f.domain_dns1.value == "<?php p_ip(g_lan()) ?>" || f.domain_dns2.value == "<?php p_ip(g_lan()) ?>") {
               
-                if (!confirm("You have chosen this <? p_mode(); ?> as the Primary DNS server for your network.\nPlease also enable the DNS server under the DNS menu or choose another DNS server."))
+                if (!confirm("You have chosen this <?php p_mode(); ?> as the Primary DNS server for your network.\nPlease also enable the DNS server under the DNS menu or choose another DNS server."))
                     return false;
             }
         }
@@ -262,12 +262,12 @@ function checkPage()
     f.f_end_ip.value = f.end_ip.value;
     f.f_lease_time.value = f.lease_time.value;
     f.f_domain_name.value = f.domain_name.value;
-    <? if (g_srvstat("named") == false) { ?> 
+    <?php if (g_srvstat("named") == false) { ?> 
     f.f_domain_dns1.value = f.domain_dns1.value;
     f.f_domain_dns2.value = f.domain_dns2.value;
-    <?}?>
+    <?php }?>
 
-    if (f.dns_relay.checked == true && <? echo g_srvstat("named")? "1==0":"1==1" ?>) {
+    if (f.dns_relay.checked == true && <?php echo g_srvstat("named")? "1==0":"1==1" ?>) {
         f.f_dns_relay.value = 1;
     } else { f.f_dns_relay.value = 0; }
 
@@ -281,8 +281,8 @@ function check_res()
 {
     var f=getObj("form");
 
-     if (rowIndx >= <? echo C_MAX ?>) {
-        alert("Attempt to exceed the limit for a class C netwok (<? echo C_MAX ?>)");
+     if (rowIndx >= <?php echo C_MAX ?>) {
+        alert("Attempt to exceed the limit for a class C netwok (<?php echo C_MAX ?>)");
         return false;
     }
     if (isFieldBlank(f.res_ip.value) == true) {
@@ -318,7 +318,7 @@ function check_res()
             if (f.res_ip.value == getObj("reserved_"+i+"_ip").value) {
                 alert("The IP address ("+f.res_ip.value+") is already used."); return false;
             }
-            if (isSubnetSame("<? p_ip(g_lan()) ?>", f.res_ip.value, "<? p_mask(g_lan()) ?>")) {
+            if (isSubnetSame("<?php p_ip(g_lan()) ?>", f.res_ip.value, "<?php p_mask(g_lan()) ?>")) {
                 alert("The IP address ("+f.res_ip.value+") is not in this DHCP Server's subnet."); return false;
             }
             if (f.res_nm.value == getObj("reserved_"+i+"_nm").value) {
@@ -347,7 +347,7 @@ function check_res()
             if (f.res_ip.value == getObj("d-reserved_"+i+"_ip").value) {
                 alert("The IP address ("+f.res_ip.value+") is already used."); return false;
             }
-            if (isSubnetSame("<? p_ip(g_lan()) ?>", f.res_ip.value, "<? p_mask(g_lan()) ?>")) {
+            if (isSubnetSame("<?php p_ip(g_lan()) ?>", f.res_ip.value, "<?php p_mask(g_lan()) ?>")) {
                 alert("The IP address ("+f.res_ip.value+") is not on this DHCP Server's subnet."); return false;
             }
             if (f.res_nm.value == getObj("d-reserved_"+i+"_nm").value) {
@@ -411,13 +411,13 @@ function check_copy()
 {
 
     var f=getObj("form");
-    f.res_ip.value="<? echo $_SERVER['REMOTE_ADDR']; ?>";
-    f.res_mac.value="<? system('arp -n | grep '.$_SERVER['REMOTE_ADDR']." | grep ether | awk '{print $3}' | tr -d '\n'"); ?>";
+    f.res_ip.value="<?php echo $_SERVER['REMOTE_ADDR']; ?>";
+    f.res_mac.value="<?php system('arp -n | grep '.$_SERVER['REMOTE_ADDR']." | grep ether | awk '{print $3}' | tr -d '\n'"); ?>";
 
    
-    f.res_nm.value="<? system("if [ \"`pidof named`\" ]; then nslookup ".$_SERVER['REMOTE_ADDR']." localhost | grep name | awk '{gsub(\".".g_domain().".\",\"\");printf \"%s\", $4}'; fi"); ?>";
+    f.res_nm.value="<?php system("if [ \"`pidof named`\" ]; then nslookup ".$_SERVER['REMOTE_ADDR']." localhost | grep name | awk '{gsub(\".".g_domain().".\",\"\");printf \"%s\", $4}'; fi"); ?>";
     if (f.res_nm.value == "")
-        f.res_nm.value="<? system('nbtscan -q '.$_SERVER['REMOTE_ADDR']." | awk '{print tolower(".'$2'.")}' | tr -d '\n'") ?>";
+        f.res_nm.value="<?php system('nbtscan -q '.$_SERVER['REMOTE_ADDR']." | awk '{print tolower(".'$2'.")}' | tr -d '\n'") ?>";
 
     return true;
 }
@@ -476,7 +476,7 @@ function initPage()
 {
     var f=getObj("form");
 
-    if (<? if(g_srvstat("dhcpd")) echo "true"; else echo "false"; ?>) {
+    if (<?php if(g_srvstat("dhcpd")) echo "true"; else echo "false"; ?>) {
         getObj("show_dhcp_res").style.display = "block"; 
         getObj("show_dhcp_rlist").style.display = "block";
         getObj("show_dhcp_domain").style.display = "block";
@@ -492,14 +492,14 @@ function initPage()
         f.f_dhcp_enable.value = 0;
     }
 
-    if (<? if(g_dnsrelay()) echo "true"; else echo "false"; ?>) {
+    if (<?php if(g_dnsrelay()) echo "true"; else echo "false"; ?>) {
         getObj("show_domain_items").style.display = "none";
         f.f_dns_relay.value = 1;
     } else {
         getObj("show_domain_items").style.display = "block";
         f.f_dns_relay.value = 0; 
     }
-    if (<? if(g_srvstat("named")) echo "0"; else echo "1"; ?>) {
+    if (<?php if(g_srvstat("named")) echo "0"; else echo "1"; ?>) {
         getObj("show_dhcp_relay").style.display = "block";
         f.f_dns_relay.value = 0;
     }
@@ -513,7 +513,7 @@ function initPage()
         </script> 
     </head>
     <body onload="initPage();"><script>onbody();</script>
-    <form name="form" id="form" method="post" action="<? echo $_SERVER['SCRIPT_NAME']; ?>" onsubmit="return checkPage();">
+    <form name="form" id="form" method="post" action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" onsubmit="return checkPage();">
         <input name="POST_ACTION" value="" type="hidden">
         <input name="f_dhcp_enable" id="f_dhcp_enable"  value="0"   type="hidden">
         <input name="f_server_ip"	id="f_server_ip"    value="0"   type="hidden">
@@ -523,31 +523,31 @@ function initPage()
         <input name="f_lease_time"  id="f_lease_time"   value="0"   type="hidden">
         <input name="f_remove_res"  id="f_remove_res"   value="0"   type="hidden">      
         <input name="f_domain_name" id="f_domain_name"  value="0"   type="hidden">
-        <input name="f_domain_dns1" id="f_domain_dns1"  value="<? p_domains(1); ?>" type="hidden">
-        <input name="f_domain_dns2" id="f_domain_dns2"  value="<? p_domains(2); ?>" type="hidden">
+        <input name="f_domain_dns1" id="f_domain_dns1"  value="<?php p_domains(1); ?>" type="hidden">
+        <input name="f_domain_dns2" id="f_domain_dns2"  value="<?php p_domains(2); ?>" type="hidden">
         <input name="f_dns_relay"   id="f_dns_relay"    value="0"   type="hidden">
-        <input name="f_wan"         id="f_wan"          value="<? echo g_wan(); ?>" type="hidden">
-        <input name="f_lan"         id="f_lan"          value="<? echo g_lan(); ?>" type="hidden">
-        <input name="f_lan1"        id="f_lan1"         value="<? echo g_lan1(); ?>" type="hidden">
+        <input name="f_wan"         id="f_wan"          value="<?php echo g_wan(); ?>" type="hidden">
+        <input name="f_lan"         id="f_lan"          value="<?php echo g_lan(); ?>" type="hidden">
+        <input name="f_lan1"        id="f_lan1"         value="<?php echo g_lan1(); ?>" type="hidden">
 
         <table id="topContainer">
             <tr>
-	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<? p_productHome(); ?>" target=_blank><? p_serverName(); ?></a></td>
-	            <td class="raCN">Version&nbsp;:&nbsp;<? p_firmware("-ro");?>&nbsp;</td>
+	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<?php p_productHome(); ?>" target=_blank><?php p_serverName(); ?></a></td>
+	            <td class="raCN">Version&nbsp;:&nbsp;<?php p_firmware("-ro");?>&nbsp;</td>
             </tr>
         </table>
         <table id="topTable">
             <tr>
-	            <td id="topBarLeft"><a id="logo" href="<? p_productHome(); ?>"></a></td>	            
+	            <td id="topBarLeft"><a id="logo" href="<?php p_productHome(); ?>"></a></td>	            
 	            <td id="topBarRight"></td>
             </tr>
         </table>
         <table id="topMenuTable">
             <tr>
 	            <td class="ledPanel">
-                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<? echo g_srvstat("shorewall")? "on":"off" ?>.png">
-                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<? echo g_srvstat("named")? "on":"off" ?>.png">
-                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<? echo g_srvstat("dhcpd")? "on":"off" ?>.png">
+                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<?php echo g_srvstat("shorewall")? "on":"off" ?>.png">
+                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<?php echo g_srvstat("named")? "on":"off" ?>.png">
+                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<?php echo g_srvstat("dhcpd")? "on":"off" ?>.png">
                 </td>
 	            <td class="topMenuLink"><a href="/network.php">Setup</a></td>
 	            <td class="topMenuThis"><a href="/advanced.php">Advanced</a></td>
@@ -562,7 +562,7 @@ function initPage()
                     <div class="leftNavLink">
                         <ul style="width: 100%">
                             <li><div class="leftnavLink"><a href="/network.php">Network</a></div></li>
-                            <? if (g_haswifi()) { ?><li><div class="leftnavLink"><a href="/wireless.php">Wireless</a></div></li><?}?>
+                            <?php if (g_haswifi()) { ?><li><div class="leftnavLink"><a href="/wireless.php">Wireless</a></div></li><?php }?>
                             <li><div id="left" class="navThis">DHCP</div></li>
                             <li><div class="leftnavLink"><a href="/dns.php">DNS</a></div></li>
                             <li><div class="leftnavLink"><a href="/firewall.php">Security</a></div></li>
@@ -573,7 +573,7 @@ function initPage()
                     <div id="contentBox">
 		                <h1>LAN and DHCP Settings</h1>
                         Use this section to configure the internal network settings of your
-                        <? p_mode(); ?> and also to configure the built-in DHCP Server to assign IP
+                        <?php p_mode(); ?> and also to configure the built-in DHCP Server to assign IP
                         addresses to the devices on your network. 
                         <br><br>
                         <input value="Save Settings" type="submit">&nbsp;
@@ -589,13 +589,13 @@ function initPage()
                              <tr>
 				                <td class="raCB" style="width: 40%">Server IP Address :</td>
 				                <td class="laCB">&nbsp;
-					                <input type="text" id="server_ip" size="16" maxlength="15" value="<? p_srvip(); ?>">
+					                <input type="text" id="server_ip" size="16" maxlength="15" value="<?php p_srvip(); ?>">
 				                </td>
 			                </tr>
                             <tr class="show_dhcp_data">
 				                <td class="raCB">Server Subnet Mask :</td>
 				                <td class="laCB">&nbsp;
-					                <input type="text" id="server_nmsk" size="16" maxlength="15" value="<? p_mask(g_lan()); ?>">
+					                <input type="text" id="server_nmsk" size="16" maxlength="15" value="<?php p_mask(g_lan()); ?>">
 				                </td>
 			                </tr>
                            </table>
@@ -605,15 +605,15 @@ function initPage()
                                 <tr>
 				                    <td class="raCB" style="width: 40%">DHCP Adress Range :</td>
 				                    <td class="laCBb">&nbsp;
-					                    <input id="start_ip" size="16" maxlength="15" value="<? p_startip(); ?>" type="text">
+					                    <input id="start_ip" size="16" maxlength="15" value="<?php p_startip(); ?>" type="text">
 				                    &nbsp;to&nbsp;
-					                    <input id="end_ip" size="16" maxlength="15" value="<? p_endip(); ?>" type="text">
+					                    <input id="end_ip" size="16" maxlength="15" value="<?php p_endip(); ?>" type="text">
 				                    </td>
 			                    </tr>
                                 <tr>
 				                    <td class="raCB">Lease Time :</td>
 				                    <td class="laCB">&nbsp;
-					                    <input id="lease_time" size="16" maxlength="15" value="<? p_leasetime(); ?>" type="text">
+					                    <input id="lease_time" size="16" maxlength="15" value="<?php p_leasetime(); ?>" type="text">
 				                    </td>
 			                    </tr>
                             </table>
@@ -622,7 +622,7 @@ function initPage()
                             <tr>
                                 <td style="text-align:right">
                                     Enable DHCP&nbsp;&nbsp;
-                                    <input type="checkbox" id="dhcp_enable" onChange="onchange_dhcp();"<? if(g_srvstat("dhcpd")) echo ' checked="checked"'; ?>>&nbsp;&nbsp;
+                                    <input type="checkbox" id="dhcp_enable" onChange="onchange_dhcp();"<?php if(g_srvstat("dhcpd")) echo ' checked="checked"'; ?>>&nbsp;&nbsp;
                                 </td>
                             </tr> 
 		                </table>                   
@@ -635,19 +635,19 @@ function initPage()
 			                <tr>
 				                <td class="raCB" style="width: 40%">Domain Name :</td>
 				                <td class="laCB">&nbsp;
-				                <input id="domain_name" size="16" maxlength="32" value="<? p_domain(); ?>" type="text">
+				                <input id="domain_name" size="16" maxlength="32" value="<?php p_domain(); ?>" type="text">
 				                </td>
 			                </tr>
                             <tr>
 				                <td class="raCB">Primary DNS Server :</td>
 				                <td class="laCB">&nbsp;
-				                    <input <? echo g_srvstat("named")? "disabled title='Defined by this DNS' ":"" ?>id="domain_dns1" size="16" maxlength="15" value="<? p_domains(1); ?>" type="text">
+				                    <input <?php echo g_srvstat("named")? "disabled title='Defined by this DNS' ":"" ?>id="domain_dns1" size="16" maxlength="15" value="<?php p_domains(1); ?>" type="text">
 				                </td>
 			                </tr>
                             <tr>
 				                <td class="raCB">Secondary DNS Server :</td>
                                 <td class="laCB">&nbsp;
-                                    <input <? echo g_srvstat("named")? "disabled title='Defined by this DNS' ":"" ?>id="domain_dns2" size="16" maxlength="15" value="<? p_domains(2); ?>" type="text">
+                                    <input <?php echo g_srvstat("named")? "disabled title='Defined by this DNS' ":"" ?>id="domain_dns2" size="16" maxlength="15" value="<?php p_domains(2); ?>" type="text">
 				                </td>
 			                </tr>
 			                </table>
@@ -657,7 +657,7 @@ function initPage()
                                 <tr>
                                     <td style="text-align:right">
                                         Enable DNS Relay&nbsp;&nbsp;
-                                        <input type="checkbox" id="dns_relay" onchange="onchange_dns_relay();"<? if(g_dnsrelay()) echo ' checked="checked"'; ?>>&nbsp;&nbsp;
+                                        <input type="checkbox" id="dns_relay" onchange="onchange_dns_relay();"<?php if(g_dnsrelay()) echo ' checked="checked"'; ?>>&nbsp;&nbsp;
                                     </td>
                                 </tr> 
 		                    </table>
@@ -702,17 +702,17 @@ function initPage()
                                     <tr>
                                         <td style="width:100px">Mac-address</td>
                                         <td style="width:70px">IP-address</td>
-                                        <td style="width:200px">Host Name @<? p_domain() ?></td>
+                                        <td style="width:200px">Host Name @<?php p_domain() ?></td>
                                         <td style="width:20px">Enabled</td>
                                     </tr>
                                     <tr>
-                                        <td><? p_mac(g_lan()) ?></td>
-                                        <td><? p_ip(g_lan()) ?></td>
-                                        <td><? p_nodeName(); if (g_spfhere()&&g_srvstat("named")) {echo ": with URL filter "; echo g_ip(g_lan1());} ?></td>
-                                        <td style="text-align:center">this <? p_mode(); ?></td>
+                                        <td><?php p_mac(g_lan()) ?></td>
+                                        <td><?php p_ip(g_lan()) ?></td>
+                                        <td><?php p_nodeName(); if (g_spfhere()&&g_srvstat("named")) {echo ": with URL filter "; echo g_ip(g_lan1());} ?></td>
+                                        <td style="text-align:center">this <?php p_mode(); ?></td>
                                     </tr>
 
-<?
+<?php
 
     if (($fd = fopen("/tmp/reslist", "r")) == NULL)
         die("bummer");
@@ -736,17 +736,17 @@ function initPage()
         $mac=$a[0]; $name=$a[1]; $ip=$a[2];
 ?> 
                                 <tr>
-                                    <td><?echo $mac;?></td>
-                                    <td><?echo $ip;?></td>
-                                    <td><input name="reserved_<?echo $record;?>_st" id="reserved_<?echo $record;?>_st" value="<?echo $st;?>" type="hidden"><?echo $name;?></td>
+                                    <td><?php echo $mac;?></td>
+                                    <td><?php echo $ip;?></td>
+                                    <td><input name="reserved_<?php echo $record;?>_st" id="reserved_<?php echo $record;?>_st" value="<?php echo $st;?>" type="hidden"><?php echo $name;?></td>
                                     <td style="text-align:center">
-                                        <input type="checkbox" id="reserved_<?echo $record;?>_item"<?echo$checked;?> onchange="check_resitem(<?echo $record;?>)">
-                                        <input name="reserved_<?echo $record;?>_mac" id="reserved_<?echo $record;?>_mac" value="<?echo $mac;?>" type="hidden">
-                                        <input name="reserved_<?echo $record;?>_ip" id="reserved_<?echo $record;?>_ip" value="<?echo $ip;?>" type="hidden">
-                                        <input name="reserved_<?echo $record;?>_nm" id="reserved_<?echo $record;?>_nm" value="<?echo $name;?>" type="hidden">
+                                        <input type="checkbox" id="reserved_<?php echo $record;?>_item"<?php echo$checked;?> onchange="check_resitem(<?php echo $record;?>)">
+                                        <input name="reserved_<?php echo $record;?>_mac" id="reserved_<?php echo $record;?>_mac" value="<?php echo $mac;?>" type="hidden">
+                                        <input name="reserved_<?php echo $record;?>_ip" id="reserved_<?php echo $record;?>_ip" value="<?php echo $ip;?>" type="hidden">
+                                        <input name="reserved_<?php echo $record;?>_nm" id="reserved_<?php echo $record;?>_nm" value="<?php echo $name;?>" type="hidden">
                                     </td>
                                 </tr>
-<?
+<?php
         $record++;
 
     } 
@@ -757,7 +757,7 @@ function initPage()
                                         <td colspan="4" style="text-align:right">
                                             Delete disabled items&nbsp;&nbsp;
                                             <input type="checkbox" id="remove_res" onchange="check_remove();">&nbsp;&nbsp;
-                                            <input id="n_res" value="<? echo $record ?>" type="hidden">
+                                            <input id="n_res" value="<?php echo $record ?>" type="hidden">
                                         </td>
                                     </tr> 
                                 </tbody>
@@ -771,10 +771,10 @@ function initPage()
                                     <tr>         
                                         <td style="width:100px">Mac-address</td>
                                         <td style="width:70px">IP-address</td>
-                                        <td style="width:200px">Host Name @<? p_domain() ?></td>
+                                        <td style="width:200px">Host Name @<?php p_domain() ?></td>
                                         <td style="width:20px">Reserve</td>
                                     </tr>
-<?
+<?php
     if (($fd = fopen("/tmp/reslist", "r")) == NULL)
         die("bummer");
  
@@ -791,17 +791,17 @@ function initPage()
         $mac=$a[0]; $name=$a[2]; $ip=$a[1];
 ?>
                                     <tr>
-                                        <td><?echo $mac;?></td>
-                                        <td><?echo$ip;?></td>
-                                        <td><?echo $name;?></td>
+                                        <td><?php echo $mac;?></td>
+                                        <td><?php echo$ip;?></td>
+                                        <td><?php echo $name;?></td>
                                         <td>
-                                            <input style="width:100%" title="Add as static reservation" type="button" value="Add" id="d-reserved_<?echo $record;?>_btn" onclick="check_dynresitem(<?echo $record;?>)">
-                                            <input id="d-reserved_<?echo $record;?>_mac" value="<?echo $mac;?>" type="hidden">
-                                            <input id="d-reserved_<?echo $record;?>_ip" value="<?echo$ip;?>" type="hidden">
-                                            <input id="d-reserved_<?echo $record;?>_nm" value="<?echo $name;?>" type="hidden">
+                                            <input style="width:100%" title="Add as static reservation" type="button" value="Add" id="d-reserved_<?php echo $record;?>_btn" onclick="check_dynresitem(<?php echo $record;?>)">
+                                            <input id="d-reserved_<?php echo $record;?>_mac" value="<?php echo $mac;?>" type="hidden">
+                                            <input id="d-reserved_<?php echo $record;?>_ip" value="<?php echo$ip;?>" type="hidden">
+                                            <input id="d-reserved_<?php echo $record;?>_nm" value="<?php echo $name;?>" type="hidden">
                                         </td>
                                     </tr>
-<?
+<?php
         $record++; 
     } 
     @fclose($fd);
@@ -817,17 +817,17 @@ function initPage()
                     your network, uncheck Enable DHCP to disable this feature.
                     <br><br>if you have devices on your network that should always have fixed IP addresses,
                     add a DHCP Reservation for each such device outside of the DHCP address range.
-                    <? if (!g_srvstat("named")) { ?>
+                    <?php if (!g_srvstat("named")) { ?>
                     <br><br>
-                    When DNS Relay is enabled, this <? p_mode(); ?> will use the DNS servers (if any) obtained from the WAN interface,
+                    When DNS Relay is enabled, this <?php p_mode(); ?> will use the DNS servers (if any) obtained from the WAN interface,
                     otherwise, define them here for your local network.
-                    <?}?>
+                    <?php }?>
 
                </td>
             </tr>
             <tr>
 	            <td colspan="3" id="footer">
-                    Copyright &copy; <? p_copyRight(); ?>
+                    Copyright &copy; <?php p_copyRight(); ?>
                 </td>                   
             </tr>
         </table>

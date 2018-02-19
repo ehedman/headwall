@@ -1,4 +1,4 @@
-<?
+<?php
     /*
      * admin.php
      *
@@ -58,30 +58,30 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link rel="stylesheet" type="text/css" href="/css/bridge.css">
-        <title><? p_title(); ?></title> 
+        <title><?php p_title(); ?></title> 
 <script>
 function do_timeout()
 {
 	self.location.href="/logout.php";
 }
-<? setTimeout(); ?>
+<?php setTimeout(); ?>
 
-<? include 'inc/general.js.php' ?>
+<?php include 'inc/general.js.php' ?>
 
 function initPage()
 {
 	var f = getObj("form");
 
-	f.ddns_pw2.value = f.ddns_pw1.value = "<? echo trim(@exec("grep password= /etc/ddclient.conf | awk -F\' '{printf \"%s\", \$2}'")); ?>";
-    f.ddns_account.value = "<? echo trim(@exec("grep login= /etc/ddclient.conf | awk -F= '{printf \"%s\", \$2}'")); ?>";
-    f.ddns_domain.value = "<? echo trim(@exec("tail -1 /etc/ddclient.conf")); ?>";
+	f.ddns_pw2.value = f.ddns_pw1.value = "<?php echo trim(@exec("grep password= /etc/ddclient.conf | awk -F\' '{printf \"%s\", \$2}'")); ?>";
+    f.ddns_account.value = "<?php echo trim(@exec("grep login= /etc/ddclient.conf | awk -F= '{printf \"%s\", \$2}'")); ?>";
+    f.ddns_domain.value = "<?php echo trim(@exec("tail -1 /etc/ddclient.conf")); ?>";
 
-    f.ddns_enable.checked = <? echo g_srvstat("ddclient")? "true":"false"; ?>;
-    f.vpn_enable.checked  = <? echo g_srvstat("pptpd")? "true":"false"; ?>;
+    f.ddns_enable.checked = <?php echo g_srvstat("ddclient")? "true":"false"; ?>;
+    f.vpn_enable.checked  = <?php echo g_srvstat("pptpd")? "true":"false"; ?>;
     
-    f.vpn_type.options.selectedIndex = "<? echo trim(@exec("grep type= /etc/ppp/pptpd-options | awk -F= '{printf \"%s\", \$2}'")); ?>";
+    f.vpn_type.options.selectedIndex = "<?php echo trim(@exec("grep type= /etc/ppp/pptpd-options | awk -F= '{printf \"%s\", \$2}'")); ?>";
 
-    f.provider.options.selectedIndex = "<? echo trim(@exec("grep provider= /etc/ddclient.conf | awk -F= '{printf \"%s\", \$2}'")); ?>";
+    f.provider.options.selectedIndex = "<?php echo trim(@exec("grep provider= /etc/ddclient.conf | awk -F= '{printf \"%s\", \$2}'")); ?>";
 }
 
 function addUser()
@@ -233,28 +233,28 @@ function checkPage()
 </script>
     </head>
     <body onload="initPage();"><script>onbody();</script>
-    <form name="form" id="form" method="post" action="<? echo $_SERVER['REQUEST_URI']; ?>" onsubmit="return checkPage();">
+    <form name="form" id="form" method="post" action="<?php echo $_SERVER['REQUEST_URI']; ?>" onsubmit="return checkPage();">
         <input name="POST_ACTION"   value="0"   type="hidden">
         <input name="ddns_enabled"  value="0"   id="ddns_enabled"   type="hidden">
         <input name="vpn_enabled"   value="0"   id="vpn_enabled"    type="hidden">
         <table id="topContainer">
             <tr>
-	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<? p_productHome(); ?>" target=_blank><? p_serverName(); ?></a></td>
-	            <td class="raCN">Version&nbsp;:&nbsp;<? p_firmware("-ro");?>&nbsp;</td>
+	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<?php p_productHome(); ?>" target=_blank><?php p_serverName(); ?></a></td>
+	            <td class="raCN">Version&nbsp;:&nbsp;<?php p_firmware("-ro");?>&nbsp;</td>
             </tr>
         </table>
         <table id="topTable">
             <tr>
-	            <td id="topBarLeft"><a id="logo" href="<? p_productHome(); ?>"></a></td>	            
+	            <td id="topBarLeft"><a id="logo" href="<?php p_productHome(); ?>"></a></td>	            
 	            <td id="topBarRight"></td>
             </tr>
         </table>
         <table id="topMenuTable">
             <tr>
                 <td class="ledPanel">
-                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<? echo g_srvstat("shorewall")? "on":"off" ?>.png">
-                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<? echo g_srvstat("named")? "on":"off" ?>.png">
-                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<? echo g_srvstat("dhcpd")? "on":"off" ?>.png">
+                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<?php echo g_srvstat("shorewall")? "on":"off" ?>.png">
+                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<?php echo g_srvstat("named")? "on":"off" ?>.png">
+                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<?php echo g_srvstat("dhcpd")? "on":"off" ?>.png">
                 </td>
 	            <td class="topMenuLink"><a href="/network.php">Setup</a></td>
 	            <td class="topMenuLink"><a href="/advanced.php">Advanced</a></td>
@@ -284,13 +284,13 @@ function checkPage()
                         a DDNS (Dynamic Name Resolution) service from a provider of such services for example www.dyn.com.<br>
                         If you have a fixed I.P address bound to your own registered domain, this DDNS service is not needed.
                         <br><br>
-                        <? if (g_srvstat("shorewall") == true && stat("/etc/shorewall/tunnels") != false) {?>
+                        <?php if (g_srvstat("shorewall") == true && stat("/etc/shorewall/tunnels") != false) {?>
                         <input value="Save Settings" type="submit">&nbsp;
                         <input value="Don't Save Settings" onclick="cancelSettings()" type="button">
-                        <?} else {?>
+                        <?php } else {?>
                         Enable VPN in the "Security" menu to see the Save button.    
                         <input value="Don't Save Settings" onclick="cancelSettings()" type="button">
-                        <?}?>
+                        <?php }?>
 		            </div><br>
 		            <div class="actionBox">
 			            <h2 class="actionHeader">DDNS</h2>
@@ -387,7 +387,7 @@ function checkPage()
                                     </tr>
 
 
-<?
+<?php
     if (($fd = fopen("/etc/ppp/chap-secrets", "r")) == NULL)
         die("bummer");
  
@@ -403,14 +403,14 @@ function checkPage()
         $user=$a[0]; $secr=$a[2]
 ?>
                                     <tr>
-                                        <td><input readonly style="width:98%" id="vpn_<?echo $record;?>_user" name="vpn_<?echo $record;?>_user" value="<?echo $user;?>" type="text"></td>
-                                        <td><input readonly style="width:98%" id="vpn_<?echo $record;?>_secr" name="vpn_<?echo $record;?>_secr" value="<?echo base64_encode($secr);?>" type="password"></td>
+                                        <td><input readonly style="width:98%" id="vpn_<?php echo $record;?>_user" name="vpn_<?php echo $record;?>_user" value="<?php echo $user;?>" type="text"></td>
+                                        <td><input readonly style="width:98%" id="vpn_<?php echo $record;?>_secr" name="vpn_<?php echo $record;?>_secr" value="<?php echo base64_encode($secr);?>" type="password"></td>
                                         <td>
-                                            <input id="vpn_<?echo $record;?>_del" type="checkbox" onchange="setStatus(<?echo $record;?>);">
-                                            <input id="vpn_<?echo $record;?>_sts" name="vpn_<?echo $record;?>_sts" value="1" type="hidden">
+                                            <input id="vpn_<?php echo $record;?>_del" type="checkbox" onchange="setStatus(<?php echo $record;?>);">
+                                            <input id="vpn_<?php echo $record;?>_sts" name="vpn_<?php echo $record;?>_sts" value="1" type="hidden">
                                         </td>
                                     </tr>
-<?
+<?php
         $record++; 
     } 
     @fclose($fd);
@@ -427,12 +427,12 @@ function checkPage()
                     <strong>NOTE!</strong> Please note that some service providers do not allow inbound access to home premises,
                     typically if the WAN side is through a 3G/4G modem.<br>Presumably they can be asked to
                     enable inbound access for your mobile subscription.<br><br>
-                    <strong>NOTE!</strong> This service will not work if any downstream firewalls (your external modem) is active without having this <? p_mode(); ?> in a DMZ zone.<br><br>
+                    <strong>NOTE!</strong> This service will not work if any downstream firewalls (your external modem) is active without having this <?php p_mode(); ?> in a DMZ zone.<br><br>
                </td>
             </tr>
             <tr>
 	            <td colspan="3" id="footer">
-                    Copyright &copy; <? p_copyRight(); ?>
+                    Copyright &copy; <?php p_copyRight(); ?>
                 </td>                   
             </tr>
         </table>

@@ -1,4 +1,4 @@
-<?
+<?php
     /*
      * admin.php
      *
@@ -23,15 +23,15 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link rel="stylesheet" type="text/css" href="/css/bridge.css">
-        <title><? p_title(); ?></title> 
+        <title><?php p_title(); ?></title> 
 <script>
 function do_timeout()
 {
 	self.location.href="/logout.php";
 }
-<? setTimeout(); ?>
+<?php setTimeout(); ?>
 
-<? include 'inc/general.js.php' ?>
+<?php include 'inc/general.js.php' ?>
 
 function initPage()
 {
@@ -56,25 +56,25 @@ function checkPage()
 </script>
     </head>
     <body onload="initPage();"><script>onbody();</script>
-    <form name="form" id="form" method="post" action="<? echo $_SERVER['REQUEST_URI']; ?>" onsubmit="return checkPage();">
+    <form name="form" id="form" method="post" action="<?php echo $_SERVER['REQUEST_URI']; ?>" onsubmit="return checkPage();">
         <table id="topContainer">
             <tr>
-	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<? p_productHome(); ?>" target=_blank><? p_serverName(); ?></a></td>
-	            <td class="raCN">Version&nbsp;:&nbsp;<? p_firmware("-ro");?>&nbsp;</td>
+	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<?php p_productHome(); ?>" target=_blank><?php p_serverName(); ?></a></td>
+	            <td class="raCN">Version&nbsp;:&nbsp;<?php p_firmware("-ro");?>&nbsp;</td>
             </tr>
         </table>
         <table id="topTable">
             <tr>
-	            <td id="topBarLeft"><a id="logo" href="<? p_productHome(); ?>"></a></td>	            
+	            <td id="topBarLeft"><a id="logo" href="<?php p_productHome(); ?>"></a></td>	            
 	            <td id="topBarRight"></td>
             </tr>
         </table>
         <table id="topMenuTable">
             <tr>
                 <td class="ledPanel">
-                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<? echo g_srvstat("shorewall")? "on":"off" ?>.png">
-                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<? echo g_srvstat("named")? "on":"off" ?>.png">
-                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<? echo g_srvstat("dhcpd")? "on":"off" ?>.png">
+                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<?php echo g_srvstat("shorewall")? "on":"off" ?>.png">
+                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<?php echo g_srvstat("named")? "on":"off" ?>.png">
+                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<?php echo g_srvstat("dhcpd")? "on":"off" ?>.png">
                 </td>
 	            <td class="topMenuLink"><a href="/network.php">Setup</a></td>
 	            <td class="topMenuLink"><a href="/advanced.php">Advanced</a></td>
@@ -95,7 +95,7 @@ function checkPage()
 	            <td id="contentHeading">
                     <div id="contentBox">
 		                <h1>Administrator Access Settings</h1>
-                        The 'admin' account can access this <? p_mode(); ?> and can change system properties. 
+                        The 'admin' account can access this <?php p_mode(); ?> and can change system properties. 
                         <br><br>
                         <input value="Save Settings" type="submit">&nbsp;
                         <input value="Don't Save Settings" onclick="cancelSettings()" type="button">
@@ -103,7 +103,7 @@ function checkPage()
 		            <div class="actionBox">
 			            <h2 class="actionHeader">ADMIN PASSWORD</h2>
                             It is recommended that you change the password the first time you log in to the system
-                            to keep your <? p_mode(); ?> and firewall secure.
+                            to keep your <?php p_mode(); ?> and firewall secure.
                             <br><br>
 			            <b style="color: #002288">Please confirm the same password into both boxes.</b>
                         <br><br>
@@ -121,14 +121,14 @@ function checkPage()
                 </td>
 	            <td id="quickHelpContent"><strong>Help...</strong><br>
                     <br>
-                    It is desirable to use a password to the <? p_mode(); ?> to prevent unauthorized access to general
+                    It is desirable to use a password to the <?php p_mode(); ?> to prevent unauthorized access to general
                     settings and security settings for the firewall.<br>
-                    Write down this password because a lost password requires super user access to the <? p_mode(); ?>.
+                    Write down this password because a lost password requires super user access to the <?php p_mode(); ?>.
                </td>
             </tr>
             <tr>
 	            <td colspan="3" id="footer">
-                    Copyright &copy; <? p_copyRight(); ?>
+                    Copyright &copy; <?php p_copyRight(); ?>
                 </td>                   
             </tr>
         </table>

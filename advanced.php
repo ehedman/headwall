@@ -1,4 +1,4 @@
-<? 
+<?php 
     /*
      * advanced.php
      *
@@ -50,12 +50,12 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link rel="stylesheet" type="text/css" href="/css/bridge.css">
-        <title><? p_title(); ?></title>
+        <title><?php p_title(); ?></title>
         <script>
 
-<? setTimeout(); ?>
+<?php setTimeout(); ?>
 
-<? include 'inc/general.js.php' ?>
+<?php include 'inc/general.js.php' ?>
 
 function checkPage()
 {
@@ -73,7 +73,7 @@ function checkPage()
         return false;
     }
 
-    f.f_if.value = isSubnetSame(f.w_probe.value, "<? p_ip(g_lan());  ?>", "<? p_mask(g_lan()) ?>") == false? "lan":"wan";
+    f.f_if.value = isSubnetSame(f.w_probe.value, "<?php p_ip(g_lan());  ?>", "<?php p_mask(g_lan()) ?>") == false? "lan":"wan";
 
     f.POST_ACTION.value = "OK";
 	f.submit();
@@ -83,27 +83,27 @@ function checkPage()
         </script> 
     </head>
     <body><script>onbody();</script>
-    <form name="form" id="form" method="post" action="<? echo $_SERVER['SCRIPT_NAME']; ?>" onsubmit="return checkPage();">
+    <form name="form" id="form" method="post" action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" onsubmit="return checkPage();">
         <input name="POST_ACTION" value="" type="hidden">
         <input name="f_if" id="f_if"  value="0"   type="hidden">
         <table id="topContainer">
             <tr>
-	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<? p_productHome(); ?>" target=_blank><? p_serverName(); ?></a></td>
-	            <td class="raCN">Version&nbsp;:&nbsp;<? p_firmware("-ro");?>&nbsp;</td>
+	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<?php p_productHome(); ?>" target=_blank><?php p_serverName(); ?></a></td>
+	            <td class="raCN">Version&nbsp;:&nbsp;<?php p_firmware("-ro");?>&nbsp;</td>
             </tr>
         </table>
         <table id="topTable">
             <tr>
-	            <td id="topBarLeft"><a id="logo" href="<? p_productHome(); ?>"></a></td>	            
+	            <td id="topBarLeft"><a id="logo" href="<?php p_productHome(); ?>"></a></td>	            
 	            <td id="topBarRight"></td>
             </tr>
         </table>
         <table id="topMenuTable">
             <tr>
 	            <td class="ledPanel">
-                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<? echo g_srvstat("shorewall")? "on":"off" ?>.png">
-                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<? echo g_srvstat("named")? "on":"off" ?>.png">
-                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<? echo g_srvstat("dhcpd")? "on":"off" ?>.png">
+                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<?php echo g_srvstat("shorewall")? "on":"off" ?>.png">
+                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<?php echo g_srvstat("named")? "on":"off" ?>.png">
+                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<?php echo g_srvstat("dhcpd")? "on":"off" ?>.png">
                 </td>
 	            <td class="topMenuLink"><a href="/network.php">Setup</a></td>
 	            <td class="topMenuThis"><a href="/advanced.php">Advanced</a></td>
@@ -136,13 +136,13 @@ function checkPage()
 			            <table>      
 			                <tr>
 				                <td class="raCB" style="width: 30%"><b>Enable the watchdog timer :</b></td>
-				                <td>&nbsp;<input type="checkbox" name="watchdog" <? echo exec("watchdogd status")=="0"? 'checked="checked"':''; ?>></td>                                 
+				                <td>&nbsp;<input type="checkbox" name="watchdog" <?php echo exec("watchdogd status")=="0"? 'checked="checked"':''; ?>></td>                                 
                                 <td style="width: 45%">Forced reboot to prevent permanent lockups after prolonged network errors.</td>
 			                </tr> 
                             <tr><td colspan="3">&nbsp;</td></tr>
                             <tr>
                                 <td class="raCB"><b>Watchdog ping :</b></td>
-                                <td><input name="w_probe" id="w_probe" type="text" maxlength="40" value="<? echo exec("watchdogd probe"); ?>">&nbsp;</td>
+                                <td><input name="w_probe" id="w_probe" type="text" maxlength="40" value="<?php echo exec("watchdogd probe"); ?>">&nbsp;</td>
                                 <td>This host must answer to a ping within resonable time to avoid a system reboot.</td>
                             </tr>
                             <tr><td colspan="3">&nbsp;</td></tr>
@@ -166,7 +166,7 @@ function checkPage()
             </tr>
             <tr>
 	            <td colspan="3" id="footer">
-                    Copyright &copy; <? p_copyRight(); ?>
+                    Copyright &copy; <?php p_copyRight(); ?>
                 </td>                   
             </tr>
         </table>

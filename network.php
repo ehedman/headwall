@@ -1,4 +1,4 @@
-<? 
+<?php 
     /*
      * network.php
      *
@@ -46,7 +46,7 @@
                             $_POST["LAN1"]);
             }
             if (($fd = fopen($_SERVER["DOCUMENT_ROOT"]."/cgi-bin/netif.php", "w")) != NULL) {
-                fwrite($fd, '<?php $THEWAN="'.$_POST["WAN"].'"; $THELAN="'.$_POST["LAN"].'"; $THESRV="'.$_POST["SRVLANassignement"].':srv"; $THESRVIP="'.$_POST["staticSRVIP"].'"; $THEMODE="'.$_POST["stationMode"].'"; ?>'."\n");
+                fwrite($fd, '<?phpphp $THEWAN="'.$_POST["WAN"].'"; $THELAN="'.$_POST["LAN"].'"; $THESRV="'.$_POST["SRVLANassignement"].':srv"; $THESRVIP="'.$_POST["staticSRVIP"].'"; $THEMODE="'.$_POST["stationMode"].'"; ?>'."\n");
                 fclose($fd);
                 sleep(5);
                 ifsrv($_POST["SRVLANassignement"].":srv", $_POST["staticSRVIP"]);
@@ -66,25 +66,25 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link rel="stylesheet" type="text/css" href="/css/bridge.css">
-        <title><? p_title(); ?></title>
+        <title><?php p_title(); ?></title>
         <script>
 
-<? setTimeout(); ?>
+<?php setTimeout(); ?>
 
-<? include 'inc/general.js.php' ?>
+<?php include 'inc/general.js.php' ?>
 
 function initPage()
 {
 	var f = getObj("form");
 
-    <?if (g_mode() == 1) { ?>
+    <?php if (g_mode() == 1) { ?>
 
     getObj("gt").checked = true;
-    <?} else {?>
+    <?php } else {?>
 
     getObj("hb").checked = true;
 
-    <?}
+    <?php }
     if (g_connectionType(g_wan()) == "dhcp") {
         echo 'f.POST_ACTION.value = "DHCP";'."\n";
         echo '    getObj("IPassignement").selectedIndex=1;'."\n";
@@ -95,7 +95,7 @@ function initPage()
     }       
     ?>
 
-    getObj("displayStaticIP").style.display="<?  echo g_connectionType(g_wan()) == "static"?  "block":"none"; ?>";
+    getObj("displayStaticIP").style.display="<?php  echo g_connectionType(g_wan()) == "static"?  "block":"none"; ?>";
 
     return true;
 }
@@ -170,7 +170,7 @@ function checkPage()
     }
 
     if (getObj("hb").checked == true) {
-        var wifs = <? do_wifilist() ?>;
+        var wifs = <?php do_wifilist() ?>;
         var i;
         var res=false;
         for (i = 0; i < wifs.length; ++i) {
@@ -215,23 +215,23 @@ function changeIPassignement(val)
         </script>
     </head>
     <body onload="initPage();"><script>onbody();</script>
-    <form name="form" id="form" method="post" action="<? echo $_SERVER['SCRIPT_NAME']; ?>" onsubmit="return checkPage();">
+    <form name="form" id="form" method="post" action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" onsubmit="return checkPage();">
         <input name="POST_ACTION" value="" type="hidden">
-        <input type="hidden" name="staticIPLan" value="<? p_ip(g_lan()); ?>">
-        <input type="hidden" name="staticNetMaskLan" value="<? p_mask(g_lan()); ?>">
+        <input type="hidden" name="staticIPLan" value="<?php p_ip(g_lan()); ?>">
+        <input type="hidden" name="staticNetMaskLan" value="<?php p_mask(g_lan()); ?>">
         <input type="hidden" name="stationMode" value="0">
-        <input type="hidden" name="LAN" value="<? echo g_lan() ?>">
-        <input type="hidden" name="WAN" value="<? echo g_wan() ?>">
-        <input type="hidden" name="LAN1" value="<? echo g_lan1() ?>">
+        <input type="hidden" name="LAN" value="<?php echo g_lan() ?>">
+        <input type="hidden" name="WAN" value="<?php echo g_wan() ?>">
+        <input type="hidden" name="LAN1" value="<?php echo g_lan1() ?>">
         <table id="topContainer">
             <tr>
-	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<? p_productHome(); ?>" target=_blank><? p_serverName(); ?></a></td>
-	            <td class="raCN">Version&nbsp;:&nbsp;<? p_firmware("-ro");?>&nbsp;</td>
+	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<?php p_productHome(); ?>" target=_blank><?php p_serverName(); ?></a></td>
+	            <td class="raCN">Version&nbsp;:&nbsp;<?php p_firmware("-ro");?>&nbsp;</td>
             </tr>
         </table>
         <table id="topTable">
             <tr>
-	            <td id="topBarLeft"><a id="logo" href="<? p_productHome(); ?>"></a></td>	            
+	            <td id="topBarLeft"><a id="logo" href="<?php p_productHome(); ?>"></a></td>	            
 	            <td id="topBarRight"></td>
             </tr>
         </table>
@@ -239,9 +239,9 @@ function changeIPassignement(val)
             <tr>
 
 	            <td class="ledPanel">
-                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<? echo g_srvstat("shorewall")? "on":"off" ?>.png">
-                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<? echo g_srvstat("named")? "on":"off" ?>.png">
-                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<? echo g_srvstat("dhcpd")? "on":"off" ?>.png">
+                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<?php echo g_srvstat("shorewall")? "on":"off" ?>.png">
+                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<?php echo g_srvstat("named")? "on":"off" ?>.png">
+                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<?php echo g_srvstat("dhcpd")? "on":"off" ?>.png">
                 </td>
 	            <td class="topMenuThis"><a href="/network.php">Setup</a></td>
 	            <td class="topMenuLink"><a href="/advanced.php">Advanced</a></td>
@@ -256,7 +256,7 @@ function changeIPassignement(val)
                     <div class="leftNavLink">
                         <ul style="width: 100%">
                             <li><div id="left" class="navThis">Network</div></li>
-                            <? if (g_haswifi()) { ?><li><div class="leftnavLink"><a href="/wireless.php">Wireless</a></div></li><?}?>
+                            <?php if (g_haswifi()) { ?><li><div class="leftnavLink"><a href="/wireless.php">Wireless</a></div></li><?php }?>
                             <li><div class="leftnavLink"><a href="/dhcp.php">DHCP</a></div></li>
                             <li><div class="leftnavLink"><a href="/dns.php">DNS</a></div></li>
                             <li><div class="leftnavLink"><a href="/firewall.php">Security</a></div></li>
@@ -267,7 +267,7 @@ function changeIPassignement(val)
 	            <td id="contentHeading">
                     <div id="contentBox">
 		                <h1>Network Settings</h1>
-                        Use this section to configure the internal network settings of your <? p_mode(); ?>.
+                        Use this section to configure the internal network settings of your <?php p_mode(); ?>.
                         <br><br>
                         <input value="Save Settings" type="submit">&nbsp;
                         <input value="Don't Save Settings" onclick="cancelSettings()" type="button">
@@ -291,7 +291,7 @@ function changeIPassignement(val)
                                 <tr>
 				                    <td class="raCB">Wireless Home Bridge :</td>
                                     <td class="laCB">&nbsp;
-                                        <input type="radio" <? echo g_haswifi()? "":'disabled="disbaled"' ?> id="hb" name="mode" onclick="setMode()">
+                                        <input type="radio" <?php echo g_haswifi()? "":'disabled="disbaled"' ?> id="hb" name="mode" onclick="setMode()">
                                     </td>
                                     <td style="text-align:center"><img alt="wifipic" style="width:70%; height:auto" src="/img/wifi.png"></td>
                                 </tr>
@@ -310,7 +310,7 @@ function changeIPassignement(val)
 				                <td class="raCB" style="width: 40%">Internet Connection Type :</td>
 				                <td class="laCB">&nbsp;
 				                 <select id="IPassignement" onchange="changeIPassignement(this.value)">
-                                        <?
+                                        <?php
                                             if (g_connectionType(g_wan()) === "static") {
                                                 echo '<option value="1" selected="">Static IP</option>';
                                                 echo '<option value="2">Dynamic IP (DHCP)</option>';
@@ -329,19 +329,19 @@ function changeIPassignement(val)
 			                <tr>
 				                <td class="raCB" style="width: 40%">IP Address :</td>
 				                <td class="laCB">&nbsp;
-				                    <input id="staticIP" name="staticIP" size="19" maxlength="15" value="<? p_ip(g_wan()); ?>" type="text">
+				                    <input id="staticIP" name="staticIP" size="19" maxlength="15" value="<?php p_ip(g_wan()); ?>" type="text">
 				                </td>
 			                </tr>
 			                <tr>
 				                <td class="raCB">Subnet Mask :</td>
 				                <td class="laCB">&nbsp;
-					                <input id="staticNetMask" name="staticNetMask" size="19" maxlength="15" value="<? p_mask(g_wan()); ?>" type="text">
+					                <input id="staticNetMask" name="staticNetMask" size="19" maxlength="15" value="<?php p_mask(g_wan()); ?>" type="text">
 				                </td>
 			                </tr>
 			                <tr>
 				                <td class="raCB">Default Gateway :</td>
 				                <td class="laCB">&nbsp;
-				                    <input id="staticGateway" name="staticGateway" size="19" maxlength="15" value="<? p_gateway(); ?>" type="text">
+				                    <input id="staticGateway" name="staticGateway" size="19" maxlength="15" value="<?php p_gateway(); ?>" type="text">
 				                </td>
 			                </tr>
 			            </table>
@@ -354,13 +354,13 @@ function changeIPassignement(val)
                             <tr>
                                 <td class="raCB" style="width: 40%">Internet Side :</td>
                                 <td class="laCB">&nbsp;
-                                    <select id="WANassignement"><? p_ifopts(g_wan()) ?></select>
+                                    <select id="WANassignement"><?php p_ifopts(g_wan()) ?></select>
                                 </td>
                             </tr>
                             <tr>
                                 <td class="raCB" style="width: 40%">LAN Side :</td>
                                 <td class="laCB">&nbsp;
-                                    <select id="LANassignement"><? p_ifopts(g_lan()) ?></select>
+                                    <select id="LANassignement"><?php p_ifopts(g_lan()) ?></select>
                                 </td>
                             </tr>
 			            </table>
@@ -376,13 +376,13 @@ function changeIPassignement(val)
                             <tr>
                                 <td class="raCB" style="width: 40%">Bind to Interface :</td>
                                 <td class="laCB">&nbsp;
-                                    <select id="SRVLANassignement" name="SRVLANassignement" ><option value="0">disabled</option><? p_ifopts(g_srvlan()) ?></select>
+                                    <select id="SRVLANassignement" name="SRVLANassignement" ><option value="0">disabled</option><?php p_ifopts(g_srvlan()) ?></select>
                                 </td>
                             </tr>
                             <tr>
 				                <td class="raCB">IP Address :</td>
 				                <td class="laCB">&nbsp;
-					                <input id="staticSRVIP" name="staticSRVIP" size="19" maxlength="15" value="<? echo g_srvip(); ?>" type="text">
+					                <input id="staticSRVIP" name="staticSRVIP" size="19" maxlength="15" value="<?php echo g_srvip(); ?>" type="text">
 				                </td>
 			                </tr>
                         </table>
@@ -394,7 +394,7 @@ function changeIPassignement(val)
 			                <tr>
 				                <td class="raCB" style="width: 40%">Station Name :</td>
 				                <td class="laCB">&nbsp;
-				                    <input id="stationName" name="stationName" size="19" maxlength="32" type="text" value="<? p_nodeName(); ?>">
+				                    <input id="stationName" name="stationName" size="19" maxlength="32" type="text" value="<?php p_nodeName(); ?>">
 				                </td>
 			                </tr>
 			            </table>
@@ -418,7 +418,7 @@ function changeIPassignement(val)
             </tr>
             <tr>
 	            <td colspan="3" id="footer">
-                    Copyright &copy; <? p_copyRight(); ?>
+                    Copyright &copy; <?php p_copyRight(); ?>
                 </td>                   
             </tr>
         </table>

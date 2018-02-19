@@ -1,4 +1,4 @@
-<? 
+<?php 
     /*
      * firewall.php
      *
@@ -64,19 +64,19 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link rel="stylesheet" type="text/css" href="/css/bridge.css">
-        <title><? p_title(); ?></title>
+        <title><?php p_title(); ?></title>
         <script>
 
-<? setTimeout(); ?>
+<?php setTimeout(); ?>
 
-<? include 'inc/general.js.php' ?>
+<?php include 'inc/general.js.php' ?>
 
 function initPage()
 {
 	var f=getObj("form");
-    f.ts_enable.checked = <? echo @stat("/etc/shorewall/tcinterfaces")==false? "false":"true" ?>;
-    f.dl_speed.value="<? echo exec ("cat /etc/shorewall/tcinterfaces | awk 'NR>5{gsub(".'"mbit",""); printf "%s"'.", $3}'"); ?>";
-    f.ul_speed.value="<? echo exec ("cat /etc/shorewall/tcinterfaces | awk 'NR>5{gsub(".'"mbit",""); printf "%s"'.", $4}'"); ?>";
+    f.ts_enable.checked = <?php echo @stat("/etc/shorewall/tcinterfaces")==false? "false":"true" ?>;
+    f.dl_speed.value="<?php echo exec ("cat /etc/shorewall/tcinterfaces | awk 'NR>5{gsub(".'"mbit",""); printf "%s"'.", $3}'"); ?>";
+    f.ul_speed.value="<?php echo exec ("cat /etc/shorewall/tcinterfaces | awk 'NR>5{gsub(".'"mbit",""); printf "%s"'.", $4}'"); ?>";
 
     f.PASSWD.value == "00000000";
 
@@ -124,7 +124,7 @@ function checkPage()
     if (f.ACTION_DO_FWS.value==1) {
         if (pw.value == "00000000" || isFieldBlank(pw.value) == true ) {
             pw.select();
-            alert("A Super Admin Password is required to set <? p_mode(); ?> Accessibility");
+            alert("A Super Admin Password is required to set <?php p_mode(); ?> Accessibility");
             return false;
         }
     }
@@ -190,7 +190,7 @@ function do_ts()
        </script> 
     </head>
     <body onload="initPage();"><script>onbody();</script>
-    <form name="form" id="form" method="post" action="<? echo $_SERVER['SCRIPT_NAME']; ?>" onsubmit="return checkPage();">
+    <form name="form" id="form" method="post" action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" onsubmit="return checkPage();">
         <input name="POST_ACTION"   value=""    type="hidden">
         <input name="ts_enabled"    value="0"   id="ts_enabled" type="hidden">
         <input name="ACTION_DO_FWS" value="0"   type="hidden">
@@ -202,22 +202,22 @@ function do_ts()
         <input name="SUPER_PASSWD"  value="00000000" id="SUPER_PASSWD"  type="hidden">
         <table id="topContainer">
             <tr>
-	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<? p_productHome(); ?>" target=_blank><? p_serverName(); ?></a></td>
-	            <td class="raCN">Version&nbsp;:&nbsp;<? p_firmware("-ro");?>&nbsp;</td>
+	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<?php p_productHome(); ?>" target=_blank><?php p_serverName(); ?></a></td>
+	            <td class="raCN">Version&nbsp;:&nbsp;<?php p_firmware("-ro");?>&nbsp;</td>
             </tr>
         </table>
         <table id="topTable">
             <tr>
-	            <td id="topBarLeft"><a id="logo" href="<? p_productHome(); ?>"></a></td>	            
+	            <td id="topBarLeft"><a id="logo" href="<?php p_productHome(); ?>"></a></td>	            
 	            <td id="topBarRight"></td>
             </tr>
         </table>
         <table id="topMenuTable">
             <tr>
 	            <td class="ledPanel">
-                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<? echo g_srvstat("shorewall")? "on":"off" ?>.png">
-                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<? echo g_srvstat("named")? "on":"off" ?>.png">
-                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<? echo g_srvstat("dhcpd")? "on":"off" ?>.png">
+                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<?php echo g_srvstat("shorewall")? "on":"off" ?>.png">
+                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<?php echo g_srvstat("named")? "on":"off" ?>.png">
+                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<?php echo g_srvstat("dhcpd")? "on":"off" ?>.png">
                 </td>
 	            <td class="topMenuLink"><a href="/network.php">Setup</a></td>
 	            <td class="topMenuThis"><a href="/advanced.php">Advanced</a></td>
@@ -242,13 +242,13 @@ function do_ts()
 	            <td id="contentHeading">
                     <div id="contentBox">
 		                <h1>Firewall</h1>
-                        <? if (g_srvstat("shorewall") || stat("/tmp/shwlog") !=false) { ?>
+                        <?php if (g_srvstat("shorewall") || stat("/tmp/shwlog") !=false) { ?>
                         <br>
                         <input value="Save Settings" type="submit">&nbsp;
                         <input value="Don't Save Settings" onclick="cancelSettings()" type="button">
-                        <?}?>
+                        <?php }?>
                         <table><tr><td style="text-align:right">
-                        <?
+                        <?php
                             if (g_srvstat("shorewall") == false) {
                                 echo '<b style="color:#f00;">Firewall: stopped</b>&nbsp;&nbsp;';
                                 if (($_SERVER["SERVER_ADDR"] == g_srvip()&& g_srvlan() == g_wan()) || $_SERVER["SERVER_ADDR"] == g_ip(g_wan())) {
@@ -274,12 +274,12 @@ function do_ts()
                         ?>                  
                         </td></tr></table>
                                               
-                        <? if (count($_GET)>0 && $_GET["msg"] == "noauth") { ?>
+                        <?php if (count($_GET)>0 && $_GET["msg"] == "noauth") { ?>
 	                    <b>Super Admin Authorization failed</b>
-                        <?}?>
+                        <?php }?>
 		            </div><div class="vbr"></div>
 
-                     <div class="actionBox" id="showTs" onclick="do_ts();" style="display:<? echo  g_srvstat("shorewall")? "block":"none"; ?>">                 
+                     <div class="actionBox" id="showTs" onclick="do_ts();" style="display:<?php echo  g_srvstat("shorewall")? "block":"none"; ?>">                 
 			                <h2 class="actionHeader">WAN Traffic Shaping</h2>
 		                    <table> 
 		                    <tbody>
@@ -303,8 +303,8 @@ function do_ts()
 		                    </table>                     
 				        </div><div class="vbr"></div>
 
-						<div class="actionBox" id="showAcc" style="display:<? echo  g_srvstat("shorewall")? "block":"none"; ?>">              
-			                <h2 class="actionHeader">Accessibility for the <? p_mode(); ?></h2>
+						<div class="actionBox" id="showAcc" style="display:<?php echo  g_srvstat("shorewall")? "block":"none"; ?>">              
+			                <h2 class="actionHeader">Accessibility for the <?php p_mode(); ?></h2>
 		                    <table> 
 		                    <tbody>
 								<tr>
@@ -313,21 +313,21 @@ function do_ts()
 								<tr>
 				                    <td class="raCB" style="height:25px">Enable VPN&nbsp;:</td>
 				                    <td class="laCB">&nbsp;
-				                        <input type="checkbox" <? echo $vpnsts; ?>id="vpn_enable" onChange="onenable_fws();">
+				                        <input type="checkbox" <?php echo $vpnsts; ?>id="vpn_enable" onChange="onenable_fws();">
 				                    </td>
-									<td>Allow this <? p_mode(); ?> to be the VPN Server for the LAN</td>
+									<td>Allow this <?php p_mode(); ?> to be the VPN Server for the LAN</td>
 				                </tr>									
 				                <tr>
 				                    <td class="raCB" style="height:25px">Enable SSH&nbsp;:</td>
 				                    <td class="laCB">&nbsp;
-				                        <input type="checkbox" <? echo $sshsts; ?>id="ssh_enable" onChange="onenable_fws();">
+				                        <input type="checkbox" <?php echo $sshsts; ?>id="ssh_enable" onChange="onenable_fws();">
 				                    </td>
-									<td>Login permission to the <? p_mode(); ?> from the LAN</td>
+									<td>Login permission to the <?php p_mode(); ?> from the LAN</td>
 				                </tr>
 								<tr>
 				                    <td class="raCB" style="height:25px">LAN NFS access of these pages&nbsp;:</td>
 				                    <td class="laCB">&nbsp;
-				                        <input type="checkbox" <? echo $nfssts; ?>id="nfs_enable" onChange="onenable_fws();">
+				                        <input type="checkbox" <?php echo $nfssts; ?>id="nfs_enable" onChange="onenable_fws();">
 				                    </td>
 									<td>Mainly for system development</td>
 				                </tr>				                
@@ -340,20 +340,20 @@ function do_ts()
                     Here you can start and stop the firewall for your LAN.<br>To stop the firewall, a Super Admin password is required.
                     <br><br>
                     You can shape incoming and outgoing network traffic.
-                    Simple Traffic Shaping allows you to set a limit on the total bandwidth allowed in or out of the <? p_mode(); ?>.
+                    Simple Traffic Shaping allows you to set a limit on the total bandwidth allowed in or out of the <?php p_mode(); ?>.
                     <br><br>
-					To complete the VPN service running on this <? p_mode(); ?> you have to go to the "Inbound Access" page.<br><br>
+					To complete the VPN service running on this <?php p_mode(); ?> you have to go to the "Inbound Access" page.<br><br>
 					If you have a VPN service running on a server inside your LAN, go to the "Virtual Server" page to allow a VPN service for that server.<br>
                </td>
             </tr>
             <tr>
 	            <td colspan="3" id="footer">
-                    Copyright &copy; <? p_copyRight(); ?>
+                    Copyright &copy; <?php p_copyRight(); ?>
                 </td>                   
             </tr>
         </table>
     </form>
-    <?
+    <?php
     if (@stat("/tmp/shwlog") != false) {
         echo '<script>getObj("showTs").style.display = "block"; getObj("showAcc").style.display = "block";</script>';
         unlink("/tmp/shwlog");							}

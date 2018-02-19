@@ -1,4 +1,4 @@
-<? 
+<?php 
     /*
      * wireless.php
      *
@@ -95,27 +95,27 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link rel="stylesheet" type="text/css" href="/css/bridge.css">
-        <title><? p_title(); ?></title>
+        <title><?php p_title(); ?></title>
         <script>
 
-<? setTimeout(); ?>
+<?php setTimeout(); ?>
 
-<? include 'inc/general.js.php' ?>
+<?php include 'inc/general.js.php' ?>
 
 function initPage()
 {
 	var f=getObj("form");
    
-	f.enable.checked = <? echo empty(g_wlanif())==true? 'false':'true'; ?>;
-	f.ssid.value = "<? p_wssid(); ?>";
+	f.enable.checked = <?php echo empty(g_wlanif())==true? 'false':'true'; ?>;
+	f.ssid.value = "<?php p_wssid(); ?>";
 		
      // WPA or WEP
-    f.securityType.selectedIndex = <? echo g_security()==1? "0":"1"; ?>;	
+    f.securityType.selectedIndex = <?php echo g_security()==1? "0":"1"; ?>;	
     f.wepKeyLenght.selectedIndex = 0;
-    f.wepPPHstring.value = "<? g_passph('wep',1); ?>";
-    f.chiperType.selectedIndex=<? echo g_cipher(); ?>;
-    f.wpaMode.selectedIndex ="<? echo g_wpamode(); ?>";
-	f.wpaPPHstring.value ="<? g_passph(); ?>";
+    f.wepPPHstring.value = "<?php g_passph('wep',1); ?>";
+    f.chiperType.selectedIndex=<?php echo g_cipher(); ?>;
+    f.wpaMode.selectedIndex ="<?php echo g_wpamode(); ?>";
+	f.wpaPPHstring.value ="<?php g_passph(); ?>";
 
 	checkWiFienable();
 }
@@ -128,12 +128,12 @@ function checkWiFienable()
 	getObj("showSecurityWEP").style.display = "none";
 	getObj("showSecurityWPA").style.display = "none";
 	getObj("showPSKpph").style.display = "none";
-    <? if (g_mode() == 1) { ?>getObj("showMasterMode").style.display = "none";<?}?>
+    <?php if (g_mode() == 1) { ?>getObj("showMasterMode").style.display = "none";<?php }?>
 
 	if(f.enable.checked == true) {
 		getObj("showSecurityMode").style.display = "";
         getObj("showWifi").style.display = "";
-        <? if (g_mode() == 1) { ?>getObj("showMasterMode").style.display = "";<?}?>
+        <?php if (g_mode() == 1) { ?>getObj("showMasterMode").style.display = "";<?php }?>
 		changeSecurityType()
 	} else {
         getObj("showWifi").style.display = "none";
@@ -228,7 +228,7 @@ function checkPage()
         </script> 
     </head>
     <body onload="initPage();"><script>onbody();</script>
-    <form name="form" id="form" method="post" action="<? echo $_SERVER['SCRIPT_NAME']; ?>" onsubmit="return checkPage();">
+    <form name="form" id="form" method="post" action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" onsubmit="return checkPage();">
         <input type="hidden" name="POST_ACTION" value="" >
         <input type="hidden" name="f_enable"    value="">
         <input type="hidden" name="f_ssid"      value="">
@@ -238,22 +238,22 @@ function checkPage()
         <input type="hidden" name="f_wpa_psk"   value="">
         <table id="topContainer">
             <tr>
-	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<? p_productHome(); ?>" target=_blank><? p_serverName(); ?></a></td>
-	            <td class="raCN">Version&nbsp;:&nbsp;<? p_firmware("-ro");?>&nbsp;</td>
+	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<?php p_productHome(); ?>" target=_blank><?php p_serverName(); ?></a></td>
+	            <td class="raCN">Version&nbsp;:&nbsp;<?php p_firmware("-ro");?>&nbsp;</td>
             </tr>
         </table>
         <table id="topTable">
             <tr>
-	            <td id="topBarLeft"><a id="logo" href="<? p_productHome(); ?>"></a></td>	            
+	            <td id="topBarLeft"><a id="logo" href="<?php p_productHome(); ?>"></a></td>	            
 	            <td id="topBarRight"></td>
             </tr>
         </table>
         <table id="topMenuTable">
             <tr>
 	            <td class="ledPanel">
-                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<? echo g_srvstat("shorewall")? "on":"off" ?>.png">
-                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<? echo g_srvstat("named")? "on":"off" ?>.png">
-                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<? echo g_srvstat("dhcpd")? "on":"off" ?>.png">
+                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<?php echo g_srvstat("shorewall")? "on":"off" ?>.png">
+                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<?php echo g_srvstat("named")? "on":"off" ?>.png">
+                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<?php echo g_srvstat("dhcpd")? "on":"off" ?>.png">
                 </td>
 	            <td class="topMenuThis"><a href="/network.php">Setup</a></td>
 	            <td class="topMenuLink"><a href="/advanced.php">Advanced</a></td>
@@ -278,7 +278,7 @@ function checkPage()
 	            <td id="contentHeading">
                     <div id="contentBox">
 		                <h1>Wireless Network Settings</h1>
-                        Use this section to configure the wireless settings for your <? p_mode(); ?>.
+                        Use this section to configure the wireless settings for your <?php p_mode(); ?>.
                         <br><br>
                         <input value="Save Settings" type="submit">&nbsp;
                         <input value="Don't Save Settings" onclick="cancelSettings()" type="button">
@@ -295,13 +295,13 @@ function checkPage()
 			                </tr>
                         </table>
                         <div id="showWifi">
-                            <table><? if (g_mode() == 2) { ?>
+                            <table><?php if (g_mode() == 2) { ?>
 			                    <tr>
 				                    <td class="raCB" style="width: 40%">Wireless Sites :&nbsp;</td>
 				                    <td class="laCB">
 				                        <input type="button" value="Survey" onClick="doWnetScan()">
 				                    </td>
-			                    </tr><?}?>
+			                    </tr><?php }?>
 
 			                    <tr>
 				                    <td class="raCB" style="width: 40%">Wireless Network Name (SSID) :&nbsp;</td>
@@ -321,7 +321,7 @@ function checkPage()
 				                <td class="laCB">
 				                    <div id="get_ap_sec">
 					                    <select id="securityType" onchange="changeSecurityType()">
-                                            <option value="1"<? if (g_mode() == 1) { ?> style="display:none"<?}?>>WEP</option>
+                                            <option value="1"<?php if (g_mode() == 1) { ?> style="display:none"<?php }?>>WEP</option>
                                             <option value="2">WPA-Personal</option>
                                         </select>
 				                    </div>
@@ -390,7 +390,7 @@ function checkPage()
 			            </table>
 		            </div>
 
-                    <? if (g_mode() == 1) { ?>
+                    <?php if (g_mode() == 1) { ?>
                     <div class="vbr"></div>
                     <div class="actionBox" id="showMasterMode">
 			            <h2 class="actionHeader">Wireless Radio</h2>
@@ -399,19 +399,19 @@ function checkPage()
 				                <td class="raCB" style="width: 40%">Wireless Channel :&nbsp;</td>
 				                <td class="laCB">
 					                <select id="WChannel" name="WChannel">
-					                    <option value="1"<?p_chansel(1)?>>1</option>
-                                        <option value="2"<?p_chansel(2)?>>2</option>
-                                        <option value="3"<?p_chansel(3)?>>3</option>
-                                        <option value="4"<?p_chansel(4)?>>4</option>
-                                        <option value="5"<?p_chansel(5)?>>5</option>
-                                        <option value="6"<?p_chansel(6)?>>6</option>
-                                        <option value="7"<?p_chansel(7)?>>7</option>
-                                        <option value="8"<?p_chansel(8)?>>8</option>
-                                        <option value="9"<?p_chansel(9)?>>9</option>
-                                        <option value="10"<?p_chansel(10)?>>10</option>
-                                        <option value="11"<?p_chansel(11)?>>11</option>
-                                        <option value="12"<?p_chansel(12)?>>12</option>
-                                        <option value="13"<?p_chansel(13)?>>13</option>
+					                    <option value="1"<?phpp_chansel(1)?>>1</option>
+                                        <option value="2"<?phpp_chansel(2)?>>2</option>
+                                        <option value="3"<?phpp_chansel(3)?>>3</option>
+                                        <option value="4"<?phpp_chansel(4)?>>4</option>
+                                        <option value="5"<?phpp_chansel(5)?>>5</option>
+                                        <option value="6"<?phpp_chansel(6)?>>6</option>
+                                        <option value="7"<?phpp_chansel(7)?>>7</option>
+                                        <option value="8"<?phpp_chansel(8)?>>8</option>
+                                        <option value="9"<?phpp_chansel(9)?>>9</option>
+                                        <option value="10"<?phpp_chansel(10)?>>10</option>
+                                        <option value="11"<?phpp_chansel(11)?>>11</option>
+                                        <option value="12"<?phpp_chansel(12)?>>12</option>
+                                        <option value="13"<?phpp_chansel(13)?>>13</option>
 					                </select>
 				                </td>
 			                </tr>
@@ -419,10 +419,10 @@ function checkPage()
 				                <td class="raCB" style="width: 40%">Wireless Mode :&nbsp;</td>
 				                <td class="laCB">
 					                <select id="WMode" name="WMode">
-                                        <option value="a"<?p_modesel("a")?>>802.11a only</option>
-                                        <option value="b"<?p_modesel("b")?>>802.11b only</option>
-                                        <option value="g"<?p_modesel("g")?>>802.11g only</option>
-					                    <option value="gn"<?p_modesel("gn")?>>Mixed 802.11g and 802.11n</option>    
+                                        <option value="a"<?phpp_modesel("a")?>>802.11a only</option>
+                                        <option value="b"<?phpp_modesel("b")?>>802.11b only</option>
+                                        <option value="g"<?phpp_modesel("g")?>>802.11g only</option>
+					                    <option value="gn"<?phpp_modesel("gn")?>>Mixed 802.11g and 802.11n</option>    
 					                </select>
 				                </td>
 			                </tr>
@@ -431,7 +431,7 @@ function checkPage()
 				                <td class="laCB">
 					                <select id="WCountry" name="WCountry">
 
-<?
+<?php
     $sel="";
     $csel=g_countrysel();
     foreach ($ccodes as $cc => $name) {
@@ -447,8 +447,8 @@ function checkPage()
 				                <td class="raCB" style="width: 40%">Visibility Status :&nbsp;</td>
 				                <td class="laCB">
 					                <select id="WVisibility" name="WVisibility">
-                                        <option value="0"<?echo g_hiddenssid()=="0"? ' selected="selected"':""?>>Visible</option>
-                                        <option value="1"<?echo g_hiddenssid()=="1"? ' selected="selected"':""?>>Invisible</option>
+                                        <option value="0"<?php echo g_hiddenssid()=="0"? ' selected="selected"':""?>>Visible</option>
+                                        <option value="1"<?php echo g_hiddenssid()=="1"? ' selected="selected"':""?>>Invisible</option>
 					                </select>
 				                </td>
 			                </tr>
@@ -456,22 +456,22 @@ function checkPage()
 				                <td class="raCB" style="width: 40%">Driver :&nbsp;</td>
 				                <td class="laCB">
 					                <select id="WDriver" name="WDriver">
-                                        <option  title="Set to rtl871xdrv for Raspberry Pi" value="rtl871xdrv"<?echo g_wdriver()=="0"? ' selected="selected"':""?>>rtl871xdrv</option>
-                                        <option value="nl80211"<?echo g_wdriver()=="1"? ' selected="selected"':""?>>nl80211</option>
+                                        <option  title="Set to rtl871xdrv for Raspberry Pi" value="rtl871xdrv"<?php echo g_wdriver()=="0"? ' selected="selected"':""?>>rtl871xdrv</option>
+                                        <option value="nl80211"<?php echo g_wdriver()=="1"? ' selected="selected"':""?>>nl80211</option>
 					                </select>
 				                </td>
 			                </tr>
 			            </table>
 		            </div>
-                    <?}?>
+                    <?php }?>
 
                 </td>
 	            <td id="quickHelpContent"><strong>Help...</strong><br>
                     <br>
-                    Specify the SSID which you want your <? p_mode(); ?> to <? echo g_mode() == 1? 'manage':'connect to'; ?> as well as
-                    the authentication data.<? if (g_mode() == 2) {?><br><br>You may use the Survey feature to connect
+                    Specify the SSID which you want your <?php p_mode(); ?> to <?php echo g_mode() == 1? 'manage':'connect to'; ?> as well as
+                    the authentication data.<?php if (g_mode() == 2) {?><br><br>You may use the Survey feature to connect
                     to a  wireless Access Point (AP) in the  WiFi  neighborhood with a
-                    passphrase as the sole typed input.<?}?>               
+                    passphrase as the sole typed input.<?php }?>               
                     <br><br>
                     <strong>NOTE!</strong> You may have to re-enable the watchdog (advanced settings tab)
                         if changes has  been made here.
@@ -479,7 +479,7 @@ function checkPage()
             </tr>
             <tr>
 	            <td colspan="3" id="footer">
-                    Copyright &copy; <? p_copyRight(); ?>
+                    Copyright &copy; <?php p_copyRight(); ?>
                 </td>                   
             </tr>
         </table>

@@ -1,4 +1,4 @@
-<? 
+<?php 
     /*
      * blacklist.php
      *
@@ -78,14 +78,14 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link rel="stylesheet" type="text/css" href="/css/bridge.css">
-        <title><? p_title(); ?></title>
+        <title><?php p_title(); ?></title>
         <script>
 
-<? setTimeout(); ?>
+<?php setTimeout(); ?>
 
-<? include 'inc/general.js.php' ?>
+<?php include 'inc/general.js.php' ?>
 
-var aPage=<? echo $aPage ?>;
+var aPage=<?php echo $aPage ?>;
 var curPage=1;
 var curLine=1;
 
@@ -93,7 +93,7 @@ function doPage(from, to)
 {
     var i;
 
-    for (i=1; i< <? echo $totlines ?>; i++) {
+    for (i=1; i< <?php echo $totlines ?>; i++) {
         if (i >=from && i <= to)
             getObj("item-"+i).style.display="";
         else
@@ -106,7 +106,7 @@ function doSearch(obj)
     var i;
     var f=0;
 
-    for (i=1; i< <? echo $totlines ?>; i++) {
+    for (i=1; i< <?php echo $totlines ?>; i++) {
         if (getObj("dom_"+i).value.toLowerCase().search(obj.value.toLowerCase())!=-1) {
             getObj("item-"+i).style.display="";
             f++;
@@ -138,8 +138,8 @@ function submitEnter(myfield,e)
 
 function nextPage()
 {
-    var lastline=curLine+aPage > <? echo $totlines ?>? <? echo $totlines ?>:curLine+aPage;
-    if (lastline >= <? echo $totlines ?>) {
+    var lastline=curLine+aPage > <?php echo $totlines ?>? <?php echo $totlines ?>:curLine+aPage;
+    if (lastline >= <?php echo $totlines ?>) {
         getObj("Next").disabled=true;
     }
     doPage(curLine, --lastline);
@@ -170,7 +170,7 @@ function initPage()
     doPage(curLine, aPage);
     curLine+=aPage;
     document.getElementById("curPage").innerHTML=1;
-    if (<? echo $totlines ?> < <? echo $aPage ?>)
+    if (<?php echo $totlines ?> < <?php echo $aPage ?>)
         getObj("Last").disabled= getObj("Next").disabled= true;
     else
         getObj("Last").disabled= getObj("Next").disabled= getObj("Prev").disabled= false;
@@ -183,10 +183,10 @@ function initPage()
 
 function lastPage()
 {
-    var f=<? echo $totlines ?> < <? echo $aPage ?>? 1:(<? echo $totlines ?>-<? echo $aPage ?>);
-    doPage(f, <? echo $totlines ?>);
-    curLine=<? echo $totlines ?>;
-    curPage=getObj("curPage").innerHTML=<? echo $lastpage; ?>;
+    var f=<?php echo $totlines ?> < <?php echo $aPage ?>? 1:(<?php echo $totlines ?>-<?php echo $aPage ?>);
+    doPage(f, <?php echo $totlines ?>);
+    curLine=<?php echo $totlines ?>;
+    curPage=getObj("curPage").innerHTML=<?php echo $lastpage; ?>;
     
     getObj("Prev").disabled=getObj("First").disabled=false;
     getObj("Next").disabled=true;
@@ -207,34 +207,34 @@ function checkItem(itm)
 
 function checkPage()
 {
-<? if ($needvars > 0) {?>
+<?php if ($needvars > 0) {?>
     alert("The blacklist is too long to be handled properly.\nYou need to reboot the system to activate an extended blacklist.");
     return false;
-<?}?>
+<?php }?>
     return true;
 }
         </script> 
     </head>
     <body onload="initPage();"><script>onbody();</script>
-    <form name="form" id="form" method="post" action="<? echo $_SERVER['SCRIPT_NAME']; ?>" onsubmit="return checkPage();">
+    <form name="form" id="form" method="post" action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" onsubmit="return checkPage();">
         <table id="topContainer">
             <tr>
-	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<? p_productHome(); ?>" target=_blank><? p_serverName(); ?></a></td>
-	            <td class="raCN">Version&nbsp;:&nbsp;<? p_firmware("-ro");?>&nbsp;</td>
+	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<?php p_productHome(); ?>" target=_blank><?php p_serverName(); ?></a></td>
+	            <td class="raCN">Version&nbsp;:&nbsp;<?php p_firmware("-ro");?>&nbsp;</td>
             </tr>
         </table>
         <table id="topTable">
             <tr>
-	            <td id="topBarLeft"><a id="logo" href="<? p_productHome(); ?>"></a></td>	            
+	            <td id="topBarLeft"><a id="logo" href="<?php p_productHome(); ?>"></a></td>	            
 	            <td id="topBarRight"></td>
             </tr>
         </table>
         <table id="topMenuTable">
             <tr>
 	            <td class="ledPanel">
-                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<? echo g_srvstat("shorewall")? "on":"off" ?>.png">
-                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<? echo g_srvstat("named")? "on":"off" ?>.png">
-                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<? echo g_srvstat("dhcpd")? "on":"off" ?>.png">
+                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<?php echo g_srvstat("shorewall")? "on":"off" ?>.png">
+                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<?php echo g_srvstat("named")? "on":"off" ?>.png">
+                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<?php echo g_srvstat("dhcpd")? "on":"off" ?>.png">
                 </td>
 	            <td class="topMenuLink"><a href="/network.php">Setup</a></td>
 	            <td class="topMenuThis"><a href="/advanced.php">Advanced</a></td>
@@ -261,11 +261,11 @@ function checkPage()
 		                <h1>URL Blacklist</h1>View and manage blacklisted domains.<br>
                         The list is sorted alphabetically with disabled domains shown first.
                         <br><br>
-                        <? if ($srv) { ?>
+                        <?php if ($srv) { ?>
 
                         <input value="Save Settings" type="submit">&nbsp;
                         <input value="Don't Save Settings" onclick="cancelSettings()" type="button">&nbsp;&nbsp;&nbsp;&nbsp;
-                        <?} echo $srv? '<b style="color:#090;">Service Enabled</b>':'<b style="color:#f00;">This Service is Disabled. Check the "URL Filtering" section under the DNS setting page.</b>'; ?>
+                        <?php } echo $srv? '<b style="color:#090;">Service Enabled</b>':'<b style="color:#f00;">This Service is Disabled. Check the "URL Filtering" section under the DNS setting page.</b>'; ?>
                         <div id="show_noactions" style="display:none">
                             <p>The DNS server must be enabled to manage this page. Check the DNS page.</p>
                         </div>	 
@@ -280,12 +280,12 @@ function checkPage()
                             <input value="Refresh" onclick="cancelSettings()" type="button">
                             &nbsp;&nbsp;Find &nbsp;:&nbsp;
                             <input title="Press return" id="search" size="16" maxlength="40" value="" onKeyPress="return submitEnter(this,event)" type="text">
-                            <br><br><div id="show_pages">Page <span id="curPage"></span> of <? echo $lastpage; ?></div>
+                            <br><br><div id="show_pages">Page <span id="curPage"></span> of <?php echo $lastpage; ?></div>
                         </div>
                         <div style="overflow-y:auto;max-height:400px;">
                         <table class="logTable">
                             <tr><td style="width:50px"><b>Enabled</b></td><td><b>Domain</b></td></tr>
-<?
+<?php
     $fd = fopen("/tmp/blist", "r");
     $i=1;
     while (!feof($fd)) {     
@@ -313,10 +313,10 @@ function checkPage()
 		            </div><div class="vbr"></div>
 
                   <div class="actionBox" style="overflow-y:auto;max-height:200px;">
-			            <h2 class="actionHeader">Top list of blacklisteds:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<? p_denycount(); ?></h2>
+			            <h2 class="actionHeader">Top list of blacklisteds:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php p_denycount(); ?></h2>
 			            <table class="logTable">
                         <tr><td style="width: 50px"><b>Hits</b></td><td><b>Domain</b></td></tr>
-<?
+<?php
     $rval=0;
     while ($rval == 0) {
         @system("ps -e | grep -q topspammers", $rval);
@@ -351,7 +351,7 @@ function checkPage()
             </tr>
             <tr>
 	            <td colspan="3" id="footer">
-                    Copyright &copy; <? p_copyRight(); ?>
+                    Copyright &copy; <?php p_copyRight(); ?>
                 </td>                   
             </tr>
         </table>

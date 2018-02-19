@@ -1,4 +1,4 @@
-<?
+<?php
     /*
      * wait.php
      *
@@ -28,10 +28,10 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link rel="stylesheet" type="text/css" href="/css/bridge.css">
-        <title><? p_title(); ?></title>
+        <title><?php p_title(); ?></title>
         <script>
 
-<? include 'inc/general.js.php' ?>
+<?php include 'inc/general.js.php' ?>
 
 window.location.hash="no-back-button";
 window.location.hash="Again-No-back-button";//again because google chrome don't insert first hash into history
@@ -44,7 +44,7 @@ function get_burn_time(size)
 
 	burn_time = parseInt((bsize+63)/64,[10]) * 2102;
 	burn_time = parseInt((burn_time+999)/1000,[10]);
-    countdown=<? echo $_GET[seconds]?$_GET[seconds]:60 ?>
+    countdown=<?php echo $_GET[seconds]?$_GET[seconds]:60 ?>
 
 	return countdown;
 }
@@ -52,7 +52,7 @@ function get_burn_time(size)
 var countdown = get_burn_time(64);
 function initPage()
 {
-    <?
+    <?php
         if ($_GET[reboot] == "y")
         system("init 6&");
     ?>
@@ -65,7 +65,7 @@ function nev()
 	countdown--;
 	document.form.WaitInfo.value=countdown;
 	if(countdown < 1 ) {
-        <? 
+        <?php 
             if (isset($_GET[loc])) {
                 if (isset($_GET[ip]))
                     $url="http://".$_GET[ip];
@@ -84,13 +84,13 @@ function nev()
     <form name="form" id="form" style="height:0">
         <table id="topContainer">
             <tr>
-	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<? p_productHome(); ?>" target=_blank><? p_serverName(); ?></a></td>
-	            <td class="raCN">Version&nbsp;:&nbsp;<? p_firmware("-ro");?>&nbsp;</td>
+	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<?php p_productHome(); ?>" target=_blank><?php p_serverName(); ?></a></td>
+	            <td class="raCN">Version&nbsp;:&nbsp;<?php p_firmware("-ro");?>&nbsp;</td>
             </tr>
         </table>
         <table id="topTable">
             <tr>
-	            <td id="topBarLeft"><a id="logo" href="<? p_productHome(); ?>"></a></td>	            
+	            <td id="topBarLeft"><a id="logo" href="<?php p_productHome(); ?>"></a></td>	            
 	            <td id="topBarRight"></td>
             </tr>
         </table>
@@ -102,13 +102,13 @@ function nev()
 			            <table>
 			                <tr>
 				                <td class="laCB" style="text-align: center; height:80px;">
-				                    <? if ($_GET[reboot] == "y") { ?>
+				                    <?php if ($_GET[reboot] == "y") { ?>
 			                        The device is rebooting...<br><br>
                                     Please <b style="color:red">DO NOT POWER OFF</b> the device.<br><br>
-                                    <? } else { ?>
+                                    <?php } else { ?>
                                     The new settings have been saved ...<br><br>
                                     Please <b style="color:red">DO NOT POWER OFF</b> the device.<br><br>
-                                    <? } ?>
+                                    <?php } ?>
                                     And please wait for
                                     <input type="Text" readonly name="WaitInfo" size="2" style="border-width:0; background-color:#DFDFDF; color:#FF3030; text-align:center">
                                     seconds...
@@ -120,7 +120,7 @@ function nev()
             </tr>
             <tr>
 	            <td colspan="3" id="footer">
-                    Copyright &copy; <? p_copyRight(); ?>
+                    Copyright &copy; <?php p_copyRight(); ?>
                 </td>                   
             </tr>
         </table>

@@ -1,4 +1,4 @@
-<? 
+<?php 
     /*
      * virtual.php
      *
@@ -42,12 +42,12 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link rel="stylesheet" type="text/css" href="/css/bridge.css">
-        <title><? p_title(); ?></title>
+        <title><?php p_title(); ?></title>
         <script>
 
-<? setTimeout(); ?>
+<?php setTimeout(); ?>
 
-<? include 'inc/general.js.php' ?>
+<?php include 'inc/general.js.php' ?>
 
 function initPage()
 {
@@ -212,27 +212,27 @@ function onsrv(n)
         </script> 
     </head>
     <body onload="initPage();"><script>onbody();</script>
-    <form name="form" id="form" method="post" action="<? echo $_SERVER['SCRIPT_NAME']; ?>" onsubmit="return checkPage();">
+    <form name="form" id="form" method="post" action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" onsubmit="return checkPage();">
         <input name="POST_ACTION" value="" type="hidden">
-        <input name="macro_prefix" value="<? echo MPRF; ?>" type="hidden">
+        <input name="macro_prefix" value="<?php echo MPRF; ?>" type="hidden">
         <table id="topContainer">
             <tr>
-	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<? p_productHome(); ?>" target=_blank><? p_serverName(); ?></a></td>
-	            <td class="raCN">Version&nbsp;:&nbsp;<? p_firmware("-ro");?>&nbsp;</td>
+	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<?php p_productHome(); ?>" target=_blank><?php p_serverName(); ?></a></td>
+	            <td class="raCN">Version&nbsp;:&nbsp;<?php p_firmware("-ro");?>&nbsp;</td>
             </tr>
         </table>
         <table id="topTable">
             <tr>
-	            <td id="topBarLeft"><a id="logo" href="<? p_productHome(); ?>"></a></td>	            
+	            <td id="topBarLeft"><a id="logo" href="<?php p_productHome(); ?>"></a></td>	            
 	            <td id="topBarRight"></td>
             </tr>
         </table>
         <table id="topMenuTable">
             <tr>
 	            <td class="ledPanel">
-                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<? echo g_srvstat("shorewall")? "on":"off" ?>.png">
-                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<? echo g_srvstat("named")? "on":"off" ?>.png">
-                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<? echo g_srvstat("dhcpd")? "on":"off" ?>.png">
+                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<?php echo g_srvstat("shorewall")? "on":"off" ?>.png">
+                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<?php echo g_srvstat("named")? "on":"off" ?>.png">
+                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<?php echo g_srvstat("dhcpd")? "on":"off" ?>.png">
                 </td>
 	            <td class="topMenuLink"><a href="/network.php">Setup</a></td>
 	            <td class="topMenuThis"><a href="/advanced.php">Advanced</a></td>
@@ -257,13 +257,13 @@ function onsrv(n)
 	            <td id="contentHeading">
                     <div id="contentBox">
 		                <h1>Virtual Server</h1>
-                        The Virtual Server option allows you to define a single public port on your <? p_mode(); ?> for
+                        The Virtual Server option allows you to define a single public port on your <?php p_mode(); ?> for
                         redirection to an internal LAN IP Address and Private LAN port if required.
                         This feature is useful for hosting online services such as FTP or Web Servers.
                         <br><br>
                         <input value="Save Settings" type="submit">&nbsp;
                         <input value="Don't Save Settings" onclick="cancelSettings()" type="button">
-                        <div style="text-align:right"><? echo g_srvstat("shorewall")? '<b style="color:#090;">Firewall: active</b>':'<b style="color:#f00;">Firewall: stopped</b>' ?></div>
+                        <div style="text-align:right"><?php echo g_srvstat("shorewall")? '<b style="color:#090;">Firewall: active</b>':'<b style="color:#f00;">Firewall: stopped</b>' ?></div>
 		            </div><div class="vbr"></div>
 		            <div class="actionBox" style="overflow-y:auto;max-height:600px;">
 	                    <h2 class="actionHeader">VIRTUAL SERVERS RULES</h2>
@@ -274,7 +274,7 @@ function onsrv(n)
                             <td style="text-align:center">Traffic Type</td>
                             <td style="text-align:center">Status</td>
                         </tr>
-<? 
+<?php 
 	@system("grep ".MPRF." /etc/shorewall/rules |  sed s/'\t'/,/g | sed 's/:/,/g;s/# //g'|sed 's/".MPRF."//;s/(DNAT)//' >/tmp/rlist");
 
   	if (($fd = fopen("/tmp/rlist", "r")) == NULL)
@@ -308,18 +308,18 @@ function onsrv(n)
 
                         <tr>
                             <td style="text-align:center; vertical-align:middle" rowspan="2">
-                                <input <? echo $chk ?>type="checkbox" title="Disable/Enable rule" id="cb_enable_<? echo $i ?>" onChange="onenable(<? echo $i ?>)">
-                                <? if ($first == false ) { ?><br><img alt="delete" id="cb_delete_<? echo $i ?>" title="Delete rule" onclick="ondelete(<? echo $i ?>)" src="/img/delete.png">                               
-                                <?}?><input name="enable_<? echo $i ?>" id="enable_<? echo $i ?>" value="<? echo $enabled ?>" type="hidden">
-                                <input name="delete_<? echo $i ?>" id="delete_<? echo $i ?>" value="0" type="hidden">
-                                <input name="rname_<? echo $i ?>" id="rname_<? echo $i ?>" value="<? echo $a[7]; ?>" type="hidden">                           			
+                                <input <?php echo $chk ?>type="checkbox" title="Disable/Enable rule" id="cb_enable_<?php echo $i ?>" onChange="onenable(<?php echo $i ?>)">
+                                <?php if ($first == false ) { ?><br><img alt="delete" id="cb_delete_<?php echo $i ?>" title="Delete rule" onclick="ondelete(<?php echo $i ?>)" src="/img/delete.png">                               
+                                <?php }?><input name="enable_<?php echo $i ?>" id="enable_<?php echo $i ?>" value="<?php echo $enabled ?>" type="hidden">
+                                <input name="delete_<?php echo $i ?>" id="delete_<?php echo $i ?>" value="0" type="hidden">
+                                <input name="rname_<?php echo $i ?>" id="rname_<?php echo $i ?>" value="<?php echo $a[7]; ?>" type="hidden">                           			
                             </td>
                             <td style="vertical-align:bottom">Name<br>
-                                <input type="text" id="name_<? echo $i ?>" name="name_<? echo $i ?>" value="<? echo $sname; ?>" size="16" maxlength="31">
+                                <input type="text" id="name_<?php echo $i ?>" name="name_<?php echo $i ?>" value="<?php echo $sname; ?>" size="16" maxlength="31">
                             </td>
 			                <td style="text-align:left;vertical-align:bottom">Service Name<br>
-                                <select style="width:110px" id="srv_<? echo $i ?>" onChange="onsrv(<? echo $i ?>)">
-                                    <option <? echo isset($a[4])? "selected ":"" ?>value="<? echo isset($a[4])? $a[4]:"0"; ?>/<? echo isset($a[6])? $a[6]:"0";?>"><? echo isset($sname)? $sname:"Custom"; ?></option>
+                                <select style="width:110px" id="srv_<?php echo $i ?>" onChange="onsrv(<?php echo $i ?>)">
+                                    <option <?php echo isset($a[4])? "selected ":"" ?>value="<?php echo isset($a[4])? $a[4]:"0"; ?>/<?php echo isset($a[6])? $a[6]:"0";?>"><?php echo isset($sname)? $sname:"Custom"; ?></option>
                                     <option value="21/21/TCP">FTP</option>
                                     <option value="9418/9418/TCP">GIT</option>
                                     <option value="80/80/TCP">HTTP</option>
@@ -332,45 +332,45 @@ function onsrv(n)
                                 </select>
                             </td>
                             <td style="text-align:center;vertical-align:bottom">Public Port<br>
-                                <input type="text" id="publ_port_<? echo $i ?>" name="publ_port_<? echo $i ?>" value="<? echo $a[6]; ?>" size="5" maxlength="5">
+                                <input type="text" id="publ_port_<?php echo $i ?>" name="publ_port_<?php echo $i ?>" value="<?php echo $a[6]; ?>" size="5" maxlength="5">
                             </td>
                             <td style="text-align:center">Protocol<br>
-                                <select style="width:80px" id="proto_<? echo $i ?>" name="proto_<? echo $i ?>" onChange="onproto(<? echo $i ?>)">
-                                    <option <? echo $a[5]=="tcp"? "selected ":"" ?>value="tcp">TCP</option>
-                                    <option <? echo $a[5]=="udp"? "selected ":"" ?>value="udp">UDP</option>
-                                    <option <? echo $a[5]=="tcp,udp"? "selected ":"" ?>value="tcp,udp">Both</option>
-                                    <option <? echo is_numeric($a[5])&&$a[5]>0? "selected ":"" ?>value="oth">Other</option>
+                                <select style="width:80px" id="proto_<?php echo $i ?>" name="proto_<?php echo $i ?>" onChange="onproto(<?php echo $i ?>)">
+                                    <option <?php echo $a[5]=="tcp"? "selected ":"" ?>value="tcp">TCP</option>
+                                    <option <?php echo $a[5]=="udp"? "selected ":"" ?>value="udp">UDP</option>
+                                    <option <?php echo $a[5]=="tcp,udp"? "selected ":"" ?>value="tcp,udp">Both</option>
+                                    <option <?php echo is_numeric($a[5])&&$a[5]>0? "selected ":"" ?>value="oth">Other</option>
                                 </select>
                             </td>
-                            <td style="text-align:center" rowspan="2"><div id="status_<? echo $i ?>"><? if ($first==false) {echo strlen($chk)? '<b style="color:#090">Enabled</b>':'<b style="color:#900;">Disabled</b>'; } ?></div>
+                            <td style="text-align:center" rowspan="2"><div id="status_<?php echo $i ?>"><?php if ($first==false) {echo strlen($chk)? '<b style="color:#090">Enabled</b>':'<b style="color:#900;">Disabled</b>'; } ?></div>
 
-                                <div id="show_status_<? echo $i ?>" style="display:<? echo $first==true? "inline":"none" ?>">
-                                <? if ($first == true ) { ?>
+                                <div id="show_status_<?php echo $i ?>" style="display:<?php echo $first==true? "inline":"none" ?>">
+                                <?php if ($first == true ) { ?>
                                     <b style="color:#378">Add<br>New</b>
-                                <? } else { ?>    <img alt="deleted" src="/img/deleted.png" style="height:12px">
-                                <?}?></div>
+                                <?php } else { ?>    <img alt="deleted" src="/img/deleted.png" style="height:12px">
+                                <?php }?></div>
                             </td>
                         </tr>
                         <tr>         
                             <td style="vertical-align:bottom">IP Address<br>
-                                <input type=text id="ip_<? echo $i ?>" name="ip_<? echo $i ?>" value="<? echo $a[3]; ?>" size="16" maxlength="31">
+                                <input type=text id="ip_<?php echo $i ?>" name="ip_<?php echo $i ?>" value="<?php echo $a[3]; ?>" size="16" maxlength="31">
                             </td>
 			                <td style="text-align:left;vertical-align:bottom">Computer Name<br>                                
-                                <select style="width:110px" id="cname_<? echo $i ?>" onChange="oncname(<? echo $i ?>)">
-                                    <option <? echo isset($a[3])? "selected ":"" ?>value="<? echo $a[3]; ?>"><? echo $a[7]; ?></option>
-                                    <? echo exec("cat /tmp/hostopts"); ?>
+                                <select style="width:110px" id="cname_<?php echo $i ?>" onChange="oncname(<?php echo $i ?>)">
+                                    <option <?php echo isset($a[3])? "selected ":"" ?>value="<?php echo $a[3]; ?>"><?php echo $a[7]; ?></option>
+                                    <?php echo exec("cat /tmp/hostopts"); ?>
 
                                 </select>
                             </td>
                             <td style="text-align:center;vertical-align:bottom">Private Port<br>
-                                <input type="text" id="priv_port_<? echo $i ?>" name="priv_port_<? echo $i ?>" value="<? echo $a[4]; ?>" size="5" maxlength="5">
+                                <input type="text" id="priv_port_<?php echo $i ?>" name="priv_port_<?php echo $i ?>" value="<?php echo $a[4]; ?>" size="5" maxlength="5">
                             </td>
                             <td style="text-align:center;vertical-align:bottom">Other protocoll<br>
-                                <input <? echo is_numeric($a[5])&&$a[5]>0? "":"disabled "; ?>type="text" id="other_proto_t<? echo $i ?>" value="<? echo is_numeric($a[5])? $a[5]:"0"; ?>" size="5" maxlength="5">
-                                <input type="hidden" id="other_proto_<? echo $i ?>" name="other_proto_<? echo $i ?>" value="0">
+                                <input <?php echo is_numeric($a[5])&&$a[5]>0? "":"disabled "; ?>type="text" id="other_proto_t<?php echo $i ?>" value="<?php echo is_numeric($a[5])? $a[5]:"0"; ?>" size="5" maxlength="5">
+                                <input type="hidden" id="other_proto_<?php echo $i ?>" name="other_proto_<?php echo $i ?>" value="0">
                             </td>
                         </tr>
-<?	
+<?php	
 	$i++;
     $first=false;
 	}
@@ -386,14 +386,14 @@ function onsrv(n)
                     You can select a computer from the list of DHCP clients in the Computer Name drop down menu,
                     or you can manually enter the IP address of the computer at which you would like to open the specified port.<br><br>
                     <strong>NOTE!</strong> This service will not work if your provider does not allow inbound traffic to your
-                    premises or if any downstream firewalls (your external modem) is active without having this <? p_mode(); ?> in a DMZ zone.<br><br>
+                    premises or if any downstream firewalls (your external modem) is active without having this <?php p_mode(); ?> in a DMZ zone.<br><br>
                     <strong>NOTE!</strong> For this service a DDNS service may be usefull for you. Check the page Security->Inbound Access
                     fort more information.
                </td>
             </tr>
             <tr>
 	            <td colspan="3" id="footer">
-                    Copyright &copy; <? p_copyRight(); ?>
+                    Copyright &copy; <?php p_copyRight(); ?>
                 </td>                   
             </tr>
         </table>

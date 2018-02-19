@@ -1,4 +1,4 @@
-<?
+<?php
     /*
      * wd_log.php
      *
@@ -24,14 +24,14 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link rel="stylesheet" type="text/css" href="/css/bridge.css">
-        <title><? p_title(); ?></title>
+        <title><?php p_title(); ?></title>
         <script>
 
-<? setTimeout(); ?>
+<?php setTimeout(); ?>
 
-<? include 'inc/general.js.php' ?>
+<?php include 'inc/general.js.php' ?>
 
-var aPage=<? echo $aPage ?>;
+var aPage=<?php echo $aPage ?>;
 var curPage=1;
 var curLine=1;
 
@@ -39,7 +39,7 @@ function doPage(from, to)
 {
     var i;
 
-    for (i=1; i< <? echo $totlines ?>; i++) {
+    for (i=1; i< <?php echo $totlines ?>; i++) {
         if (i >=from && i <= to)
             getObj("item-"+i).style.display="";
         else
@@ -49,8 +49,8 @@ function doPage(from, to)
 
 function nextPage()
 {
-    var lastline=curLine+aPage > <? echo $totlines ?>? <? echo $totlines ?>:curLine+aPage;
-    if (lastline >= <? echo $totlines ?>) {
+    var lastline=curLine+aPage > <?php echo $totlines ?>? <?php echo $totlines ?>:curLine+aPage;
+    if (lastline >= <?php echo $totlines ?>) {
         getObj("Next").disabled=true;
     }
     doPage(curLine, --lastline);
@@ -81,7 +81,7 @@ function initPage()
     doPage(curLine, aPage);
     curLine+=aPage;
     document.getElementById("curPage").innerHTML=1;
-    if (<? echo $totlines ?> < <? echo $aPage ?>)
+    if (<?php echo $totlines ?> < <?php echo $aPage ?>)
         getObj("Last").disabled= getObj("Next").disabled= true;
     else
         getObj("Last").disabled= getObj("Next").disabled= getObj("Prev").disabled= false;
@@ -93,10 +93,10 @@ function initPage()
 
 function lastPage()
 {
-    var f=<? echo $totlines ?> < <? echo $aPage ?>? 1:(<? echo $totlines ?>-<? echo $aPage ?>);
-    doPage(f, <? echo $totlines ?>);
-    curLine=<? echo $totlines ?>;
-    curPage=getObj("curPage").innerHTML=<? echo $lastpage; ?>;
+    var f=<?php echo $totlines ?> < <?php echo $aPage ?>? 1:(<?php echo $totlines ?>-<?php echo $aPage ?>);
+    doPage(f, <?php echo $totlines ?>);
+    curLine=<?php echo $totlines ?>;
+    curPage=getObj("curPage").innerHTML=<?php echo $lastpage; ?>;
     
     getObj("Prev").disabled=getObj("First").disabled=false;
     getObj("Next").disabled=true;
@@ -107,22 +107,22 @@ function lastPage()
     <form name="form" id="form">
         <table id="topContainer">
             <tr>
-	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<? p_productHome(); ?>" target=_blank><? p_serverName(); ?></a></td>
-	            <td class="raCN">Version&nbsp;:&nbsp;<? p_firmware("-ro");?>&nbsp;</td>
+	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<?php p_productHome(); ?>" target=_blank><?php p_serverName(); ?></a></td>
+	            <td class="raCN">Version&nbsp;:&nbsp;<?php p_firmware("-ro");?>&nbsp;</td>
             </tr>
         </table>
         <table id="topTable">
             <tr>
-	            <td id="topBarLeft"><a id="logo" href="<? p_productHome(); ?>"></a></td>	            
+	            <td id="topBarLeft"><a id="logo" href="<?php p_productHome(); ?>"></a></td>	            
 	            <td id="topBarRight"></td>
             </tr>
         </table>
         <table id="topMenuTable">
             <tr>
 	            <td class="ledPanel">
-                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<? echo g_srvstat("shorewall")? "on":"off" ?>.png">
-                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<? echo g_srvstat("named")? "on":"off" ?>.png">
-                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<? echo g_srvstat("dhcpd")? "on":"off" ?>.png">
+                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<?php echo g_srvstat("shorewall")? "on":"off" ?>.png">
+                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<?php echo g_srvstat("named")? "on":"off" ?>.png">
+                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<?php echo g_srvstat("dhcpd")? "on":"off" ?>.png">
                 </td>
 	            <td class="topMenuLink"><a href="/network.php">Setup</a></td>
 	            <td class="topMenuThis"><a href="/advanced.php">Advanced</a></td>
@@ -155,11 +155,11 @@ function lastPage()
                             <input id="Prev"  value="Previous"   onclick="prevPage()" type="button">
                             <input id="Next"  value="Next"       onclick="nextPage()" type="button">
                             <input value="Refresh" onclick="cancelSettings()" type="button">
-                            <br><br>Page <span id="curPage"></span> of <? echo $lastpage; ?><br><br>
+                            <br><br>Page <span id="curPage"></span> of <?php echo $lastpage; ?><br><br>
                         </div>
                         <table class="logTable">
                             <tr><td style="width: 14%">Time</td><td  style="width: 14%">Daemon</td><td>Message</td></tr>
-<?
+<?php
     $fd = fopen("/tmp/wlog", "r");
     $i=1;
     while (!feof($fd)) {     
@@ -180,7 +180,7 @@ function lastPage()
             </tr>
             <tr>
 	            <td colspan="3" id="footer">
-                    Copyright &copy; <? p_copyRight(); ?>
+                    Copyright &copy; <?php p_copyRight(); ?>
                 </td>                   
             </tr>
         </table>

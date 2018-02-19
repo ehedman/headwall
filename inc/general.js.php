@@ -34,7 +34,7 @@ function getObj(name)
 
 function cancelSettings()
 {
-	self.location.href="<? echo $_SERVER['SCRIPT_NAME']; ?>?refresh=1";
+	self.location.href="<?php echo $_SERVER['SCRIPT_NAME']; ?>?refresh=1";
 }
 
 function isFieldBlank(s)

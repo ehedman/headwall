@@ -14,7 +14,7 @@
     include 'cgi-bin/netif.php';
 
     define('HOMENAME', "HedmansHome");
-    define('HOMEURL', "http://www.hedmanshome.se");
+    define('HOMEURL', "https://github.com/ehedman/headwall");
 
     define('WAN',    $THEWAN);      // Set to match WAN side
     define('LAN',    $THELAN);      // Set to match LAN side
@@ -219,8 +219,8 @@ function restartTimeout()
 {
     timeoutCount=240;
 }
-<?
-    } else { ?>function restartTimeout(){}<? }
+<?php
+    } else { ?>function restartTimeout(){}<?php }
 }
 
 function bash($args)
@@ -774,7 +774,7 @@ function snCheck($args)
 <script>
 function init()
 {
-    alert("DHCP Adress Range: <? echo $sip; ?> to <? echo $eip; ?> not in subnet <? echo $snet; ?> as of netmask <? echo $msk; ?>");
+    alert("DHCP Adress Range: <?php echo $sip; ?> to <?php echo $eip; ?> not in subnet <?php echo $snet; ?> as of netmask <?php echo $msk; ?>");
     self.location.href="/bsc_dhcp.php";
 }
 </script>
@@ -782,7 +782,7 @@ function init()
 <body onload="init();">
 </body>
 </html>
-<?
+<?php
     return false;
     }
     return true;

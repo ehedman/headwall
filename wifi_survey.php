@@ -1,4 +1,4 @@
-<?
+<?php
     /*
      * wifi_survey.php
      *
@@ -17,7 +17,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <title><? p_title(); ?></title>
+        <title><?php p_title(); ?></title>
         <script>
 
 var ckssidnum = 0;
@@ -142,7 +142,7 @@ td
             <td>Passphrase</td>
             <td>Select</td>
         </tr>
-<?
+<?php
     $fd = fopen("/tmp/scanlist", "r");
     $indx=1;
     while (!feof($fd)) {     
@@ -185,7 +185,7 @@ td
                     <input type="button" value="OK" name="connect" onclick="do_connect()">
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
    	 		        <input type="button" value="Cancel" name="exit" onclick="do_exit()">
-                    <input type="hidden" id="cnt" name="cnt" value="0<? echo $_GET['cnt']; ?>">
+                    <input type="hidden" id="cnt" name="cnt" value="0<?php echo $_GET['cnt']; ?>">
    	            </td>
             </tr>
         </table>

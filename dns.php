@@ -1,4 +1,4 @@
-<? 
+<?php 
     /*
      * dns.php
      *
@@ -82,12 +82,12 @@ function tt($msg=0)
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link rel="stylesheet" type="text/css" href="/css/bridge.css">
-        <title><? p_title(); ?></title>
+        <title><?php p_title(); ?></title>
         <script>
 
-<? setTimeout(); ?>
+<?php setTimeout(); ?>
 
-<? include 'inc/general.js.php' ?>
+<?php include 'inc/general.js.php' ?>
 
 function checkPage()
 {
@@ -183,7 +183,7 @@ function initPage()
 	// init here ...
     var f=getObj("form");
 
-	if (<? if(g_srvstat("named")) echo "true"; else echo "false"; ?>) {
+	if (<?php if(g_srvstat("named")) echo "true"; else echo "false"; ?>) {
         getObj("show_dns_items").style.display = "block";
         getObj("show_local_items").style.display = "block";
         getObj("show_spam_items").style.display = "block";
@@ -197,7 +197,7 @@ function initPage()
         f.f_dns_enable.value = 0;
 	}
 
-    if (<? if(g_spamfmode() == true) echo "1"; else echo "0"; ?>) {
+    if (<?php if(g_spamfmode() == true) echo "1"; else echo "0"; ?>) {
         getObj("show_spam_features").style.display = "block";
         getObj("show_bl_help").style.display = "block";
         f.do_spamft.checked = true;
@@ -206,7 +206,7 @@ function initPage()
          getObj("show_bl_help").style.display = "none";
     } 
 
-    if (<? echo g_spfhere()? '1':'0'; ?>) {
+    if (<?php echo g_spfhere()? '1':'0'; ?>) {
         getObj("show_bl_options").style.display = "block";
     } else {
         getObj("show_bl_options").style.display = "none";
@@ -222,7 +222,7 @@ function onchange_dns()
 {
     var f=getObj("form");
 
-    <? if (g_srvstat("named")) { ?>
+    <?php if (g_srvstat("named")) { ?>
     if (f.dns_enable.checked == false) {
         getObj("show_dns_items").style.display = "none";
         getObj("show_local_items").style.display = "none";
@@ -236,10 +236,10 @@ function onchange_dns()
         getObj("show_add_host").style.display = "block";
         f.f_dns_enable.value = 1;
     }
-    <?} else {?>
+    <?php } else {?>
 
     f.f_dns_enable.value = (f.dns_enable.checked? "1":"0");
-    <?}?>
+    <?php }?>
 
     return true;
 }
@@ -295,10 +295,10 @@ function check_spfhere()
 function check_copy()
 {
     var f=getObj("form");
-    f.res_ip.value="<? echo $_SERVER['REMOTE_ADDR']; ?>";  
-    f.res_name.value="<? system("if [ \"`pidof named`\" ]; then nslookup ".$_SERVER['REMOTE_ADDR']." localhost | grep name | awk '{gsub(\".".g_domain().".\",\"\");printf \"%s\", $4}'; fi"); ?>";
+    f.res_ip.value="<?php echo $_SERVER['REMOTE_ADDR']; ?>";  
+    f.res_name.value="<?php system("if [ \"`pidof named`\" ]; then nslookup ".$_SERVER['REMOTE_ADDR']." localhost | grep name | awk '{gsub(\".".g_domain().".\",\"\");printf \"%s\", $4}'; fi"); ?>";
     if (f.res_name.value == "")
-        f.res_name.value="<? system('nbtscan -q '.$_SERVER['REMOTE_ADDR']." | awk '{print tolower(".'$2'.")}' | tr -d '\n'") ?>";
+        f.res_name.value="<?php system('nbtscan -q '.$_SERVER['REMOTE_ADDR']." | awk '{print tolower(".'$2'.")}' | tr -d '\n'") ?>";
     f.res_indx.value=0;
     restartTimeout();
     return true;
@@ -334,8 +334,8 @@ function check_res()
     var n=0;
 
     var rowIndx = getObj("restable").getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
-    if (rowIndx >= <? echo C_MAX ?>) {
-        alert("Attempt to exceed the limit for a class C netwok (<? echo C_MAX ?>)");
+    if (rowIndx >= <?php echo C_MAX ?>) {
+        alert("Attempt to exceed the limit for a class C netwok (<?php echo C_MAX ?>)");
         return false;
     }
    
@@ -365,7 +365,7 @@ function check_res()
         if (f.res_name.value == getObj("nm_local_host_"+i).value) {
             alert("Name ("+f.res_name.value+") is already used."); return false;
         }
-        if (isSubnetSame("<? p_srvzone() ?>", f.res_ip.value, "<? p_mask(g_lan()) ?>")) {
+        if (isSubnetSame("<?php p_srvzone() ?>", f.res_ip.value, "<?php p_mask(g_lan()) ?>")) {
             alert("The IP address ("+f.res_ip.value+") is not in this DNS Server's served Local Zone."); return false;
         }
     }
@@ -401,39 +401,39 @@ function check_res()
         </script> 
     </head>
     <body onload="initPage();"><script>onbody();</script>
-    <form name="form" id="form" method="post" action="<? echo $_SERVER['SCRIPT_NAME']; ?>" onsubmit="return checkPage();">
+    <form name="form" id="form" method="post" action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" onsubmit="return checkPage();">
         <input name="POST_ACTION"       value="" type="hidden">
         <input name="f_dns_enable"	    id="f_dns_enable"       value="0"  type="hidden">
-        <input name="f_bl_enable"	    id="f_bl_enable"        value="<? echo g_spamfmode()? '1':'0'; ?>"  type="hidden">
+        <input name="f_bl_enable"	    id="f_bl_enable"        value="<?php echo g_spamfmode()? '1':'0'; ?>"  type="hidden">
         <input name="f_bl_updates"	    id="f_bl_updates"       value="0"  type="hidden">
         <input name="f_gg_jumps"	    id="f_gg_jumps"         value="0"  type="hidden">
-        <input name="f_forwarder_1"	    id="f_forwarder_1"      value="<? p_dnsforw(0); ?>"  type="hidden">
-        <input name="f_forwarder_2"	    id="f_forwarder_2"      value="<? p_dnsforw(1); ?>"  type="hidden">
-        <input name="f_serving_zone"    id="f_serving_zone"     value="<? p_srvzone() ?>"  type="hidden">
-        <input name="f_local_domain"    id="f_local_domain"     value="<? p_domain(); ?>" type="hidden">
-        <input name="f_redir_spf"       id="f_redir_spf"        value="<? p_spfredir(); ?>"  type="hidden">
-        <input name="f_spf_here"        id="f_spf_here"         value="<? echo g_spfhere()? '1':'0'; ?>" type="hidden">
-        <input name="f_lan"             id="f_lan"              value="<? echo g_lan(); ?>" type="hidden">
-        <input name="f_lan1"            id="f_lan1"             value="<? echo g_lan1(); ?>" type="hidden">
+        <input name="f_forwarder_1"	    id="f_forwarder_1"      value="<?php p_dnsforw(0); ?>"  type="hidden">
+        <input name="f_forwarder_2"	    id="f_forwarder_2"      value="<?php p_dnsforw(1); ?>"  type="hidden">
+        <input name="f_serving_zone"    id="f_serving_zone"     value="<?php p_srvzone() ?>"  type="hidden">
+        <input name="f_local_domain"    id="f_local_domain"     value="<?php p_domain(); ?>" type="hidden">
+        <input name="f_redir_spf"       id="f_redir_spf"        value="<?php p_spfredir(); ?>"  type="hidden">
+        <input name="f_spf_here"        id="f_spf_here"         value="<?php echo g_spfhere()? '1':'0'; ?>" type="hidden">
+        <input name="f_lan"             id="f_lan"              value="<?php echo g_lan(); ?>" type="hidden">
+        <input name="f_lan1"            id="f_lan1"             value="<?php echo g_lan1(); ?>" type="hidden">
 
         <table id="topContainer">
             <tr>
-	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<? p_productHome(); ?>" target=_blank><? p_serverName(); ?></a></td>
-	            <td class="raCN">Version&nbsp;:&nbsp;<? p_firmware("-ro");?>&nbsp;</td>
+	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<?php p_productHome(); ?>" target=_blank><?php p_serverName(); ?></a></td>
+	            <td class="raCN">Version&nbsp;:&nbsp;<?php p_firmware("-ro");?>&nbsp;</td>
             </tr>
         </table>
         <table id="topTable">
             <tr>
-	            <td id="topBarLeft"><a id="logo" href="<? p_productHome(); ?>"></a></td>	            
+	            <td id="topBarLeft"><a id="logo" href="<?php p_productHome(); ?>"></a></td>	            
 	            <td id="topBarRight"></td>
             </tr>
         </table>
         <table id="topMenuTable">
             <tr>
 	            <td class="ledPanel">
-                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<? echo g_srvstat("shorewall")? "on":"off" ?>.png">
-                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<? echo g_srvstat("named")? "on":"off" ?>.png">
-                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<? echo g_srvstat("dhcpd")? "on":"off" ?>.png">
+                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<?php echo g_srvstat("shorewall")? "on":"off" ?>.png">
+                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<?php echo g_srvstat("named")? "on":"off" ?>.png">
+                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<?php echo g_srvstat("dhcpd")? "on":"off" ?>.png">
                 </td>
 	            <td class="topMenuLink"><a href="/network.php">Setup</a></td>
 	            <td class="topMenuThis"><a href="/advanced.php">Advanced</a></td>
@@ -448,7 +448,7 @@ function check_res()
                     <div class="leftNavLink">
                         <ul style="width: 100%">
                             <li><div class="leftnavLink"><a href="/network.php">Network</a></div></li>
-                            <? if (g_haswifi()) { ?><li><div class="leftnavLink"><a href="/wireless.php">Wireless</a></div></li><?}?>
+                            <?php if (g_haswifi()) { ?><li><div class="leftnavLink"><a href="/wireless.php">Wireless</a></div></li><?php }?>
                             <li><div class="leftnavLink"><a href="/dhcp.php">DHCP</a></div></li>
                             <li><div id="left" class="navThis">DNS</div></li>
                             <li><div class="leftnavLink"><a href="/firewall.php">Security</a></div></li>
@@ -460,9 +460,9 @@ function check_res()
 		                <h1>DNS Settings</h1>
                         The Domain Name System (DNS) is responsible of assigning domain names and mapping those names
                         to IP addresses of devices on your LAN.
-                        The DNS is maintained by a database residing on this <? p_mode(); ?> to maintain local
+                        The DNS is maintained by a database residing on this <?php p_mode(); ?> to maintain local
                         addresses and names of your network devices.<br>
-                        A DNS Server running on this <? p_mode(); ?> is then linked to root DNS servers on the internet and thus this <? p_mode(); ?> can serve your
+                        A DNS Server running on this <?php p_mode(); ?> is then linked to root DNS servers on the internet and thus this <?php p_mode(); ?> can serve your
                         LAN as the primary DNS Server with caching capabilities to reduce network traffic to the internet.
                         <br><br>
                         <input value="Save Settings" type="submit">&nbsp;
@@ -475,25 +475,25 @@ function check_res()
                              <tr>
 				                <td class="raCB" style="width: 40%">Local Domain Name :</td>
 				                <td class="laCB">&nbsp;
-					                <input <? echo g_srvstat("dhcpd")? "disabled title='DHCP defined' ":"" ?> id="local_domain" size="16" maxlength="15" value="<? p_domain(); ?>" type="text">
+					                <input <?php echo g_srvstat("dhcpd")? "disabled title='DHCP defined' ":"" ?> id="local_domain" size="16" maxlength="15" value="<?php p_domain(); ?>" type="text">
 				                </td>
 			                </tr>
                             <tr>
 				                <td class="raCB">Serving local zone :</td>
 				                <td class="laCB">&nbsp;
-					                <input <? echo g_srvstat("dhcpd")? "disabled title='DHCP defined' ":"" ?>id="serving_zone" size="16" maxlength="15" value="<? p_srvzone() ?>" type="text">
+					                <input <?php echo g_srvstat("dhcpd")? "disabled title='DHCP defined' ":"" ?>id="serving_zone" size="16" maxlength="15" value="<?php p_srvzone() ?>" type="text">
 				                </td>
 			                </tr>
                             <tr>
 				                <td class="raCB">Forwarding DNS Server 1 :</td>
 				                <td class="laCB">&nbsp;
-					                <input id="forwarder_1" size="16" maxlength="15" value="<? p_dnsforw(0); ?>" type="text">
+					                <input id="forwarder_1" size="16" maxlength="15" value="<?php p_dnsforw(0); ?>" type="text">
 				                </td>
 			                </tr>
                             <tr>
 				                <td class="raCB">Forwarding DNS Server 2 :</td>
 				                <td class="laCB">&nbsp;
-					                <input id="forwarder_2" size="16" maxlength="15" value="<? p_dnsforw(1); ?>" type="text">
+					                <input id="forwarder_2" size="16" maxlength="15" value="<?php p_dnsforw(1); ?>" type="text">
 				                </td>
 			                </tr>
                             </table>
@@ -502,7 +502,7 @@ function check_res()
                             <tr>
                                 <td class="raCB" style="text-align:right">
                                     Enable DNS Server&nbsp;&nbsp;
-                                    <input type="checkbox" id="dns_enable" onChange="onchange_dns();"<? echo g_srvstat("named")? ' checked="checked"':''; ?>>&nbsp;&nbsp;
+                                    <input type="checkbox" id="dns_enable" onChange="onchange_dns();"<?php echo g_srvstat("named")? ' checked="checked"':''; ?>>&nbsp;&nbsp;
                                 </td>
                             </tr> 
                         </table>
@@ -513,7 +513,7 @@ function check_res()
 			        <table>
                         <tr>
                             <td class="raCB" style="width: 40%">Enable URL blacklist :</td>
-                            <td><input id="do_spamft" onclick="check_spamft();" type="checkbox"<? echo g_spamfmode()? ' checked="checked"':''; ?>></td>
+                            <td><input id="do_spamft" onclick="check_spamft();" type="checkbox"<?php echo g_spamfmode()? ' checked="checked"':''; ?>></td>
                         </tr>
                     </table>
                     <div id="show_spam_features">
@@ -521,7 +521,7 @@ function check_res()
                             <tr>
                                 <td class="raCB" style="width: 40%">Redirect blacklisted sites to I.P :</td>
                                 <td>
-                                    <input id="redir_spf" size="16" title="<? tt(1); ?>" maxlength="15" value="<? p_spfredir(); ?>" type="text">&nbsp;<b>On this <? p_mode(); ?>:</b>&nbsp;<input id="spf_here" title="<? tt(2); ?>" onclick="check_spfhere()" type="checkbox"<? if(g_spfhere()) {echo " checked";} ?>>
+                                    <input id="redir_spf" size="16" title="<?php tt(1); ?>" maxlength="15" value="<?php p_spfredir(); ?>" type="text">&nbsp;<b>On this <?php p_mode(); ?>:</b>&nbsp;<input id="spf_here" title="<?php tt(2); ?>" onclick="check_spfhere()" type="checkbox"<?php if(g_spfhere()) {echo " checked";} ?>>
                                 </td>
                             </tr>
                         </table>
@@ -537,7 +537,7 @@ function check_res()
                 <div class="actionBox" id="show_add_host">
 			        <h2 class="actionHeader">Add a Host to Local Domain</h2>
                     <table>
-                        <? if (g_srvstat("dhcpd") == false) { ?>
+                        <?php if (g_srvstat("dhcpd") == false) { ?>
                              <tr>
 				                <td class="raCB" style="width: 40%">IP Address :</td>
 				                <td class="laCB">&nbsp;
@@ -550,7 +550,7 @@ function check_res()
                             <tr>
 				                <td class="raCB">Host Name :</td>
 				                <td class="laCB" colspan="2">&nbsp;
-					                <input style="text-align:right;" id="res_name" size="16" maxlength="20" value="" type="text">.<? p_domain() ?>
+					                <input style="text-align:right;" id="res_name" size="16" maxlength="20" value="" type="text">.<?php p_domain() ?>
                                 <input id="res_indx" value="0" type="hidden">
                                 </td>
 			                </tr>
@@ -560,14 +560,14 @@ function check_res()
                                     <input type="button" value="Add" onclick="check_res();">&nbsp;&nbsp;
                                 </td>
                             </tr> 
-                        <? } else { ?>
+                        <?php } else { ?>
                             <tr>			        
 				                <td class="laCB">
 					                Your configuration dictates that host names and IP addresses are managed from the DHCP section.
-                                    Editing is permitted only when this <? p_mode(); ?> provides the DNS service standalone.
+                                    Editing is permitted only when this <?php p_mode(); ?> provides the DNS service standalone.
                                 </td>    
 			                </tr>
-                        <?}?>             
+                        <?php }?>             
                     </table>
                 </div><div class="vbr"></div>
 
@@ -577,24 +577,24 @@ function check_res()
                         <tr>       
                             <td style="width:50%">Name</td>
                             <td style="width:50%">IP-Address</td>
-                            <td<? echo g_srvstat("dhcpd")==false? ' colspan="2"':""; ?>></td>
+                            <td<?php echo g_srvstat("dhcpd")==false? ' colspan="2"':""; ?>></td>
                         </tr>
                         <tr>
                             <td>
-                                <input name="st_local_host_<? echo $rowIndx ?>" value="1" type="hidden">
-                                <input name="nm_local_host_<? echo $rowIndx ?>" value="<? p_nodeName(); ?>" type="hidden">
-                                <input name="ip_local_host_<? echo $rowIndx ?>" value="<? p_srvip(); ?>" type="hidden">
-                                <input disabled="disabled" size="10" maxlength="40" value="<? p_nodeName(); ?>" type="text">&nbsp;(this <? p_mode(); ?><? if (g_spfhere()) echo " with URL filter"; ?>)
+                                <input name="st_local_host_<?php echo $rowIndx ?>" value="1" type="hidden">
+                                <input name="nm_local_host_<?php echo $rowIndx ?>" value="<?php p_nodeName(); ?>" type="hidden">
+                                <input name="ip_local_host_<?php echo $rowIndx ?>" value="<?php p_srvip(); ?>" type="hidden">
+                                <input disabled="disabled" size="10" maxlength="40" value="<?php p_nodeName(); ?>" type="text">&nbsp;(this <?php p_mode(); ?><?php if (g_spfhere()) echo " with URL filter"; ?>)
                             </td>
                             <td>
-                                <input disabled="disabled" size="12" maxlength="15" value="<? p_srvip(); ?>" type="text">
-                                <? if (g_spfhere()) {
+                                <input disabled="disabled" size="12" maxlength="15" value="<?php p_srvip(); ?>" type="text">
+                                <?php if (g_spfhere()) {
                                     echo '                        &&nbsp;<input disabled="disabled" size="12" value="'.g_spfredir().'" type="text">';                       
                                 } ?>
                             </td>
-                            <td<? echo g_srvstat("dhcpd")==false? ' colspan="2"':""; ?>></td>
+                            <td<?php echo g_srvstat("dhcpd")==false? ' colspan="2"':""; ?>></td>
                         </tr>
-<?
+<?php
     $dstat=g_srvstat("dhcpd");
 
     if (($fd = fopen("/tmp/dmlist", "r")) == NULL)
@@ -646,13 +646,13 @@ function check_res()
                         <a style="color:#FFFFFF" href="http://pgl.yoyo.org/adservers/" target="_blank"><b>pgl.yoyo.org</b></a>
                         <br><br>The option "Enable Google tracking jump through" will attempt to bypass the
                         hidden trackers that the google search site imposes on sponsored links.<br><br>
-                        Monthly  updates and "tracking jump through" are meaningsfull only when this <? p_mode(); ?> is
-                        the handler of blacklisted sites i.e, the  "On this <? p_mode(); ?>" feature must be checked.
+                        Monthly  updates and "tracking jump through" are meaningsfull only when this <?php p_mode(); ?> is
+                        the handler of blacklisted sites i.e, the  "On this <?php p_mode(); ?>" feature must be checked.
                     </div>
-                    <? if (g_srvstat("dhcpd")) { ?><br><br>Local Domain Hosts marked as
+                    <?php if (g_srvstat("dhcpd")) { ?><br><br>Local Domain Hosts marked as
                     <a><img style="background-color:#FFFFFF; height:12px; border:0" src="/img/dyn.png" alt="x"></a> are
                     dynamic I.P addresses managed by the DHCP server.<br>
-                    The &nbsp;<a><img style="background-color:#FFFFFF; height:12px;border:0" alt="x" src="/img/fixed.png"></a>&nbsp;indicates a static IP DHCP reservation.<?}?>
+                    The &nbsp;<a><img style="background-color:#FFFFFF; height:12px;border:0" alt="x" src="/img/fixed.png"></a>&nbsp;indicates a static IP DHCP reservation.<?php }?>
                     <br><br><b>NOTICE</b><br>In an established dhcp/dns environment it is highly inappropriate to change the policy of having the dhcp
                     service and the dns service working together or not.<br>
                     Changing the policy will probably mean lost DNS records or lost DHCP asignements or both.
@@ -660,7 +660,7 @@ function check_res()
             </tr>
             <tr>
 	            <td colspan="3" id="footer">
-                    Copyright &copy; <? p_copyRight(); ?>
+                    Copyright &copy; <?php p_copyRight(); ?>
                 </td>                   
             </tr>
         </table>

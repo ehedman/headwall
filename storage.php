@@ -1,4 +1,4 @@
-<? 
+<?php 
     /*
      * advanced.php
      *
@@ -69,12 +69,12 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link rel="stylesheet" type="text/css" href="/css/bridge.css">
-        <title><? p_title(); ?></title>
+        <title><?php p_title(); ?></title>
         <script>
 
-<? include 'inc/general.js.php' ?>
+<?php include 'inc/general.js.php' ?>
 
-<? setTimeout(); ?>
+<?php setTimeout(); ?>
 
 function initPage()
 {
@@ -83,7 +83,7 @@ function initPage()
     if (f.disk_inuse.value == "0")
         getObj("show_cifs_info").style.display = "none";
 
-    getObj("cifs_workgroup").value = "<? echo trim(exec("grep 'workgroup =' /etc/samba/smb.conf | awk -F= '{print \$2}'")); ?>";
+    getObj("cifs_workgroup").value = "<?php echo trim(exec("grep 'workgroup =' /etc/samba/smb.conf | awk -F= '{print \$2}'")); ?>";
 
     return true;
 }
@@ -300,7 +300,7 @@ function rm_row(rowIndx)
         </script> 
     </head>
     <body onload="initPage();"><script>onbody();</script>
-    <form name="form" id="form" method="post" action="<? echo $_SERVER['SCRIPT_NAME']; ?>" onsubmit="return checkPage();">
+    <form name="form" id="form" method="post" action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" onsubmit="return checkPage();">
         <input name="POST_ACTION"   value="0"   type="hidden">
         <input name="disk_device"   value="0"   id="disk_device"    type="hidden">
         <input name="disk_size"     value="0"   id="disk_size"      type="hidden">
@@ -311,22 +311,22 @@ function rm_row(rowIndx)
 
         <table id="topContainer">
             <tr>
-	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<? p_productHome(); ?>" target=_blank><? p_serverName(); ?></a></td>
-	            <td class="raCN">Version&nbsp;:&nbsp;<? p_firmware("-ro");?>&nbsp;</td>
+	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<?php p_productHome(); ?>" target=_blank><?php p_serverName(); ?></a></td>
+	            <td class="raCN">Version&nbsp;:&nbsp;<?php p_firmware("-ro");?>&nbsp;</td>
             </tr>
         </table>
         <table id="topTable">
             <tr>
-	            <td id="topBarLeft"><a id="logo" href="<? p_productHome(); ?>"></a></td>	            
+	            <td id="topBarLeft"><a id="logo" href="<?php p_productHome(); ?>"></a></td>	            
 	            <td id="topBarRight"></td>
             </tr>
         </table>
         <table id="topMenuTable">
             <tr>
 	            <td class="ledPanel">
-                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<? echo g_srvstat("shorewall")? "on":"off" ?>.png">
-                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<? echo g_srvstat("named")? "on":"off" ?>.png">
-                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<? echo g_srvstat("dhcpd")? "on":"off" ?>.png">
+                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<?php echo g_srvstat("shorewall")? "on":"off" ?>.png">
+                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<?php echo g_srvstat("named")? "on":"off" ?>.png">
+                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<?php echo g_srvstat("dhcpd")? "on":"off" ?>.png">
                 </td>
 	            <td class="topMenuLink"><a href="/network.php">Setup</a></td>
 	            <td class="topMenuThis"><a href="/advanced.php">Advanced</a></td>
@@ -348,16 +348,16 @@ function rm_row(rowIndx)
 	            <td id="contentHeading">
                     <div id="contentBox">
 		                <h1>Settings</h1>
-                        Here you can setup your <? p_mode(); ?> to act as a CIFS File Server for most computers on your LAN.
+                        Here you can setup your <?php p_mode(); ?> to act as a CIFS File Server for most computers on your LAN.
                         <br><br>
                         <input value="Save Settings" type="submit">&nbsp;
                         <input value="Don't Save Settings" onclick="cancelSettings()" type="button">&nbsp;&nbsp;&nbsp;&nbsp;
-                        <? echo g_srvstat("smbd")? '<b style="color:#090;">CIFS Service is active</b>':'<b style="color:#f00;">CIFS Service is disabled.</b>'; ?>
+                        <?php echo g_srvstat("smbd")? '<b style="color:#090;">CIFS Service is active</b>':'<b style="color:#f00;">CIFS Service is disabled.</b>'; ?>
 		            </div><div class="vbr"></div>
 
 		            <div class="actionBox" id="show_disk_info">
 	                    <h2 class="actionHeader">Avaiable Disks and Disk Partitions</h2>
-                        This section show disk partitions that can be used by the <? p_mode(); ?>
+                        This section show disk partitions that can be used by the <?php p_mode(); ?>
                         as a network shared resource.<br><br>
 			            <table id="disk-parts">      
 			               <tbody>                 
@@ -369,7 +369,7 @@ function rm_row(rowIndx)
                                         <td style="width:10%">Usage</td>
                                         <td style="width:30%">Action</td>
                                     </tr>
-<?
+<?php
     $ourpath="";
     if (stat($_SERVER["DOCUMENT_ROOT"]."/inc/disk-uuid") != false) {
         $ourpart=trim(exec("head -n 1 ".$_SERVER["DOCUMENT_ROOT"]."/inc/disk-uuid"));
@@ -420,18 +420,18 @@ function rm_row(rowIndx)
         }
 ?>
                                     <tr>
-                                        <td><input readonly style="width:90%" id="disk_<?echo $record;?>_sts" value="<?echo $sts;?>" type="text"></td>
-                                        <td><input readonly style="width:90%" id="disk_<?echo $record;?>_dev" value="<?echo $dev;?>" type="text"></td>
+                                        <td><input readonly style="width:90%" id="disk_<?php echo $record;?>_sts" value="<?php echo $sts;?>" type="text"></td>
+                                        <td><input readonly style="width:90%" id="disk_<?php echo $record;?>_dev" value="<?php echo $dev;?>" type="text"></td>
                                         
-                                        <? if ($lfs == "none") {?><td><select id="disk_<?echo $record;?>_siz">
-                                            <option value="1.0"><?echo $siz;?></option>
+                                        <?php if ($lfs == "none") {?><td><select id="disk_<?php echo $record;?>_siz">
+                                            <option value="1.0"><?php echo $siz;?></option>
                                             <option value="0.2">20%</option>
                                             <option value="0.4">40%</option>
                                             <option value="0.5">50%</option>
                                             <option value="0.6">60%</option>
                                             <option value="0.8">80%</option>
                                         </select></td>
-                                            <td><select id="disk_<?echo $record;?>_lfs">
+                                            <td><select id="disk_<?php echo $record;?>_lfs">
                                             <option value="none">empty</option>
                                             <option value="ext4" title="recommended">ext4</option>
                                             <option value="ext3">ext3</option>
@@ -439,16 +439,16 @@ function rm_row(rowIndx)
                                             <option value="reiserfs">reiserfs</option>
                                             <option value="fat32">vfat</option>
                                         </select>
-                                        <?}else{?><td><input <? echo $rd; ?>style="width:90%" id="disk_<?echo $record;?>_siz" value="<?echo $siz;?>" type="text"></td>
-                                        <td><input <? echo $rdfs; ?>style="width:90%" id="disk_<?echo $record;?>_lfs" value="<?echo $lfs;?>" type="text"></td>
-                                        <?}?><td><input readonly style="width:90%" id="disk_<?echo $record;?>_usage" value="<?echo $usage; ?>" type="text"></td>
+                                        <?php } else {?><td><input <?php echo $rd; ?>style="width:90%" id="disk_<?php echo $record;?>_siz" value="<?php echo $siz;?>" type="text"></td>
+                                        <td><input <?php echo $rdfs; ?>style="width:90%" id="disk_<?php echo $record;?>_lfs" value="<?php echo $lfs;?>" type="text"></td>
+                                        <?php }?><td><input readonly style="width:90%" id="disk_<?php echo $record;?>_usage" value="<?php echo $usage; ?>" type="text"></td>
                                         <td>
-                                            <input name="dodisk" id="disk_<?echo $record;?>_act" type="radio" onchange="setDevice(<?echo $record;?>)"><?echo $com."\n"; ?>
-                                            <input id="disk_<?echo $record;?>_uuid" value="<?echo $uuid; ?>" type="hidden">
-                                            <input id="disk_<?echo $record;?>_action" value="<?echo $status; ?>" type="hidden"><? echo $script; ?>
+                                            <input name="dodisk" id="disk_<?php echo $record;?>_act" type="radio" onchange="setDevice(<?php echo $record;?>)"><?php echo $com."\n"; ?>
+                                            <input id="disk_<?php echo $record;?>_uuid" value="<?php echo $uuid; ?>" type="hidden">
+                                            <input id="disk_<?php echo $record;?>_action" value="<?php echo $status; ?>" type="hidden"><?php echo $script; ?>
                                         </td>
                                     </tr>
-<?
+<?php
         $record++; 
     } 
     @fclose($fd);
@@ -510,7 +510,7 @@ function rm_row(rowIndx)
                                         <td style="width:10%">Private</td>
                                         <td colspan="2" style="width:10%">Action</td>
                                     </tr>
-<?
+<?php
     
     @system("cifsshares > /tmp/cifsshares");
     if (($fd = fopen("/tmp/cifsshares", "r")) == NULL)
@@ -530,18 +530,18 @@ function rm_row(rowIndx)
 
 ?>
                                 <tr>
-                                    <td><input readonly="readonly" style="width:98%" name="cifs_share_<?echo $record;?>_name" id="cifs_share_<?echo $record;?>_name" value="<?echo $share;?>" maxlength="40" type="text"></td>
-                                    <td><input readonly="readonly" style="width:98%" name="cifs_share_<?echo $record;?>_user" id="cifs_share_<?echo $record;?>_user" value="<?echo $user;?>" maxlength="40" type="text"></td>
-                                    <td><input readonly="readonly" style="width:98%" name="cifs_share_<?echo $record;?>_user_pw" id="cifs_share_<?echo $record;?>_user_pw" value="<? echo $pw?>" maxlength="40" type="text"></td>
+                                    <td><input readonly="readonly" style="width:98%" name="cifs_share_<?php echo $record;?>_name" id="cifs_share_<?php echo $record;?>_name" value="<?php echo $share;?>" maxlength="40" type="text"></td>
+                                    <td><input readonly="readonly" style="width:98%" name="cifs_share_<?php echo $record;?>_user" id="cifs_share_<?php echo $record;?>_user" value="<?php echo $user;?>" maxlength="40" type="text"></td>
+                                    <td><input readonly="readonly" style="width:98%" name="cifs_share_<?php echo $record;?>_user_pw" id="cifs_share_<?php echo $record;?>_user_pw" value="<?php echo $pw?>" maxlength="40" type="text"></td>
                                     <td>
-                                        <input disabled="disabled" <?echo $checked;?>id="cifs_share_<?echo $record;?>_user_privcb" type="checkbox">
-                                        <input name="cifs_share_<?echo $record;?>_user_priv" id="cifs_share_<?echo $record;?>_user_priv" value="<?echo $priv;?>" type="hidden">
-                                        <input name="cifs_share_<?echo $record;?>_user_touched" id="cifs_share_<?echo $record;?>_user_touched" value="0" type="hidden">
+                                        <input disabled="disabled" <?php echo $checked;?>id="cifs_share_<?php echo $record;?>_user_privcb" type="checkbox">
+                                        <input name="cifs_share_<?php echo $record;?>_user_priv" id="cifs_share_<?php echo $record;?>_user_priv" value="<?php echo $priv;?>" type="hidden">
+                                        <input name="cifs_share_<?php echo $record;?>_user_touched" id="cifs_share_<?php echo $record;?>_user_touched" value="0" type="hidden">
                                     </td>
-                                    <td><img alt="unsh" title="unshare" id="cifs_share_<?echo $record;?>_unsh" onclick="rm_row(<?echo $record;?>)" src="/img/delete.jpg" style="border:0"></td>
-                                    <td><img alt="edit" title="edit" onclick="ed_row(<?echo $record;?>)" src="/img/edit.jpg" style="border:0"></td>
+                                    <td><img alt="unsh" title="unshare" id="cifs_share_<?php echo $record;?>_unsh" onclick="rm_row(<?php echo $record;?>)" src="/img/delete.jpg" style="border:0"></td>
+                                    <td><img alt="edit" title="edit" onclick="ed_row(<?php echo $record;?>)" src="/img/edit.jpg" style="border:0"></td>
                                 </tr>
-<?
+<?php
             $record++; 
     } 
     @fclose($fd);
@@ -563,7 +563,7 @@ function rm_row(rowIndx)
             </tr>
             <tr>
 	            <td colspan="3" id="footer">
-                    Copyright &copy; <? p_copyRight(); ?>
+                    Copyright &copy; <?php p_copyRight(); ?>
                 </td>                   
             </tr>
         </table>

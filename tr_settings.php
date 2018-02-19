@@ -1,4 +1,4 @@
-<? 
+<?php 
     /*
      * advanced.php
      *
@@ -50,21 +50,21 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link rel="stylesheet" type="text/css" href="/css/bridge.css">
-        <title><? p_title(); ?></title>
+        <title><?php p_title(); ?></title>
         <script>
 
-<? include 'inc/general.js.php' ?>
+<?php include 'inc/general.js.php' ?>
 
-<? setTimeout(); ?>
+<?php setTimeout(); ?>
 
 function initPage()
 {
     var f=getObj("form");
-    f.tr_enabled.checked=<? echo g_srvstat("transmission-daemon")? "true":"false" ?>;
-    f.tr_port.value=<? echo trim(exec("grep rpc-port ".g_trcfg()." | awk -F: '{gsub(/,/,\"\"); print \$2}'")); ?>;
-    f.tr_user_name.value="<? echo trim(exec("grep rpc-username ".g_trcfg()." | awk -F\\\" '{gsub(/,/,\"\"); print \$4}'")); ?>";
+    f.tr_enabled.checked=<?php echo g_srvstat("transmission-daemon")? "true":"false" ?>;
+    f.tr_port.value=<?php echo trim(exec("grep rpc-port ".g_trcfg()." | awk -F: '{gsub(/,/,\"\"); print \$2}'")); ?>;
+    f.tr_user_name.value="<?php echo trim(exec("grep rpc-username ".g_trcfg()." | awk -F\\\" '{gsub(/,/,\"\"); print \$4}'")); ?>";
     
-    if (<? echo trim(exec("grep rpc-authentication-required ".g_trcfg()." | awk -F: '{gsub(/,/,\"\"); print \$2}'")); ?>)
+    if (<?php echo trim(exec("grep rpc-authentication-required ".g_trcfg()." | awk -F: '{gsub(/,/,\"\"); print \$2}'")); ?>)
     {
         f.tr_auth.checked=true;
         getObj("show_auth").style.display = "block";
@@ -149,7 +149,7 @@ function setAuth(obj)
 function setDlf()
 {
     var f=getObj("form");
-    var sf="<? echo trim(exec("grep download-dir ".g_trcfg()." | awk -F/ '{gsub(/\",/,\"\"); print \$(NF-1)}'")); ?>";
+    var sf="<?php echo trim(exec("grep download-dir ".g_trcfg()." | awk -F/ '{gsub(/\",/,\"\"); print \$(NF-1)}'")); ?>";
 
     var fld=f.tr_folder;
 
@@ -164,29 +164,29 @@ function setDlf()
         </script> 
     </head>
     <body onload="initPage();"><script>onbody();</script>
-    <form name="form" id="form" method="post" action="<? echo $_SERVER['SCRIPT_NAME']; ?>" onsubmit="return checkPage();">
+    <form name="form" id="form" method="post" action="<?php echo $_SERVER['SCRIPT_NAME']; ?>" onsubmit="return checkPage();">
         <input name="POST_ACTION"   value="0"   type="hidden">
-        <input name="f_tr_enabled"  value="<? echo g_srvstat("transmission-daemon")? "1":"0"; ?>"   type="hidden">
+        <input name="f_tr_enabled"  value="<?php echo g_srvstat("transmission-daemon")? "1":"0"; ?>"   type="hidden">
         <input name="f_tr_auth"     value="0"   type="hidden">
 
         <table id="topContainer">
             <tr>
-	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<? p_productHome(); ?>" target=_blank><? p_serverName(); ?></a></td>
-	            <td class="raCN">Version&nbsp;:&nbsp;<? p_firmware("-ro");?>&nbsp;</td>
+	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<?php p_productHome(); ?>" target=_blank><?php p_serverName(); ?></a></td>
+	            <td class="raCN">Version&nbsp;:&nbsp;<?php p_firmware("-ro");?>&nbsp;</td>
             </tr>
         </table>
         <table id="topTable">
             <tr>
-	            <td id="topBarLeft"><a id="logo" href="<? p_productHome(); ?>"></a></td>	            
+	            <td id="topBarLeft"><a id="logo" href="<?php p_productHome(); ?>"></a></td>	            
 	            <td id="topBarRight"></td>
             </tr>
         </table>
         <table id="topMenuTable">
             <tr>
 	            <td class="ledPanel">
-                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<? echo g_srvstat("shorewall")? "on":"off" ?>.png">
-                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<? echo g_srvstat("named")? "on":"off" ?>.png">
-                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<? echo g_srvstat("dhcpd")? "on":"off" ?>.png">
+                    <img class="led" alt="fwstat"   title="Firewall" src="/img/<?php echo g_srvstat("shorewall")? "on":"off" ?>.png">
+                    <img class="led" alt="dnsstat"  title="DNS"      src="/img/<?php echo g_srvstat("named")? "on":"off" ?>.png">
+                    <img class="led" alt="dhcpstat" title="DHCP"     src="/img/<?php echo g_srvstat("dhcpd")? "on":"off" ?>.png">
                 </td>
 	            <td class="topMenuLink"><a href="/network.php">Setup</a></td>
 	            <td class="topMenuThis"><a href="/advanced.php">Advanced</a></td>
@@ -209,11 +209,11 @@ function setDlf()
 	            <td id="contentHeading">
                     <div id="contentBox">
 		                <h1>Settings</h1>
-                        Here you can setup your <? p_mode(); ?> to act as a BitTorrent Server for for most computers on your LAN.
+                        Here you can setup your <?php p_mode(); ?> to act as a BitTorrent Server for for most computers on your LAN.
                         <br><br>
-                        <? if (g_srvstat("smbd")) {?><input value="Save Settings" type="submit">&nbsp;<?}?>
+                        <?php if (g_srvstat("smbd")) {?><input value="Save Settings" type="submit">&nbsp;<?php }?>
                         <input value="Don't Save Settings" onclick="cancelSettings()" type="button">&nbsp;&nbsp;&nbsp;&nbsp;
-                        <? echo g_srvstat("transmission-daemon")? '<b style="color:#090;">Transmission Service is active</b>':'<b style="color:#f00;">Transmission Service is disabled.</b>'; ?>
+                        <?php echo g_srvstat("transmission-daemon")? '<b style="color:#090;">Transmission Service is active</b>':'<b style="color:#f00;">Transmission Service is disabled.</b>'; ?>
 		            </div><div class="vbr"></div>
 
                     <div class="actionBox">
@@ -223,7 +223,7 @@ function setDlf()
                             <tr>
 				                <td class="raCN" style="width:30%"><b>Service enabled :</b></td>
 				                <td>&nbsp;
-                                    <input type="checkbox" id="tr_enabled" onchange="setEnable(this);" <? echo g_srvstat("smbd")? "":'disabled="disabled"'; ?>>
+                                    <input type="checkbox" id="tr_enabled" onchange="setEnable(this);" <?php echo g_srvstat("smbd")? "":'disabled="disabled"'; ?>>
                                 </td>
                             </tr>
                             <tr>
@@ -234,7 +234,7 @@ function setDlf()
 				                <td class="raCN"><b>Download folder :&nbsp;</b></td>
                                 <td>
                                     <select id="tr_folder" name="tr_folder">
-                                        <option value="none">none</option><? system('cifsshares | awk -F, \'{ printf "<option value=\"%s\">%s</option>", $3, $1}\''); ?>
+                                        <option value="none">none</option><?php system('cifsshares | awk -F, \'{ printf "<option value=\"%s\">%s</option>", $3, $1}\''); ?>
                                     </select>&nbsp;/transmision
                                     <script>setDlf();</script>
                                 </td>
@@ -267,7 +267,7 @@ function setDlf()
             </tr>
             <tr>
 	            <td colspan="3" id="footer">
-                    Copyright &copy; <? p_copyRight(); ?>
+                    Copyright &copy; <?php p_copyRight(); ?>
                 </td>                   
             </tr>
         </table>
