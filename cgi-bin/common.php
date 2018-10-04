@@ -243,7 +243,7 @@ function p_uptime()
 }
 function p_serverName()
 {
-    $var=exec("grep Hardware /proc/cpuinfo | cut -d: -f2");
+    $var=exec("egrep -i -m1 'hardware|model name' /proc/cpuinfo | cut -d: -f2");
     echo trim($var);
 }
 function  g_iftype($if)
@@ -271,8 +271,10 @@ function p_keyType($if)
 
 function p_lanStat($if)
 {
-   $res=exec("ifconfig ".$if."|egrep 'RX pa|TX pa'|awk '{print $1\"&nbsp;\"$2}'|sed ':a;N;$!ba;s/\\n/ /g'");
-   echo trim($res);
+   $rx=(exec("cat /sys/class/net/$if/statistics/rx_bytes | numfmt --to=iec --format='%.2fB'"));
+   $tx=(exec("cat /sys/class/net/$if/statistics/tx_bytes | numfmt --to=iec --format='%.2fB'"));
+   $res="RX bytes $rx TX bytes $tx";
+   echo $res;
 }
 
 function p_signalQuality()
@@ -325,7 +327,8 @@ function g_ifip($if)
 
 function g_mac($if)
 {
-    return trim(exec("ifconfig $if | grep HWaddr | awk '{print $5}'"));
+    return trim(exec("cat /sys/class/net/$if/address"));
+
 }
 function p_mac($if)
 {    
@@ -334,7 +337,7 @@ function p_mac($if)
 
 function g_ip($if)
 {
-    $val=trim(exec("ifconfig $if | grep 'inet addr' | awk '{print $2}' | cut -d: -f2"));
+    $val=trim(exec("ip -4 addr show $if | grep -oP '(?<=inet\s)\d+(\.\d+){3}'"));
     if ($val == "") $val="0.0.0.0";
     return $val;
 }
@@ -345,7 +348,7 @@ function p_ip($if)
 
 function g_mask($if)
 {
-    $val=exec("ifconfig $if | grep Mask | awk '{print $4}' | cut -d: -f2");
+    $val=exec("ifconfig $if | grep -i mask | awk '{print $4}' | cut -d: -f2");
     return trim($val);
 }
 function p_mask($if)
