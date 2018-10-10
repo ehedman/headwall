@@ -1261,8 +1261,8 @@ cat <<End-of-message>${file}
 ?FORMAT 2
 ###############################################################################
 #ZONE   INTERFACE       OPTIONS
-net	NET_IF 		dhcp,tcpflags,nosmurfs,routefilter,logmartians,sourceroute=0,physical=${wan}
-loc	LOC_IF		tcpflags,nosmurfs,routefilter,logmartians,physical=${lan}
+net	NET_IF 		dhcp,tcpflags,nosmurfs,routefilter,logmartians=0,sourceroute=0,physical=${wan}
+loc	LOC_IF		dhcp,tcpflags,nosmurfs,routefilter,logmartians=0,physical=${lan}
 ${vpnif}
 End-of-message
 

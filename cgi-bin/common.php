@@ -528,6 +528,8 @@ function p_leasetime()
 }
 function g_domain()
 {
+    $var = "";
+
     if (g_srvstat("dhcpd") && g_srvstat("named"))
         $var = trim(exec("grep -m1 \"domain-name \" /etc/dhcp/dhcpd.conf | awk -F".'\"'." '{print $2}'"));
     else if (g_srvstat("named"))

@@ -38,7 +38,7 @@
     $rej=$rej==0? 1:0;
     $drp=$drp==0? 1:0;   
 
-    @exec('tail -n 300 /var/log/firewall | sed s/"Shorewall:*:"/" "/g | awk '."'".'{printf "%s,[%s] %s %s %s\n",$3,$5,$9,$17,$18}'."' >/tmp/fwlog"); 
+    @exec('tail -n 300 /var/log/firewall.log | sed s/"Shorewall:*:"/" "/g | awk '."'".'{printf "%s,[%s] %s %s %s\n",$3,$5,$9,$17,$18}'."' >/tmp/fwlog"); 
    
     $totlines=@exec("wc -l /tmp/fwlog | awk '{print $1}'");
 
