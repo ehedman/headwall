@@ -243,7 +243,7 @@ function p_uptime()
 }
 function p_serverName()
 {
-    $var=exec("egrep -i -m1 'hardware|model name' /proc/cpuinfo | cut -d: -f2");
+    $var=exec("grep Hardware /proc/cpuinfo | cut -d: -f2");
     echo trim($var);
 }
 function  g_iftype($if)
@@ -319,7 +319,8 @@ function p_denycount()
 }
 function g_ifip($if)
 {
-    $val=exec("ifconfig $if | grep 'inet addr' | awk '{print $2}' | cut -d: -f2");
+    $val=exec("ip addr show wlan0 | grep -v secondary | awk -F/ '/inet /{ print $1 }' | awk '{ print $NF }'");
+
     if (strlen(trim($val)))
         return true;
     return false;
@@ -328,7 +329,6 @@ function g_ifip($if)
 function g_mac($if)
 {
     return trim(exec("cat /sys/class/net/$if/address"));
-
 }
 function p_mac($if)
 {    
@@ -337,7 +337,7 @@ function p_mac($if)
 
 function g_ip($if)
 {
-    $val=trim(exec("ip -4 addr show $if | grep -oP '(?<=inet\s)\d+(\.\d+){3}'"));
+    $val=trim(exec("ip addr show $if | grep -v secondary | awk -F/ '/inet /{ print \$1 }' | awk '{ print \$NF }'"));
     if ($val == "") $val="0.0.0.0";
     return $val;
 }
@@ -348,7 +348,8 @@ function p_ip($if)
 
 function g_mask($if)
 {
-    $val=exec("ifconfig $if | grep -i mask | awk '{print $4}' | cut -d: -f2");
+    $val=trim(exec("ip addr show eth0 | grep -v secondary | awk -F' ' '/inet /{ print $4 }'"));
+
     return trim($val);
 }
 function p_mask($if)
@@ -528,8 +529,6 @@ function p_leasetime()
 }
 function g_domain()
 {
-    $var = "";
-
     if (g_srvstat("dhcpd") && g_srvstat("named"))
         $var = trim(exec("grep -m1 \"domain-name \" /etc/dhcp/dhcpd.conf | awk -F".'\"'." '{print $2}'"));
     else if (g_srvstat("named"))

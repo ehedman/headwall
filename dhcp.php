@@ -708,7 +708,7 @@ function initPage()
                                     <tr>
                                         <td><?php p_mac(g_lan()) ?></td>
                                         <td><?php p_ip(g_lan()) ?></td>
-                                        <td><?php p_nodeName(); if (g_spfhere()&&g_srvstat("named")) {echo ": with URL filter "; echo g_ip(g_lan1());} ?></td>
+                                        <td><?php p_nodeName(); if (g_spfhere()&&g_srvstat("named")) {echo ": with URL filter "; p_spfredir();} ?></td>
                                         <td style="text-align:center">this <?php p_mode(); ?></td>
                                     </tr>
 

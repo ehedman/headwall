@@ -21,7 +21,7 @@
     }
     $ppgw=$pubip=NULL;
     if ($vpnifs=trim(@exec("/sbin/ifconfig | grep ppp | wc -l")) >0)
-        $ppgw=trim(@exec("/sbin/ifconfig ppp0 | head -2 | awk -F: 'NF>2{print \$2}' | awk -F' ' '{print \$1}'"));
+        $ppgw=trim(@exec("ip addr show ppp0 | grep -v secondary | awk  '/inet /{ print $2 }'"));
 
     if (g_srvstat("ddclient"))
         $pubip=trim(@exec("cat /var/cache/ddclient/ddclient.cache | awk -Fip= '{print \$2}' | awk -F, '{print \$1}'"));
