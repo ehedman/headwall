@@ -203,7 +203,7 @@ function initPage()
 			            <table>
                             <tr>
 			                    <td class="raCB" style="width:40%">To Host IP Address&nbsp;:</td>
-                                <td class="laCB">&nbsp;<?php p_ip(g_lan1()); if(g_spfhere()) {echo " on this "; p_mode();} ?></td>
+                                <td class="laCB">&nbsp;<?php  p_spfredir(); if(g_spfhere()) {echo " on this "; p_mode();} ?></td>
 			                </tr>
                             <?php if(g_spfhere()) { ?><tr>
 				                <td class="raCB">URLs rejected&nbsp;:</td>
