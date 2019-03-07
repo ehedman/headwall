@@ -21,7 +21,7 @@ doMkKey()
 
     cd /tmp
     /usr/sbin/dnssec-keygen -a HMAC-MD5 -b 128 -r /dev/urandom -n USER DDNS_UPDATE  >/dev/null 2>&1
-    key=`grep Key: Kddns_update*.private | cut -d: -f2 | sed s/" "//`
+    key=$(grep Key: Kddns_update*.private | cut -d: -f2 | sed s/" "//)
 
 cat <<End-of-message>/etc/dhcp/ddns.key
 key DDNS_UPDATE {
@@ -45,7 +45,7 @@ End-of-message
 do_nlist()
 {
     if=$3
-    nw=`ifconfig ${if} | grep "inet addr" | cut -d: -f2 | cut -d. -f1-3`
+    nw=$(ip addr show ${if} | grep -v secondary | awk -F/ '/inet /{ print $1 }' | awk '{ print $NF }' | cut -d. -f1-3)
     if [ -z ${nw} ]; then
         echo "" > /tmp/hostopts
         return
@@ -58,7 +58,7 @@ do_hlist()
 {
     dm=$2
     if [ -z "$dm" ]; then
-        dm=`grep search /etc/resolv.conf | awk '{print $2}'`
+        dm=$(grep search /etc/resolv.conf | awk '{print $2}')
         if [ -z "$dm" ]; then return; fi
     fi
     host -W 2 -l $dm 127.0.0.1 | awk 'NR>6{gsub(".'${dm}'", "");printf "<option value=%s%s%s>%s</option>","\"",$4,"\"",$1}' >/tmp/hostopts &
@@ -79,7 +79,7 @@ do_hostopts()
 do_wifilist()
 {
     if [ -f /proc/net/wireless ]; then
-        ifs=`cat /proc/net/wireless | awk -F: 'NR>2{printf "%s", $1}'`
+        ifs=$(cat /proc/net/wireless | awk -F: 'NR>2{printf "%s", $1}')
         echo -n "["
         for if in $ifs; do
             echo -n '"'$if'", '
@@ -92,7 +92,7 @@ do_wifilist()
 
 do_ifopts()
 {
-    devs=`grep : /proc/net/dev | cut -d: -f1 | grep -v lo | awk '{printf "%s ", $NF}'`
+    devs=$(grep : /proc/net/dev | cut -d: -f1 | grep -v lo | awk '{printf "%s ", $NF}')
 
     for dev in $devs
     do
@@ -160,13 +160,13 @@ End-of-message
         if [ $? -eq 0 ]; then               
             grep -q 'redir_here=y' /etc/bind/null.zone.file
             if [ $? -eq 0 ]; then
-                rd=`grep '*' /etc/bind/null.zone.file | awk '{print $4}'`
+                rd=$(grep '*' /etc/bind/null.zone.file | awk '{print $4}')
                 /sbin/ifconfig ${lan1_if} ${rd} up
             fi
             /usr/sbin/service bind9 stop
         fi
 
-        dhif=`grep interface /etc/dhcp/dhcpd.conf | awk -F\" '{printf "%s", $2}'`
+        dhif=$(grep interface /etc/dhcp/dhcpd.conf | awk -F\" '{printf "%s", $2}')
         if [ -n "${dhif}" ]; then
             sed /${dhif}/s//${lan}/g /etc/dhcp/dhcpd.conf > /tmp/dhif
             if [ -f /tmp/dhif ]; then
@@ -178,8 +178,8 @@ End-of-message
             fi
         fi
 
-        newlan=`tail -n 4 /etc/network/interfaces`
-        oldlan=`tail -n 4 /etc/network/interfaces.old`
+        newlan=$(tail -n 4 /etc/network/interfaces)
+        oldlan=$(tail -n 4 /etc/network/interfaces.old)
 
         if [ "${oldlan}" != "${newlan}" ]; then
             /usr/sbin/service bind9 stop
@@ -193,7 +193,7 @@ End-of-message
             /usr/sbin/service hostapd stop
             grep -q ${lan} /proc/net/wireless
             if [ $? -eq 0 ]; then
-                haif=`grep -m1 interface /etc/hostapd/hostapd.conf | awk -F= '{printf "%s", $2}'`
+                haif=$(grep -m1 interface /etc/hostapd/hostapd.conf | awk -F= '{printf "%s", $2}')
                 if [ -n "${haif}" ]; then
                     sed /${haif}/s//${lan}/g /etc/hostapd/hostapd.conf > /tmp/haif
                     if [ -f /tmp/haif ]; then
@@ -208,7 +208,7 @@ End-of-message
     do_firewall_masqif na ${wan} ${lan} ${srvif} ${srvip}
 
     if [ -f /etc/shorewall/tcinterfaces ]; then
-        data=`grep mbit /etc/shorewall/tcinterfaces | awk '{printf "%s %s\n", $3,$4}' | sed /mbit/s///g`
+        data=$(grep mbit /etc/shorewall/tcinterfaces | awk '{printf "%s %s\n", $3,$4}' | sed /mbit/s///g)
         do_firewall_ts na 1  ${data} ${wan}
     fi
 
@@ -276,13 +276,13 @@ End-of-message
         if [ $? -eq 0 ]; then               
             grep -q 'redir_here=y' /etc/bind/null.zone.file
             if [ $? -eq 0 ]; then
-                rd=`grep '*' /etc/bind/null.zone.file | awk '{print $4}'`
+                rd=$(grep '*' /etc/bind/null.zone.file | awk '{print $4}')
                 /sbin/ifconfig ${lan1_if} ${rd} up
             fi
             /usr/sbin/service bind9 stop
         fi
 
-        dhif=`grep interface /etc/dhcp/dhcpd.conf | awk -F\" '{printf "%s", $2}'`
+        dhif=$(grep interface /etc/dhcp/dhcpd.conf | awk -F\" '{printf "%s", $2}')
         if [ -n "${dhif}" ]; then
             sed /${dhif}/s//${lan}/g /etc/dhcp/dhcpd.conf > /tmp/dhif
             if [ -f /tmp/dhif ]; then
@@ -294,8 +294,8 @@ End-of-message
             fi
         fi
 
-        newlan=`tail -n 4 /etc/network/interfaces`
-        oldlan=`tail -n 4 /etc/network/interfaces.old`
+        newlan=$(tail -n 4 /etc/network/interfaces)
+        oldlan=$(tail -n 4 /etc/network/interfaces.old)
 
         if [ "${oldlan}" != "${newlan}" ]; then
             /usr/sbin/service bind9 stop
@@ -309,7 +309,7 @@ End-of-message
             /usr/sbin/service hostapd stop
             grep -q ${lan} /proc/net/wireless
             if [ $? -eq 0 ]; then
-                haif=`grep -m1 interface /etc/hostapd/hostapd.conf | awk -F= '{printf "%s", $2}'`
+                haif=$(grep -m1 interface /etc/hostapd/hostapd.conf | awk -F= '{printf "%s", $2}')
                 if [ -n "${haif}" ]; then
                     sed /${haif}/s//${lan}/g /etc/hostapd/hostapd.conf > /tmp/haif
                     if [ -f /tmp/haif ]; then
@@ -324,7 +324,7 @@ End-of-message
     do_firewall_masqif na ${wan} ${lan} ${srvif} ${srvip}
 
     if [ -f /etc/shorewall/tcinterfaces ]; then
-        data=`grep mbit /etc/shorewall/tcinterfaces | awk '{printf "%s %s\n", $3,$4}' | sed /mbit/s///g`
+        data=$(grep mbit /etc/shorewall/tcinterfaces | awk '{printf "%s %s\n", $3,$4}' | sed /mbit/s///g)
         do_firewall_ts na 1  ${data} ${wan}
     fi
 
@@ -388,12 +388,11 @@ End-of-message
 
 }
 
-udec=""                                                                          
-urldecode()                                                                     
+udec=""
+urldecode()
 {                                                                               
-                                                                                
-    local url_encoded="${1//+/ }"                                               
-    udec=`printf '%b' "${url_encoded//%/\x}"`                                    
+    local url_encoded="${1//+/ }"
+    udec=$(printf '%b' "${url_encoded//%/\x}")
 } 
 
 do_setwep()
@@ -461,8 +460,8 @@ do_dhcpd()
    
     if [ ${10} -eq 1 ]; then
         relay="# dns-relay true" 
-        resolv=`grep -m1 nameserver /etc/resolv.conf | awk '{printf "%s", $2}'`
-        r2=`grep nameserver /etc/resolv.conf | awk '{printf "%s ", $2}' | awk '{print $2}'`
+        resolv=$(grep -m1 nameserver /etc/resolv.conf | awk '{printf "%s", $2}')
+        r2=$(grep nameserver /etc/resolv.conf | awk '{printf "%s ", $2}' | awk '{print $2}')
         if [ -n ${r2} ]; then
             resolv="${resolv}, ${r2}"
         fi
@@ -474,9 +473,10 @@ do_dhcpd()
         fi
     fi  
 
-    sub=`ipcalc -b ${lan_ip} ${lan_mask} | grep Network: | awk '{print $2 }' | cut -d/ -f1`
-    broadc=`ipcalc ${sub}/${lan_mask} | grep Broadcast | awk '{print $2}'`
-    iprev=`echo ${sub} | sed s/"\."/" "/g | awk '{print $3"."$2"."$1}'`
+    sub=$(ipcalc -b ${lan_ip} ${lan_mask} | grep Network: | awk '{print $2 }' | cut -d/ -f1)
+    broadc=$(ipcalc ${sub}/${lan_mask} | grep Broadcast | awk '{print $2}')
+    iprev=$(echo ${sub} | sed s/"\."/" "/g | awk '{print $3"."$2"."$1}')
+
     rzone="${iprev}.in-addr.arpa"
     filedns="/tmp/dnsbatch-1.txt"
 
@@ -532,7 +532,7 @@ End-of-message
     do
     if [ ${cnt} -le 0 ]; then break; fi
 
-        rv=`echo ${3}|sed s/"\."/" "/g|awk '{printf "%s.%s.%s.%s.in-addr.arpa",$4,$3,$2,$1}'`
+        rv=$(echo ${3}|sed s/"\."/" "/g|awk '{printf "%s.%s.%s.%s.in-addr.arpa",$4,$3,$2,$1}')
         echo "zone ${domain}" >> ${filedns} 
         echo "update delete ${4}.${domain}" >> ${filedns}
         echo "send" >> ${filedns}
@@ -570,7 +570,7 @@ End-of-message
         let cnt=${cnt}-4
     done
 
-    cip=`grep -m1 -A1 "iface ${lan_if} inet static" /etc/network/interfaces | grep address | awk '{print $2}'`
+    cip=$(grep -m1 -A1 "iface ${lan_if} inet static" /etc/network/interfaces | grep address | awk '{print $2}')
     cat /etc/network/interfaces | sed /"${cip}"/s//"${lan_ip}"/ >/tmp/ifs
     
     if [ -s /tmp/ifs ]; then
@@ -581,8 +581,8 @@ End-of-message
 
     pidof named >/tmp/null
     if [ $? -eq 0 ]; then 
-        key=`cat /etc/dhcp/ddns.key  | grep key | awk '{print $2}'`
-        sec=`cat /etc/dhcp/ddns.key  | grep secret | awk -F\" '{print $2}'`
+        key=$(cat /etc/dhcp/ddns.key  | grep key | awk '{print $2}')
+        sec=$(cat /etc/dhcp/ddns.key  | grep secret | awk -F\" '{print $2}')
         /usr/bin/nsupdate -y "${key}:${sec}" ${filedns}
     fi
 
@@ -597,13 +597,13 @@ End-of-message
         if [ $? -eq 0 ]; then               
             grep -q 'redir_here=y' /etc/bind/null.zone.file
             if [ $? -eq 0 ]; then
-                rd=`grep '*' /etc/bind/null.zone.file | awk '{print $4}'`
+                rd=$(grep '*' /etc/bind/null.zone.file | awk '{print $4}')
                 /sbin/ifconfig ${lan1_if} ${rd} up
             fi
         fi
 
-        newlan=`tail -n 4 /etc/network/interfaces`
-        oldlan=`tail -n 4 /etc/network/interfaces.old`
+        newlan=$(tail -n 4 /etc/network/interfaces)
+        oldlan=$(tail -n 4 /etc/network/interfaces.old)
 
         if [ "${oldlan}" != "${newlan}" ]; then
             /usr/sbin/service bind9 stop
@@ -620,10 +620,10 @@ do_updatedhcp()
     secondary=${2}
     if [ -n  "${secondary}" ]; then
         npattern="${primary}, ${secondary};"
-        pattern=`grep 'option domain-name-servers' /etc/dhcp/dhcpd.conf | awk '{print $2" "$3" "$4}'`
+        pattern=$(grep 'option domain-name-servers' /etc/dhcp/dhcpd.conf | awk '{print $2" "$3" "$4}')
     else
         npattern="${primary},"
-        pattern=`grep 'option domain-name-servers' /etc/dhcp/dhcpd.conf | awk '{print $2" "$3}'`
+        pattern=$(grep 'option domain-name-servers' /etc/dhcp/dhcpd.conf | awk '{print $2" "$3}')
     fi
 
     pidof dhcpd > /dev/null
@@ -647,9 +647,9 @@ do_rangecheck()
     mask=${2}
     sip=${3}
     eip=${4}
-    netw=`ipcalc -b ${dip} ${mask} | grep Network: | awk '{print $2 }' | cut -d/ -f1`
-    sipn=`ipcalc -b ${sip} ${mask} | grep Network: | awk '{print $2 }' | cut -d/ -f1`
-    eipn=`ipcalc -b ${eip} ${mask} | grep Network: | awk '{print $2 }' | cut -d/ -f1`
+    netw=$(ipcalc -b ${dip} ${mask} | grep Network: | awk '{print $2 }' | cut -d/ -f1)
+    sipn=$(ipcalc -b ${sip} ${mask} | grep Network: | awk '{print $2 }' | cut -d/ -f1)
+    eipn=$(ipcalc -b ${eip} ${mask} | grep Network: | awk '{print $2 }' | cut -d/ -f1)
 
     if [ "${sipn}" = "${netw}" ] &&  [ "${eipn}" = "${netw}" ]; then
         echo "" > /tmp/netrange
@@ -676,8 +676,8 @@ do_dbhome()
     lan1_if=${14}
 
     
-    thishost=`hostname`
-    thisip=`ifconfig ${lan_if} | grep 'inet addr' | awk '{print $2}' | cut -d: -f2`
+    thishost=$(hostname)
+    thisip=$(ip addr show ${lan_if} | grep -v secondary | awk -F/ '/inet /{ print $1 }' | awk '{ print $NF }')
 
     file=/etc/bind/db.${domain}
 
@@ -729,10 +729,10 @@ do_dbrev()
 
     shift 8
 
-    thisip=`ifconfig ${lan_if} | grep 'inet addr' | awk '{print $2}' | cut -d: -f2`
-    iprev=`echo ${serving_net} | sed s/"\."/" "/g | awk '{print $3"."$2"."$1}'`
+    thisip=$(ip addr show ${lan_if} | grep -v secondary | awk -F/ '/inet /{ print $1 }' | awk '{ print $NF }')
+    iprev=$(echo ${serving_net} | sed s/"\."/" "/g | awk '{print $3"."$2"."$1}')
    
-    thishost=`hostname`
+    thishost=$(hostname)
 
     if [ ${bl_enable} = true ]; then
         blist='include "/etc/bind/blacklist";'
@@ -759,7 +759,7 @@ End-of-message
     do
     if [ ${cnt} -le 0 ]; then break; fi
         if [ ${1} -eq 1 ]; then
-            tail=`echo ${3} | cut -d. -f4`
+            tail=$(echo ${3} | cut -d. -f4)
             echo -e ${tail}'\t'"IN"'\t'"PTR"'\t'${2}.${domain}.>> ${file}
         fi
         shift 3
@@ -838,7 +838,7 @@ cat <<End-of-message>${file}
 *	IN		A		${redir_spf}
 End-of-message
 
-    serving_net_in=`echo ${serving_net} | cut -d. -f1-2 | sed s/"\."/" "/| awk '{print $2"."$1}'`
+    serving_net_in=$(echo ${serving_net} | cut -d. -f1-2 | sed s/"\."/" "/| awk '{print $2"."$1}')
 
 file=/etc/bind/zones.rfc1918
 cat <<End-of-message>${file}
@@ -890,12 +890,12 @@ do_updatedns()
 
     if [ ${4} -eq 1 ]; then spf_here="redir_here=y"; else spf_here="redir_here=n"; fi
     if [ ${6} -eq 1 ]; then bl_enable=true; else bl_enable=false; fi
-    thisip=`ifconfig ${lan_if} | grep 'inet addr' | awk '{print $2}' | cut -d: -f2`
-    thishost=`hostname`
+    thisip=$(ip addr show ${lan_if} | grep -v secondary | awk -F/ '/inet /{ print $1 }' | awk '{ print $NF }')
+    thishost=$(hostname)
     if [ ${bl_enable} = true ]; then
         blist='include "/etc/bind/blacklist";'
     fi
-    iprev=`echo ${serving_net} | sed s/"\."/" "/g | awk '{print $3"."$2"."$1}'`  
+    iprev=$(echo ${serving_net} | sed s/"\."/" "/g | awk '{print $3"."$2"."$1}')
 
     if [ ${bl_enable} = true ] && [ ${4} -eq 1 ]; then
         ifconfig ${lan1_if} ${redir_spf} up
@@ -982,7 +982,7 @@ do_dbrecords()
     file=/tmp/dnsbatch.txt
 
     domain=${10}
-    rzn=`echo ${9}|sed s/"\."/" "/g|awk '{printf "%s.%s.%s.in-addr.arpa",$3,$2,$1}'`
+    rzn=$(echo ${9}|sed s/"\."/" "/g|awk '{printf "%s.%s.%s.in-addr.arpa",$3,$2,$1}')
     shift 14
 
     cnt=$#
@@ -994,7 +994,7 @@ do_dbrecords()
     do
     if [ ${cnt} -le 0 ]; then break; fi
         if [ ${1} -gt 0 ]; then
-            rv=`echo ${3}|sed s/"\."/" "/g|awk '{printf "%s.%s.%s.%s.in-addr.arpa",$4,$3,$2,$1}'`
+            rv=$(echo ${3}|sed s/"\."/" "/g|awk '{printf "%s.%s.%s.%s.in-addr.arpa",$4,$3,$2,$1}')
             echo "zone ${domain}" >> ${file} 
             echo "update delete ${2}.${domain}" >> ${file}
             echo "send" >> ${file}
@@ -1013,8 +1013,8 @@ do_dbrecords()
         shift 3
         let cnt=${cnt}-3
     done
-    key=`cat /etc/dhcp/ddns.key  | grep key | awk '{print $2}'`
-    sec=`cat /etc/dhcp/ddns.key  | grep secret | awk -F\" '{print $2}'`
+    key=$(cat /etc/dhcp/ddns.key  | grep key | awk '{print $2}')
+    sec=$(cat /etc/dhcp/ddns.key  | grep secret | awk -F\" '{print $2}')
     /usr/bin/nsupdate -y "${key}:${sec}" ${file}
 }
  
@@ -1236,9 +1236,9 @@ do_firewall_masqif()
 
     wan=${2}
     lan=${3}
-    mask=`/sbin/ifconfig ${lan} | grep Mask: | awk -F: '{print $NF}'`
-    ip=`ifconfig ${lan}| grep "inet addr:"| cut -d: -f2 | awk '{print $1}'`
-    net=`ipcalc -b ${ip} ${mask} | grep Network: | awk '{print $2 }'`
+    mask=$(/sbin/ifconfig ${lan} | grep -i netmask | awk -F' ' '{print $4}')
+    ip=$(ip addr show eth0 | grep -v secondary | awk -F/ '/inet /{ print $1 }' | awk '{ print $NF }')
+    net=$(ipcalc -b ${ip} ${mask} | grep Network: | awk '{print $2 }')
 
     if [ -f /etc/shorewall/tunnels ]; then
        vpnif="loc	ppp+"
@@ -1247,7 +1247,7 @@ do_firewall_masqif()
     if [ "${4}" != "0" ]; then
         srvif=${4}
         srvip=${5}
-        srvnet=`ipcalc -b ${srvip} 255.255.255.0 | grep Network: | awk '{print $2 }'`
+        srvnet=$(ipcalc -b ${srvip} 255.255.255.0 | grep Network: | awk '{print $2 }')
     fi
 
     
@@ -1357,7 +1357,7 @@ do_firewall_fws()
 
     echo "# BRIDGE USER RULES" >> /tmp/rules
 
-    r=`ls ${base}/macro.* | cut -d. -f2`
+    r=$(ls ${base}/macro.* | cut -d. -f2)
 
     for ar in ${r}
     do
@@ -1381,10 +1381,10 @@ do_cifs_disk()
 
     case ${action} in
         3)
-            max=`parted ${1} unit s print free | grep 'Free Space' | tail -n 1 | awk -Fs '{print $2}'`
-            #start=`parted ${1} unit s print free | grep 'Free Space' | tail -n 1 | awk -Fs '{print $1}'`
+            max=$(parted ${1} unit s print free | grep 'Free Space' | tail -n 1 | awk -Fs '{print $2}')
+            #start=$(parted ${1} unit s print free | grep 'Free Space' | tail -n 1 | awk -Fs '{print $1}')
             start=2048
-            end=`echo "${max}*${2}" | bc | awk '{print int($1-0.5)}'`
+            end=$(echo "${max}*${2}" | bc | awk '{print int($1-0.5)}')
             
             parted -s -a optimal ${1} unit s mkpart primary ${3} ${start}s ${end}s
             $SHELL -c "nohup mkfs.${3} ${1}1 -U ${4} >/tmp/mkfs.${3}"
@@ -1397,9 +1397,9 @@ do_cifs_disk()
             grep -q /media/${ext}/${uuid} /proc/mounts
             if [ $? -eq 0 ]; then return; fi
             rm -rf /media/${ext}/*
-            osize=`wc -l /etc/fstab | awk '{ print $1 }'`
+            osize=$(wc -l /etc/fstab | awk '{ print $1 }')
             grep -v "${uuid}" /etc/fstab > /tmp/fstab
-            let nsize=`wc -l /tmp/fstab | awk '{ print $1 }'`+1
+            let nsize=$(wc -l /tmp/fstab | awk '{ print $1 }')+1
             if [ ${osize} -eq ${nsize} ]; then
                 cp /tmp/fstab /etc/fstab
             fi
@@ -1408,7 +1408,7 @@ do_cifs_disk()
     esac
 
 
-    curdisk=`ls /media/${ext}`
+    curdisk=$(ls /media/${ext})
     if [ -n "${curdisk}" ]; then
         grep -q ${curdisk} /etc/fstab
         if [ $? -ne 0 ]; then
@@ -1431,14 +1431,14 @@ do_cifs_disk()
             if [ $? -eq 0 ]; then return; fi
             rm -rf /media/${ext}/*
         fi
-        osize=`wc -l /etc/fstab | awk '{ print $1 }'`
+        osize=$(wc -l /etc/fstab | awk '{ print $1 }')
         if [ -n "${curdisk}" ]; then
             grep -v "${curdisk}" /etc/fstab > /tmp/fstab
         else
             cp /etc/fstab /tmp/fstab
         fi
         echo "UUID=${uuid} /media/${ext}/${uuid}  ${fstype}  defaults,noatime  0  0" >> /tmp/fstab
-        nsize=`wc -l /tmp/fstab | awk '{ print $1 }'`
+        nsize=$(wc -l /tmp/fstab | awk '{ print $1 }')
 
         if [ -n  "${curdisk}" ]; then
             if [ ${osize} -ne ${nsize} ]; then return; fi

@@ -1,9 +1,9 @@
 #!/bin/bash
 
-all=`fdisk -l 2>/dev/null | grep "Disk /dev/" |  egrep -v 'ram|mmc' |  awk -F: '{print $1}' | awk -F' ' '{printf "%s ", $2}'`
+all=$(fdisk -l 2>/dev/null | grep "Disk /dev/" |  egrep -v 'ram|mmc' |  awk -F: '{print $1}' | awk -F' ' '{printf "%s ", $2}')
 muuid=${1}
 
-pidof `basename /tmp/mkfs.*` > /dev/null
+pidof $(basename /tmp/mkfs.*) > /dev/null
 if [ $? -eq 0 ]; then
     echo "3|N/A|0|none|0|0%"
     exit
@@ -17,10 +17,10 @@ do
             grep -q ${muuid} /proc/mounts
             if [ $? -eq 0 ]; then
                 type="4"
-                dev=`grep ${1} /proc/mounts | awk '{printf "%s", $1}'`
-                fs=`grep ${1} /proc/mounts | awk '{printf "%s", $3}'`
-                sz=`df -h ${dev} | awk 'NR==2{print $2}'`
-                usage=`df -h ${dev} | awk 'NR==2{print $5}'`
+                dev=$(grep ${1} /proc/mounts | awk '{printf "%s", $1}')
+                fs=$(grep ${1} /proc/mounts | awk '{printf "%s", $3}')
+                sz=$(df -h ${dev} | awk 'NR==2{print $2}')
+                usage=$(df -h ${dev} | awk 'NR==2{print $5}')
                 echo "${type}|${dev}|${sz}|${fs}|${1}|${usage}"
                 unset muuid
             fi
@@ -29,18 +29,18 @@ do
     fi
 
     echo -ne "p\nq\n" | parted ${d} > /tmp/partlist
-    part=`echo ${d} | sed /'\/dev\/'/s///`
+    part=$(echo ${d} | sed /'\/dev\/'/s///)
     grep -q ${part}1 /proc/partitions
     if [ $? -eq 0 ]; then
-        let max=`grep ${part} /proc/partitions | wc -l`
+        let max=$(grep ${part} /proc/partitions | wc -l)
         
         let cnt=1
         while true
         do
             if [ ${cnt} -ge ${max} ]; then break; fi
-                uuid=`blkid ${d}${cnt} | awk -F'UUID=' '{print $2}' | awk -F'"' '{print $2}'`
-                if [ -z "${uuid}" ]; then uuid=`uuid`; fi
-                fs=`blkid ${d}${cnt} | awk -F' TYPE=' '{print $2}' | awk -F'"' '{print $2}'`
+                uuid=$(blkid ${d}${cnt} | awk -F'UUID=' '{print $2}' | awk -F'"' '{print $2}')
+                if [ -z "${uuid}" ]; then uuid=$(uuid); fi
+                fs=$(blkid ${d}${cnt} | awk -F' TYPE=' '{print $2}' | awk -F'"' '{print $2}')
                 
                 if [ -z "${fs}" ]; then
                     fs="none"
@@ -54,7 +54,7 @@ do
                 mkdir -p /tmp/${tdir}
                 mount -o ro ${d}${cnt} /tmp/${tdir} 2> /dev/null
                 if [ $? -eq 0 ]; then
-                    usage=`df -h ${d}${cnt} | awk 'NR==2{print $5}'`
+                    usage=$(df -h ${d}${cnt} | awk 'NR==2{print $5}')
                     umount /tmp/${tdir} 2> /dev/null
                 else
                     usage="-"
@@ -67,8 +67,8 @@ do
         done
     else
         type="3"
-        size=`grep "Disk ${d}:" /tmp/partlist | awk -F: '{printf "%s", $2}'`
-        uuid=`uuid`
+        size=$(grep "Disk ${d}:" /tmp/partlist | awk -F: '{printf "%s", $2}')
+        uuid=$(uuid)
         echo "${type}|${d}|${size}|none|${uuid}|0%"
     fi
 done

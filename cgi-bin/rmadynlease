@@ -11,14 +11,14 @@ if [ -z "${2}" ]; then exit 0; fi
 tmpf=${dest}
 tmpf1=/tmp/onedhlist
 
-net=`ifconfig ${2} | grep "inet addr:" | cut -d: -f2 | cut -d. -f1`
-end=`grep -n "}" $tmpf |cut -d: -f1| awk '{printf "%s ", $NF}'| awk '{print $NF}'`
+net=$(ip addr show ${2} | grep -v secondary | awk -F/ '/inet /{ print $1 }' | awk '{ print $NF }' | cut -d: -f2 | cut -d. -f1)
+end=$(grep -n "}" $tmpf |cut -d: -f1| awk '{printf "%s ", $NF}'| awk '{print $NF}')
 let end=$end+1
-str=`grep -n "lease ${net}" $tmpf | cut -d: -f1 | awk '{printf "%s ", $NF}'`
-lines=(`echo -n "${str}${end}"`)
+str=$(grep -n "lease ${net}" $tmpf | cut -d: -f1 | awk '{printf "%s ", $NF}')
+lines=($(echo -n "${str}${end}"))
 
-str1=`grep "lease ${net}" $tmpf | cut -d{ -f1 |  awk '{printf "%s ", $NF}'`
-ipa=(`echo -n "${str1}"`)
+str1=$(grep "lease ${net}" $tmpf | cut -d{ -f1 |  awk '{printf "%s ", $NF}')
+ipa=($(echo -n "${str1}"))
 
 let cell=1                                                                      
 let nlines="${lines[$cell]}"                                                    

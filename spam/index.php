@@ -18,13 +18,13 @@
     * Apache must have option: ErrorDocument 404 /index.php # where index.php is this file
     * Lighthttpd must have option: server.error-handler-404 = "/index.php" # where index.php is this file
     */
-	//error_reporting(E_ALL ^ E_NOTICE);
-	error_reporting(0);
-	if (1) {
-	    // Go to the end destination without trackers, doubleclick etc.
-	    // This is mainly to handle ads from google search clicks.
-	        
-	    // Click sites to skip. Add as you hit them.
+    //error_reporting(E_ALL ^ E_NOTICE);
+    error_reporting(0);
+    if (0) {
+        // Go to the end destination without trackers, doubleclick etc.
+        // This is mainly to handle ads from google search clicks.
+            
+        // Click sites to skip. Add as you hit them.
         $jump = array(
             "googleadservices"  => array(   "/url\[\]=http:\/\//",
                                             "/lp=http:\/\//",
@@ -42,8 +42,8 @@
         $log = TRUE;
         $DBG = FALSE;
 
-	    $ahost = preg_split("/\./", $_SERVER[HTTP_HOST], -1, PREG_SPLIT_NO_EMPTY);
-	    $dhost = $ahost[count($ahost)-2];
+        $ahost = preg_split("/\./", $_SERVER[HTTP_HOST], -1, PREG_SPLIT_NO_EMPTY);
+        $dhost = $ahost[count($ahost)-2];
         $str=urldecode(rawurldecode($_SERVER[REQUEST_URI]));
         if ($log) {$fpl = @fopen("/tmp/rejected_log", 'a+');}
         $found = FALSE;
@@ -62,7 +62,7 @@
             }
             if ($found) break;
         }
-	}
+    }
 /*
     if (strstr($_SERVER[HTTP_HOST], 'netflix.com') !=null) {
         $ip=gethostbyname($_SERVER[HTTP_HOST]);
@@ -85,12 +85,12 @@
             $count = $count + 1;
             $date  = fread($fp,10);
             rewind($fp);
-		    fwrite($fp, $count . "\n");
-		    fwrite($fp, $date);
+            fwrite($fp, $count . "\n");
+            fwrite($fp, $date);
         }
-	    flock($fp, LOCK_UN);
-	    fclose($fp);
-	    if ($count >= $max_count) unlink($fc); // reset the counter
+        flock($fp, LOCK_UN);
+        fclose($fp);
+        if ($count >= $max_count) unlink($fc); // reset the counter
     } else {
         if ($fp == FALSE) {
             // create it
@@ -106,7 +106,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-	    <title>Forbidden Web Access</title>
+        <title>Forbidden Web Access</title>
     </head>
     <body>
         <img alt="STOP" src="http://<?php echo $_SERVER['SERVER_ADDR']?>/spam/stop.png">

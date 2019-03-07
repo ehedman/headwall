@@ -270,12 +270,14 @@ function check_blu()
 
 function check_ggj()
 {
+/* works no more :-(
     var f=getObj("form");
 
     if (f.do_ggj.checked == false)
         f.f_gg_jumps.value = 0;
     else
         f.f_gg_jumps.value = 1;
+*/
 }
 
 function check_spfhere()
@@ -528,7 +530,7 @@ function check_res()
                         <div id="show_bl_options">
                         <table>
                             <tr><td class="raCB" style="width: 40%">Enable blacklist monthly updates :</td><td><input id="do_blu" onclick="check_blu();" type="checkbox"></td></tr>
-                            <tr><td class="raCB">Enable Google tracking jump through : </td><td><input id="do_ggj" onclick="check_ggj();" type="checkbox"></td></tr>
+                            <!-- <tr><td class="raCB">Enable Google tracking jump through : </td><td><input id="do_ggj" onclick="check_ggj();" type="checkbox"></td></tr> -->
                         </table>
                         </div>
                     </div>
@@ -644,9 +646,9 @@ function check_res()
                         With the option "Enable blacklist monthly updates", the blacklist is regulary and
                         automatically updated from the internet from:<br>
                         <a style="color:#FFFFFF" href="http://pgl.yoyo.org/adservers/" target="_blank"><b>pgl.yoyo.org</b></a>
-                        <br><br>The option "Enable Google tracking jump through" will attempt to bypass the
-                        hidden trackers that the google search site imposes on sponsored links.<br><br>
-                        Monthly  updates and "tracking jump through" are meaningsfull only when this <?php p_mode(); ?> is
+                        <!-- <br><br>The option "Enable Google tracking jump through" will attempt to bypass the
+                        hidden trackers that the google search site imposes on sponsored links. --><br><br>
+                        Monthly  updates <!-- and "tracking jump through"-->are meaningsfull only when this <?php p_mode(); ?> is
                         the handler of blacklisted sites i.e, the  "On this <?php p_mode(); ?>" feature must be checked.
                     </div>
                     <?php if (g_srvstat("dhcpd")) { ?><br><br>Local Domain Hosts marked as

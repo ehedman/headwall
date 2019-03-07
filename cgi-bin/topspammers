@@ -7,7 +7,7 @@ else
 fi
 
 while read d; do
-    cnt=`grep -c ${d} /tmp/rejected_log`
+    cnt=$(grep -c ${d} /tmp/rejected_log)
     if [ ${cnt} -le 11 ]; then continue; fi
     echo "${cnt},${d}"
 done  < /tmp/rejected.tmp | sort -t, -k1 -n -r

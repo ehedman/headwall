@@ -109,6 +109,7 @@ function g_srvlan()
     $a=explode(':', SRVLAN);
     return $a[0];
 }
+
 function g_srvip()
 {
     return SRVIP;
@@ -348,7 +349,7 @@ function p_ip($if)
 
 function g_mask($if)
 {
-    $val=trim(exec("ip addr show eth0 | grep -v secondary | awk -F' ' '/inet /{ print $4 }'"));
+    $val=trim(exec("/sbin/ifconfig $if | grep -i netmask | awk -F' ' '{print $4}'"));
 
     return trim($val);
 }

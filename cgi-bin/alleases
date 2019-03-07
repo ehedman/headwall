@@ -13,8 +13,8 @@ pidof -s dhcpd  > /dev/null
 if [ $? -gt 0 ]; then dh=false; else dh=true; fi
 
 while read d; do
-    host=`echo $d | cut -d, -f1`
-    if [ "${host}" = "`uname -n`" ]; then continue; fi
+    host=$(echo $d | cut -d, -f1)
+    if [ "${host}" = "$(uname -n)" ]; then continue; fi
     if [ $dh = true ]; then
         grep -q -m1 "host ${host}.${dm}" /etc/dhcp/dhcpd.conf
         if [ $? -ne 0 ]; then

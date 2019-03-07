@@ -2,11 +2,12 @@
 # format # 0C:96:BF:B7:72:9B,bukefalos,Infrastructure,3,TKIP,WPA2-PSK,68%
 tmpf=/tmp/allwlist
 tmpf1=/tmp/onewlist
-/sbin/iwlist $1 scan > $tmpf
+/sbin/iwlist 2>/dev/null $1 scan > $tmpf
+if [ $? -ne 0 ]; then exit 0; fi
 
-end=`wc -l $tmpf | awk '{print $1}'`
-str=`grep -n Cell $tmpf | cut -d: -f1 | awk '{printf "%s ", $NF}'`
-lines=(`echo -n "${str} ${end}"`)
+end=$(wc -l $tmpf | awk '{print $1}')
+str=$(grep -n Cell $tmpf | cut -d: -f1 | awk '{printf "%s ", $NF}')
+lines=($(echo -n "${str} ${end}"))
 
 let cell=1
 let nlines="${lines[$cell]}"
@@ -37,7 +38,7 @@ function doCell()
 for cells in $str
 do
 
-    celln=`echo ${cell} | awk '{printf "Cell %02d", $NF}'`
+    celln=$(echo ${cell} | awk '{printf "Cell %02d", $NF}')
     grep -A ${nlines} "${celln}" $tmpf > $tmpf1
     if [ -s $tmpf1 ]; then
         doCell
