@@ -14,8 +14,10 @@ tmpf3=/tmp/slist
 
 if [ -z "${2}" ]; then echo "two argument is required"; exit 1; fi
 
+declare -A line
+
 dm=${2}
-net=$(ip addr show ${1} | grep -v secondary | awk -F/ '/inet /{ print $1 }' | awk '{ print $NF }' | cut -d: -f2 | cut -d. -f1)
+net=$(ip addr show ${1} | grep -v secondary | awk -F/ '/inet /{ print $1 }' | awk '{ print $NF }' | cut -d. -f1)
 end=$(grep -n "}" $tmpf |cut -d: -f1| awk '{printf "%s ", $NF}'| awk '{print $NF}')
 let end=$end+1
 str=$(grep -n "lease ${net}" $tmpf | cut -d: -f1 | awk '{printf "%s ", $NF}')
@@ -24,9 +26,9 @@ lines=($(echo -n "${str}${end}"))
 str1=$(grep "lease ${net}" $tmpf | cut -d{ -f1 |  awk '{printf "%s ", $NF}')
 ipa=($(echo -n "${str1}"))
 
-let cell=1                                                                      
-let nlines="${lines[$cell]}"                                                    
-let nlines=$nlines-${lines[0]}
+let cell=1
+let nlines=lines[$cell]
+let nlines=$nlines-lines[0]
 let nlines=$nlines-1
 
 function doItem()
