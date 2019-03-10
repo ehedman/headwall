@@ -1,5 +1,4 @@
 <?php
-
     /*******************************************************************************
     *  Title: PHP *click bypasser
     *  Version: 1.0 @ October 19, 2013
@@ -20,7 +19,7 @@
     */
     //error_reporting(E_ALL ^ E_NOTICE);
     error_reporting(0);
-    $STOPPNG = "http://".$_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF'])."/stop.png";
+    $STOPPNG = "http://".$_SERVER['HTTP_HOST']."/spam/stop.png";
     if (1) {
         // Go to the end destination without trackers, doubleclick etc.
         // This is mainly to handle ads from google search clicks.
