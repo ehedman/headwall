@@ -20,6 +20,7 @@
     */
     //error_reporting(E_ALL ^ E_NOTICE);
     error_reporting(0);
+    $STOPPNG = "http://".$_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF'])."/stop.png";
     if (1) {
         // Go to the end destination without trackers, doubleclick etc.
         // This is mainly to handle ads from google search clicks.
@@ -103,7 +104,7 @@
         <title>Forbidden Web Access</title>
     </head>
     <body>
-        <img alt="STOP" src="http://<?php echo $_SERVER['SERVER_ADDR']?>/spam/stop.png">
+        <img alt="STOP" src="<?php echo $STOPPNG; ?>">
         <p>Access to this Web site is not allowed from this computer.</p>
         <p>The site <b><?php echo $_SERVER[HTTP_HOST] ?></b> is included in the DNS Blacklist Site List.</p>
         <p>This server has detected <?php echo $count; ?> attempts to access blacklisted sites since <?php echo $date ?></p>
