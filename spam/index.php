@@ -20,12 +20,13 @@
     */
     //error_reporting(E_ALL ^ E_NOTICE);
     error_reporting(0);
-    if (0) {
+    if (1) {
         // Go to the end destination without trackers, doubleclick etc.
         // This is mainly to handle ads from google search clicks.
             
         // Click sites to skip. Add as you hit them.
         $jump = array(
+/*
             "googleadservices"  => array(   "/url\[\]=http:\/\//",
                                             "/lp=http:\/\//",
                                             "/dst=/",
@@ -37,7 +38,8 @@
             "webgains"      => array("/http:\/\//"),
             "tradedoubler"  => array("/http:\/\//", "/url=/"),
             "marinsm"       => array("/lp=http:\/\//"),
-            "intelliad"     => array("/https:\/\//"),          
+            "intelliad"     => array("/https:\/\//"), 
+*/
         );
         $log = TRUE;
         $DBG = FALSE;
@@ -63,15 +65,7 @@
             if ($found) break;
         }
     }
-/*
-    if (strstr($_SERVER[HTTP_HOST], 'netflix.com') !=null) {
-        $ip=gethostbyname($_SERVER[HTTP_HOST]);
-        if ($_SERVER["REQUEST_URI"] == "/login.php") $uri=""; else $uri=$_SERVER["REQUEST_URI"];
-        if ($log && $DBG) fwrite($fpl, "host $_SERVER[HTTP_HOST] allowed through to http://".$ip.$uri."\n");
-        header ("Location: http://".$ip.$uri);
-        die();
-    }
-*/
+
     if ($log) {fwrite($fpl, $_SERVER[HTTP_HOST]."\n"); fclose($fpl);}
 
     // Still here? - bring up the stop sign!

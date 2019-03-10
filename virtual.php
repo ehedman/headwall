@@ -329,6 +329,7 @@ function onsrv(n)
                                     <option value="4040/4040/TCP">Subsonic</option>
                                     <option value="9091/9091/TCP">Transmission</option>
                                     <option value="5900/5900/TCP">VNC</option>
+                                    <option value="554/554/TCP">RTP</option>
                                 </select>
                             </td>
                             <td style="text-align:center;vertical-align:bottom">Public Port<br>
