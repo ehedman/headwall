@@ -11,6 +11,17 @@
      * 2 of the License, or (at your option) any later version.
      */
 
+    $rval = 1;
+    system("arp -n | grep -q ". $_SERVER['REMOTE_ADDR'], $rval);
+    if ( $rval != 0) {
+        system("ip addr show | grep -q -E '".$_SERVER['REMOTE_ADDR'].".*ppp'", $rval);
+        if ( $rval != 0 ) {
+            header("HTTP/1.0 404 Not Found");
+            echo "<h1>404 Not Found</h1>";
+            die();
+        }
+    }
+
     include 'cgi-bin/netif.php';
 
     define('HOMENAME', "HedmansHome");

@@ -17,6 +17,18 @@
     * Apache must have option: ErrorDocument 404 /index.php # where index.php is this file
     * Lighthttpd must have option: server.error-handler-404 = "/index.php" # where index.php is this file
     */
+
+    $rval = 1;
+    system("arp -n | grep -q ". $_SERVER['REMOTE_ADDR'], $rval);
+    if ( $rval != 0) {
+        system("ip addr show | grep -q -E '".$_SERVER['REMOTE_ADDR'].".*ppp'", $rval);
+        if ( $rval != 0 ) {
+            header("HTTP/1.0 404 Not Found");
+            echo "<h1>404 Not Found</h1>";
+            die();
+        }
+    }
+
     //error_reporting(E_ALL ^ E_NOTICE);
     error_reporting(0);
     $STOPPNG = "http://".$_SERVER['HTTP_HOST']."/spam/stop.png";

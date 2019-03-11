@@ -9,7 +9,7 @@
      * as published by the Free Software Foundation; either version
      * 2 of the License, or (at your option) any later version.
      */
- 
+
     include 'cgi-bin/common.php';
 
     //if (count($_POST)) {echo "<pre>"; print_r($_POST); echo "</pre>";exit;}
