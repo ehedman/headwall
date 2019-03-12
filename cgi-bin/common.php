@@ -331,7 +331,7 @@ function p_denycount()
 }
 function g_ifip($if)
 {
-    $val=exec("ip addr show $if | grep -v secondary | awk -F/ '/inet /{ print $1 }' | awk '{ print $NF }'");
+    $val=exec("ip addr show $if | grep -v secondary | awk -F/ '/inet /{ print $1 }' | awk '{ print \$NF }'");
 
     if (strlen(trim($val)))
         return true;
