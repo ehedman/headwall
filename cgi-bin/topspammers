@@ -3,14 +3,14 @@
 locals=$(hostname -I | xargs |  awk '{gsub(" ", "|", $0); print}')
 
 if [ -s /tmp/rejected_log ]; then
-    cat /tmp/rejected_log | sort | uniq | egrep -v "${locals}" > /tmp/rejected.tmp
+    sort /tmp/rejected_log | uniq | egrep -v "${locals}" > /tmp/rejected.tmp
 else
     exit 0
 fi
 
 while read d; do
-    cnt=$(grep -c ${d} /tmp/rejected_log)
-    if [ ${cnt} -le 11 ]; then continue; fi
+    cnt=$(grep -c "${d}" /tmp/rejected_log)
+    if [ "${cnt}" -le 11 ]; then continue; fi
     echo "${cnt},${d}"
 done  < /tmp/rejected.tmp | sort -t, -k1 -n -r
 rm -f /tmp/rejected.tmp

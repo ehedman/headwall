@@ -17,7 +17,7 @@ let end=$end+1
 str=$(grep -n "lease ${net}" $tmpf | cut -d: -f1 | awk '{printf "%s ", $NF}')
 lines=($(echo -n "${str}${end}"))
 
-str1=$(grep "lease ${net}" $tmpf | cut -d{ -f1 |  awk '{printf "%s ", $NF}')
+str1=$(grep "lease ${net}" $tmpf | cut -d -f1 |  awk '{printf "%s ", $NF}')
 ipa=($(echo -n "${str1}"))
 
 let cell=1                                                                      

@@ -3,7 +3,7 @@
 # These variables are dynamically overridden
 # by /etc/default/watchdog.dest:
 #######################################
-DDEST=`route -n | grep UG | awk '{print $2}'`
+DDEST=$(route -n | grep UG | awk '{print $2}')
 INTERFACES="wlan0"
 #######################################
 # User defined action to repair service
@@ -16,14 +16,14 @@ do_action()
    ifdown $INTERFACES >/tmp/null 2>&1;
    let ret=$ret+$?
    if [ -s /tmp/null ]; then
-      do_log "`cat /tmp/null`"
+      do_log "$(cat /tmp/null)"
    fi
    sleep 1
    do_log "Attempting to bring up interface(s)"
    ifup $INTERFACES >/tmp/null 2>&1;
    let ret=$ret+$?
    if [ -s /tmp/null ]; then
-      do_log "`cat /tmp/null`"
+      do_log "$(cat /tmp/null)"
    fi
    sleep 3
    return $ret
@@ -69,24 +69,24 @@ do_log()
    else
       if [ "$SHELL" = "/bin/bash" ]; then
          case $(ps -o stat= -p $$) in
-            *+*) LOGDEV="`tty`"; E_LOG=0 ;;
-            *) LOGDEV=$LOG ;;
+            *+*) LOGDEV="$(tty)"; E_LOG=0 ;;
+            *) LOGDEV="$LOG" ;;
          esac
       else
-         LOGDEV="`tty`"
+         LOGDEV="$(tty)"
          E_LOG=0
       fi
    fi
    
    let E_LOG=$E_LOG+1
    if [ $E_LOG -gt $MAX_E_LOG ]; then
-      echo "${NAME}: `date +%H:%M:%S:` " "log rotaded" > $LOGDEV
+      echo "${NAME}: $(date +%H:%M:%S:) " "log rotaded" > "$LOGDEV"
       E_LOG=0
    fi
-   echo "${NAME}: `date +%H:%M:%S:` " "$*" >> $LOGDEV
+   echo "${NAME}: $(date +%H:%M:%S:) " "$*" >> "$LOGDEV"
 }
 
-if [ `id -u` -ne 0 ]; then
+if [ "$(id -u)" -ne 0 ]; then
    echo "Must be root"
    exit 1
 fi
@@ -96,7 +96,7 @@ start_check()
 if [ -f /etc/default/watchdog.dest ]; then
    . /etc/default/watchdog.dest
    sleep 20
-   ping -n -c 2 -W 3 $DEST >/dev/null 2>&1
+   ping -n -c 2 -W 3 "$DEST" >/dev/null 2>&1
    if [ $? -gt 0 ]; then
       do_log "No valid ($DEST) destiantion to probe"
       exit 1
@@ -104,12 +104,12 @@ if [ -f /etc/default/watchdog.dest ]; then
 else
    if [ -z "$DEST" ]; then
        sleep 20
-       DDEST=`route -n | grep UG | awk '{print $2}'`
+       DDEST=$(route -n | grep UG | awk '{print $2}')
    fi
 fi
 
 if [ -z "$DEST" ]; then
-      DEST=$DDEST;
+      DEST="$DDEST";
 fi
 if [ -z "$DEST" ]; then
       do_log "No destiantion to probe"
@@ -122,9 +122,9 @@ control_c()
    do_log "*** $PRG Exiting ***"
    if [ $HAS_WD -eq 1 ]; then
       do_log "*** System reboot due to watchdog expiration ***"
-      kill -9 `cat $RUN`
+      kill -9 "$(cat "$RUN")"
    fi
-   rm -f $RUN
+   rm -f "$RUN"
    exit 0
 }
 
@@ -163,7 +163,7 @@ do_shutdown()
 
 wd_tick()
 {
-   echo $$ > $RUN
+   echo $$ > "$RUN"
    chrt -p 55 $$  >/dev/null 2>&1
 
    exec 3<>$WD
@@ -195,14 +195,14 @@ do_check()
       if [ -f /etc/default/watchdog.dest ]; then
       . /etc/default/watchdog.dest
       else
-         DEST=$DDEST
+         DEST="$DDEST"
       fi
       do_log "Checking health of service at $DEST ($E_CNT)"
       if [ -f /tmp/keep_wd ]; then
          do_log "Holding watchdog alive due to system reconfiguration"
          res=0
       else
-         ping -n -c 2 -W 3 $DEST >/dev/null 2>&1
+         ping -n -c 2 -W 3 "$DEST" >/dev/null 2>&1
          res=$?
       fi
       if [ $res -gt 0 ]; then
@@ -230,11 +230,11 @@ case $1 in
          exit 2
       fi
       start_check
-      rm -f $RUN
+      rm -f "$RUN"
       inint_vars
-      modprobe $WD_MOD > /dev/null 2>&1
+      modprobe "$WD_MOD" > /dev/null 2>&1
       sleep 3
-      if [ ! -c $WD ]; then
+      if [ ! -c "$WD" ]; then
          HAS_WD=0
          do_log "No watchdog device on this system!"
          do_log "Perhaps the watchdog mudule must be loaded first"
@@ -268,7 +268,7 @@ case $1 in
       if [ -f /etc/default/watchdog.dest ]; then
          . /etc/default/watchdog.dest
       fi
-         echo $DEST
+         echo "$DEST"
       exit 0
    ;;
    *)

@@ -462,13 +462,13 @@ do_dhcpd()
         relay="# dns-relay true" 
         resolv=$(grep -m1 nameserver /etc/resolv.conf | awk '{printf "%s", $2}')
         r2=$(grep nameserver /etc/resolv.conf | awk '{printf "%s ", $2}' | awk '{print $2}')
-        if [ -n ${r2} ]; then
+        if [ -n "${r2}" ]; then
             resolv="${resolv}, ${r2}"
         fi
     else
         relay="#"
         resolv="${8}"
-        if [ -n ${9} ]; then
+        if [ -n "${9}" ]; then
             resolv="${8}, ${9}"
         fi
     fi  

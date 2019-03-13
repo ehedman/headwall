@@ -5,7 +5,7 @@ shares=$(grep -B2 path /etc/samba/smb.conf | awk '{printf "%s ", $0}' | sed -e '
 let i=0
 for s in ${shares}
 do
-    echo -n $s
+    echo -n "$s"
     let i=${i}+1
     if [ ${i} -gt 2 ]; then echo ""; i=0; else echo -n ","; fi
 done
