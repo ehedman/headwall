@@ -1,8 +1,8 @@
-<?php 
+<?php
     /*
      * virtual.php
      *
-     *  Copyright (C) 2013-2014 by Erland Hedman <erland@hedmanshome.se>
+     *  Copyright (C) 2013-2019 by Erland Hedman <erland@hedmanshome.se>
      *
      * This program is free software; you can redistribute it and/or
      * modify it under the terms of the GNU General Public License
@@ -151,11 +151,11 @@ function ondelete(n)
     return true;
 }
 
-function oncname(n)
+function onhname(n)
 {
-    var cn=getObj("cname_"+n);
+    var cn=getObj("hosts_"+n);
     var ip=getObj("ip_"+n);
-	var nm=getObj("rname_"+n);
+	var nm=getObj("hname_"+n);
     ip.value=cn.options[cn.selectedIndex].value;	
 	nm.value=cn.options[cn.selectedIndex].text;
 
@@ -164,7 +164,7 @@ function oncname(n)
 
 function onproto(n)
 {
-    var cn=getObj("cname_"+n);
+    var cn=getObj("hosts_"+n);
     var pt=getObj("proto_"+n);
     var op=getObj("other_proto_t"+n);
     var oph=getObj("other_proto_"+n);
@@ -187,8 +187,9 @@ function onsrv(n)
     if (a[0] == 0) {
         nm.value=getObj("publ_port_"+n).value=getObj("priv_port_"+n).value="";
         return true;
-    }   
-    var cn=getObj("cname_"+n);
+    }
+    getObj("sname_"+n).value = srv.options[srv.selectedIndex].text;
+    var cn=getObj("hosts_"+n);
     nm.value=srv.options[srv.selectedIndex].text;   
     getObj("priv_port_"+n).value = a[0];
     getObj("publ_port_"+n).value = a[1];
@@ -275,8 +276,7 @@ function onsrv(n)
                             <td style="text-align:center">Status</td>
                         </tr>
 <?php 
-	@system("grep ".MPRF." /etc/shorewall/rules |  sed s/'\t'/,/g | sed 's/:/,/g;s/# //g'|sed 's/".MPRF."//;s/(DNAT)//' >/tmp/rlist");
-
+    @system("grep ".MPRF." /etc/shorewall/rules | sed s/'\t'/!/g | sed 's/:/!/g' | sed 's/".MPRF."//;s/(DNAT)//' >/tmp/rlist");
   	if (($fd = fopen("/tmp/rlist", "r")) == NULL)
     	die("bummer");
    	$i=0;
@@ -288,22 +288,26 @@ function onsrv(n)
 
         $chk="";
         $enabled=0;
-
+       
         if ($first==true) {
-            $a=array_fill (0 , 8, "0" );
+            $a=array_fill (0 , 9, "0" );
             $sname="0";
+            $hname="0";
         } else {
             $str=trim(fgets($fd));
             //echo $str;
-            $a=preg_split("/,/", $str);
-			if (count($a) <8) continue;
+            $a=preg_split("/!/", $str);
+			if (count($a) <9) continue;
             //print_r($a);
+            $hname=substr($a[7],2);
             if (!strncmp("#", $a[0], 1)) {
                 $chk="";
                 $sname=substr($a[0],1);
-            } else { $sname=$a[0]; $chk="checked ";}
+            } else {
+                $chk="checked ";
+                $sname=$a[0];
+            }
         }
-
 ?>
 
                         <tr>
@@ -312,13 +316,14 @@ function onsrv(n)
                                 <?php if ($first == false ) { ?><br><img alt="delete" id="cb_delete_<?php echo $i ?>" title="Delete rule" onclick="ondelete(<?php echo $i ?>)" src="/img/delete.png">                               
                                 <?php }?><input name="enable_<?php echo $i ?>" id="enable_<?php echo $i ?>" value="<?php echo $enabled ?>" type="hidden">
                                 <input name="delete_<?php echo $i ?>" id="delete_<?php echo $i ?>" value="0" type="hidden">
-                                <input name="rname_<?php echo $i ?>" id="rname_<?php echo $i ?>" value="<?php echo $a[7]; ?>" type="hidden">                           			
+                                <input name="hname_<?php echo $i ?>" id="hname_<?php echo $i ?>" value="<?php echo $hname ?>" type="hidden">
+                                <input name="sname_<?php echo $i ?>" id="sname_<?php echo $i ?>" value="<?php echo $sname ?>" type="hidden">
                             </td>
                             <td style="vertical-align:bottom">Name<br>
-                                <input type="text" id="name_<?php echo $i ?>" name="name_<?php echo $i ?>" value="<?php echo $sname; ?>" size="16" maxlength="31">
+                                <input type="text" id="name_<?php echo $i ?>" name="name_<?php echo $i ?>" value="<?php echo $a[8]; ?>" size="16" maxlength="31">
                             </td>
 			                <td style="text-align:left;vertical-align:bottom">Service Name<br>
-                                <select style="width:110px" id="srv_<?php echo $i ?>" onChange="onsrv(<?php echo $i ?>)">
+                                <select style="width:110px" id="srv_<?php echo $i ?>" name="srv_<?php echo $i ?>" onChange="onsrv(<?php echo $i ?>)">
                                     <option <?php echo isset($a[4])? "selected ":"" ?>value="<?php echo isset($a[4])? $a[4]:"0"; ?>/<?php echo isset($a[6])? $a[6]:"0";?>"><?php echo isset($sname)? $sname:"Custom"; ?></option>
                                     <option value="21/21/TCP">FTP</option>
                                     <option value="9418/9418/TCP">GIT</option>
@@ -328,8 +333,9 @@ function onsrv(n)
                                     <option value="22/22/TCP">SSH</option>
                                     <option value="4040/4040/TCP">Subsonic</option>
                                     <option value="9091/9091/TCP">Transmission</option>
-                                    <option value="5900/5900/TCP">VNC</option>
+                                    <option value="5901/5901/TCP">VNC</option>
                                     <option value="554/554/TCP">RTP</option>
+                                    <option value="10110/10110/TCP">NMEA</option>
                                 </select>
                             </td>
                             <td style="text-align:center;vertical-align:bottom">Public Port<br>
@@ -357,8 +363,8 @@ function onsrv(n)
                                 <input type=text id="ip_<?php echo $i ?>" name="ip_<?php echo $i ?>" value="<?php echo $a[3]; ?>" size="16" maxlength="31">
                             </td>
 			                <td style="text-align:left;vertical-align:bottom">Computer Name<br>                                
-                                <select style="width:110px" id="cname_<?php echo $i ?>" onChange="oncname(<?php echo $i ?>)">
-                                    <option <?php echo isset($a[3])? "selected ":"" ?>value="<?php echo $a[3]; ?>"><?php echo $a[7]; ?></option>
+                                <select style="width:110px" id="hosts_<?php echo $i ?>" onChange="onhname(<?php echo $i ?>)">
+                                    <option <?php echo isset($a[3])? "selected ":"" ?>value="<?php echo $a[3]; ?>"><?php echo $hname ?></option>
                                     <?php echo exec("cat /tmp/hostopts"); ?>
 
                                 </select>
@@ -367,7 +373,7 @@ function onsrv(n)
                                 <input type="text" id="priv_port_<?php echo $i ?>" name="priv_port_<?php echo $i ?>" value="<?php echo $a[4]; ?>" size="5" maxlength="5">
                             </td>
                             <td style="text-align:center;vertical-align:bottom">Other protocoll<br>
-                                <input <?php echo is_numeric($a[5])&&$a[5]>0? "":"disabled "; ?>type="text" id="other_proto_t<?php echo $i ?>" value="<?php echo is_numeric($a[5])? $a[5]:"0"; ?>" size="5" maxlength="5">
+                                <input <?php echo is_numeric($a[5])&&$a[5]>0? "":"disabled "; ?>type="text" id="other_proto_t<?php echo $i ?>" value="<?php echo is_numeric($a[5])? $a[5]:"0"; ?>" size="5" maxlength="5" title="See: /etc/protocols">
                                 <input type="hidden" id="other_proto_<?php echo $i ?>" name="other_proto_<?php echo $i ?>" value="0">
                             </td>
                         </tr>
@@ -389,7 +395,10 @@ function onsrv(n)
                     <strong>NOTE!</strong> This service will not work if your provider does not allow inbound traffic to your
                     premises or if any downstream firewalls (your external modem) is active without having this <?php p_mode(); ?> in a DMZ zone.<br><br>
                     <strong>NOTE!</strong> For this service a DDNS service may be usefull for you. Check the page Security->Inbound Access
-                    fort more information.
+                    fort more information.<br><br>
+                    Select the protocol used by the service. The common choices UDP, TCP, and both UDP and TCP, can be selected from the drop-down menu.
+                    To specify any other protocol, select "Other" from the list, then enter the corresponding protocol number
+                    <a href="http://www.iana.org/assignments/protocol-numbers">(as assigned by the IANA)</a> in the Protocol box. 
                </td>
             </tr>
             <tr>

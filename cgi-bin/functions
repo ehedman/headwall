@@ -1020,32 +1020,34 @@ do_dbrecords()
  
 do_vrules()
 {
- 
     base="/etc/shorewall"
     rules="${base}/rules"
+
+    prefix=${2}
+    shift 2
     cnt=$#
-    prefix=${1}
-    shift 1
-    nip=$(ip addr show $( grep NET_IF ${base}/interfaces | grep -o '[^=]*$') | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
-    if [ ${cnt} -gt 9 ]; then
+
+    nip=$(ip addr show $( grep LOC_IF ${base}/interfaces |  grep -o '[^=]*$') | grep -v secondary | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+    if [ ${cnt} -ge 10 ]; then
         cp ${base}/bridge/rules ${rules}
         rm -f ${base}/macro.*
         echo "# BRIDGE USER RULES" >> ${rules}
         while true
         do
-            if [ ${cnt} -le 9 ]; then break; fi
-            if [ ${2} -eq 0 ] && [ "${4}" != "0" ]; then
-                if [ ${1} -eq 0 ]; then st="#"; else st=""; fi
-                if [ ${9} -gt 0 ]; then proto=${9}; else proto=${6}; fi
-                if [ "${nip}" = "${7}" ]; then dest="\$FW"; else dest="loc"; fi
-                echo -e ${st}${prefix}${4}\(DNAT\)'\t'"net"'\t'"${dest}:${7}:${8}"'\t'${proto}'\t'${5}'\t'\# ${3} >> ${rules}
+            if [ ${cnt} -lt 11 ]; then break; fi
+            if [ "${2}" = "0" ] && [ "${3}" != "0" ]; then
+                if [ "${1}" = "0" ]; then st="#"; else st=""; fi
+                if [ "${8}" != "oth" ]; then proto=${8}; else proto=${11}; fi
+                if [ "${nip}" = "${9}" ]; then dest="\$FW"; else dest="loc"; fi
+                echo -e ${st}${prefix}${4}\(DNAT\)'\t'"net"'\t'"${dest}:${9}:${10}"'\t'${proto}'\t'${7}'\t'\# ${3}:${5} >> ${rules}
                 echo 'PARAM		-	-	-	-	-' > "${base}/macro.${prefix}${4}"
             fi
-            shift 9
-            let cnt=${cnt}-9
+            shift 11
+            let cnt=${cnt}-11
         done
     fi
 }
+
 
 do_ddns()
 {
