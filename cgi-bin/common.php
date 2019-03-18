@@ -1,4 +1,4 @@
-do_vrules<?php
+<?php
 
     /*
      * common.php
