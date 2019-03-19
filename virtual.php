@@ -218,7 +218,7 @@ function onsrv(n)
         <input name="macro_prefix" value="<?php echo MPRF; ?>" type="hidden">
         <table id="topContainer">
             <tr>
-	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<?php p_productHome(); ?>" target=_blank><?php p_serverName(); ?></a></td>
+	            <td class="laCN">Project Page&nbsp;:&nbsp;<a href="<?php p_productHome(); ?>" target="_blank"><?php p_serverName(); ?></a></td>
 	            <td class="raCN">Version&nbsp;:&nbsp;<?php p_firmware("-ro");?>&nbsp;</td>
             </tr>
         </table>
@@ -397,8 +397,8 @@ function onsrv(n)
                     <strong>NOTE!</strong> For this service a DDNS service may be usefull for you. Check the page Security->Inbound Access
                     fort more information.<br><br>
                     Select the protocol used by the service. The common choices UDP, TCP, and both UDP and TCP, can be selected from the drop-down menu.
-                    To specify any other protocol, select "Other" from the list, then enter the corresponding protocol number
-                    <a href="http://www.iana.org/assignments/protocol-numbers">(as assigned by the IANA)</a> in the Protocol box. 
+                    To specify any other protocol, select "Other" from the list, then enter the corresponding protocol number as assigned by the
+                    <a target="_blank" href="http://www.iana.org/assignments/protocol-numbers">IANA</a> in the Protocol box. 
                </td>
             </tr>
             <tr>
