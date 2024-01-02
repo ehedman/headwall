@@ -14,7 +14,7 @@
     @system("iwscan ".g_wan()." >/tmp/scanlist");
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <title><?php p_title(); ?></title>
