@@ -249,7 +249,7 @@ function checkPage()
 	                    <h2 class="actionHeader">Log Options</h2>
                         <table> 
 		                    <tr>
-		                        <td class="raCB" style="width:40%;heigh:25px">Log dropped packets&nbsp;:</td>
+		                        <td class="raCB" style="width:40%;height:25px">Log dropped packets&nbsp;:</td>
 		                        <td class="laCB">&nbsp;
 		                            <input <?php echo $drp==1? "checked ":""; ?>type="checkbox" id="dr_enablecb" onChange="enable_dr(this)">
 		                        </td>
