@@ -32,13 +32,13 @@
     //error_reporting(E_ALL ^ E_NOTICE);
     error_reporting(0);
     $STOPPNG = "http://".$_SERVER['HTTP_HOST']."/spam/stop.png";
-    if (1) {
+    if (0) {
         // Go to the end destination without trackers, doubleclick etc.
         // This is mainly to handle ads from google search clicks.
             
         // Click sites to skip. Add as you hit them.
         $jump = array(
-/*
+/* no longer working
             "googleadservices"  => array(   "/url\[\]=http:\/\//",
                                             "/lp=http:\/\//",
                                             "/dst=/",
@@ -117,7 +117,7 @@
     <body>
         <img alt="STOP" src="<?php echo $STOPPNG; ?>">
         <p>Access to this Web site is not allowed from this computer.</p>
-        <p>The site <b><?php echo $_SERVER[HTTP_HOST] ?></b> is included in the DNS Blacklist Site List.</p>
+        <p>The site referenced is included in the DNS <b>Blacklist Site List</b>.</p>
         <p>This server has detected <?php echo $count; ?> attempts to access blacklisted sites since <?php echo $date ?></p>
     </body>
 </html>

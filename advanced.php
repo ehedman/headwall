@@ -25,21 +25,21 @@
         } else if (!$pid) {
             // We are the child
 
-            if (isset($_POST[reboot])) {
+            if (isset($_POST['reboot'])) {
                 @system("reboot");
                 exit;
             }
 
-            if (isset($_POST[watchdog]) && isset($_POST[w_probe])) {
+            if (isset($_POST['watchdog']) && isset($_POST['w_probe'])) {
                 $if=$_POST['f_if'] == "lan"? g_lan():g_wan();
-                @system("echo 'DEST=".$_POST[w_probe]."; INTERFACES=".$if.";' > /etc/default/watchdog.dest");
+                @system("echo 'DEST=".$_POST['w_probe']."; INTERFACES=".$if.";' > /etc/default/watchdog.dest");
                 @system("watchdogd start bg > /dev/null 2>&1 &");           
             } else {
                 // Cannot stop once started! do something harmless.
                 system("echo 'DEST=127.0.0.1; INTERFACES=".g_lan().";' > /etc/default/watchdog.dest");
             }
         } else {
-            $sec = isset($_POST[reboot])? 64:30;
+            $sec = isset($_POST['reboot'])? 64:30;
             header('Location: http://'. $_SERVER["SERVER_ADDR"]. '/wait.php?seconds='.$sec.'&loc='.$_SERVER['SCRIPT_NAME']);
             exit;
         }

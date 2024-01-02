@@ -12,6 +12,8 @@
 
     include 'cgi-bin/common.php';
 
+    //if (count($_POST)) {echo "<pre>"; print_r($_POST); echo "</pre>";exit;}
+
     $needvars = exec("wc -l /etc/bind/blacklist | awk '{printf \"%s\", \$1}'");
 
     if ($needvars > ini_get('max_input_vars')) {       
@@ -19,7 +21,7 @@
         exec( "echo 'max_input_vars = ".$needvars."' > ".$_SERVER["DOCUMENT_ROOT"].".user.ini");
     } else $needvars = 0;
 
-    if (g_spfhere()&&g_srvstat("named")) $srv=true; else $srv=false;
+    if (g_spfhere() && g_srvstat("named")) $srv=true; else $srv=false;
 
     if (count($_POST)) {
         if (! function_exists('pcntl_fork')) die('PCNTL functions not available on this PHP installation');
@@ -54,7 +56,7 @@
             @fclose($fdo);
             if (exec("wc -l /tmp/blist.out | awk '{printf \"%s\", \$1}'")  == exec("wc -l /etc/bind/blacklist | awk '{printf \"%s\", \$1}'")) {
                 @system("cp /tmp/blist.out /etc/bind/blacklist");
-                @system("/usr/sbin/service bind9 restart");
+                @system("/usr/bin/systemctl restart bind9");
             }
             @unlink("/tmp/blist");
             @unlink("/tmp/blist.out");

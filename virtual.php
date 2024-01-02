@@ -67,13 +67,16 @@ function checkPage()
 
         var nm=getObj("name_"+n);
 
-        if (nm.value == "0" && n == 0) continue;
+        if (nm.value == "0" && n == 0) {
+            continue;
+        }
 
         if (isFieldBlank(nm.value) == true) {
             nm.select();
             alert("Blank Host Name");
             return false;
         }
+
         if (! /^[a-zA-Z0-9\-]+$/.test(nm.value)) {
             nm.select();
             alert("Illegal characters in Name");
@@ -277,8 +280,9 @@ function onsrv(n)
                         </tr>
 <?php 
     @system("grep ".MPRF." /etc/shorewall/rules | sed s/'\t'/!/g | sed 's/:/!/g' | sed 's/".MPRF."//;s/(DNAT)//' >/tmp/rlist");
-  	if (($fd = fopen("/tmp/rlist", "r")) == NULL)
+  	if (($fd = fopen("/tmp/rlist", "r")) == NULL) {
     	die("bummer");
+    }
    	$i=0;
     $first=true;
     $ret=0;
@@ -292,7 +296,7 @@ function onsrv(n)
         if ($first==true) {
             $a=array_fill (0 , 9, "0" );
             $sname="0";
-            $hname="0";
+            $hname="Select";
         } else {
             $str=trim(fgets($fd));
             //echo $str;
@@ -382,7 +386,7 @@ function onsrv(n)
     $first=false;
 	}
 	@fclose($fd);
-	@unlink("/tmp/rlist");
+    @unlink("/tmp/rlist");
 ?>
 
 			            </table>

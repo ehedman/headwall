@@ -26,8 +26,8 @@
             echo "</pre>\n"; exit;
         } else if (!$pid) {
             // We are the child
-            @system("/usr/sbin/service transmission-daemon stop");
-            @system("/usr/sbin/update-rc.d transmission-daemon disable");
+            @system("/usr/bin/systemctl stop transmission-daemon.service");
+            @system("/usr/bin/systemctl disable transmission-daemon.service");
 
             if ($_POST["disk_uuid"] != "0" &&  $_POST["disk_action"] > 0)
                 do_cifs_disk(implode(" ", $_POST));

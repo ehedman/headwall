@@ -235,46 +235,48 @@ function initPage()
 				                <td class="raCB">Default Gateway&nbsp;:</td>
 				                <td class="laCB">&nbsp;<?php p_gateway(); ?></td>
 			                </tr>
-                                        <tr>
+                            <tr>
 				                <td class="raCB">Traffic&nbsp;:</td>
 				                <td class="laCB">&nbsp;<?php p_lanStat(g_wan()); ?></td>
 			                </tr>
-                                        <tr>
+<!--
+                            <tr>
 				                <td class="raCB">Signal Quality&nbsp;:</td>
-				                <td class="laCB">&nbsp;<?php p_signalQuality(); ?></td>
+				                <td class="laCB">&nbsp;<?php //p_wquality($wdev); ?></td>
 			                </tr>
+-->
 			            </table>
-		            </div><?php if (g_wlanif() !=NULL) { ?><div class="vbr"></div>
+		            </div><?php if (g_wlanif(g_awifidev()) !=NULL) { ?><div class="vbr"></div>
                     <div class="actionBox">
-			            <h2 class="actionHeader">Wireless Connection</h2>
+			            <h2 class="actionHeader">Wireless Connection for <?php $wdev=g_awifidev(); echo $wdev; ?></h2>
 			            <table>
 			                <tr>
 				                <td class="raCB" style="width:40%">Wireless Radio&nbsp;:</td>
-				                <td class="laCB">&nbsp;<?php echo g_wstatus(g_wlanif())? 'Enabled':'Disabled'; ?></td>
+				                <td class="laCB">&nbsp;<?php echo g_wstatus(g_wlanif($wdev))? 'Enabled':'Disabled'; ?></td>
 			                </tr>
                             <tr>
 				                <td class="raCB" style="width:40%">Wireless Mode&nbsp;:</td>
-				                <td class="laCB">&nbsp;<?php echo g_wmode(g_wlanif()) ?></td>
+				                <td class="laCB">&nbsp;<?php echo g_wmode(g_wlanif($wdev)) ?></td>
 			                </tr>                     		
 			                <tr>
 				                <td class="raCB">Network Name(SSID)&nbsp;:</td>
-				                <td class="laCB">&nbsp;<?php p_wssid(); ?></td>
+				                <td class="laCB">&nbsp;<?php p_wssid($wdev); ?></td>
                             </tr>
+			                <tr><?php if (g_mode()==1) {?>
+				                <td class="raCB">Bit Rate&nbsp;:</td>
+				                <td class="laCB">&nbsp;<?php p_wbitrate($wdev); ?></td>
+			                </tr><?php }?>
                             <tr><?php if (g_mode()==2) {?>
 				                <td class="raCB">Status&nbsp;:</td>
-				                <td class="laCB">&nbsp;<?php p_wstatus(); ?></td>
-			                </tr>	
-			                <tr>
-				                <td class="raCB">Bit Rate&nbsp;:</td>
-				                <td class="laCB">&nbsp;<?php p_wbitrate(); ?></td>
-			                </tr><?php }?>
+				                <td class="laCB">&nbsp;<?php p_wstatus($wdev); ?></td>
+			                </tr>
                             <tr>
 				                <td class="raCB">Link Quality&nbsp;:</td>
-				                <td class="laCB">&nbsp;<?php p_wquality(); ?></td>
-			                </tr>
+				                <td class="laCB">&nbsp;<?php p_wquality($wdev); ?></td>
+			                </tr><?php }?>
 			                <tr>
 				                <td class="raCB">Security Type&nbsp;:</td>
-				                <td class="laCB">&nbsp;<?php p_keyType(g_wlanif()); ?></td>
+				                <td class="laCB">&nbsp;<?php p_keyType($wdev); ?></td>
 			                </tr>
 			            </table>
 		            </div><?php }?>

@@ -12,7 +12,7 @@
 
     include 'cgi-bin/common.php';
 
-    //if (count($_POST)) {echo "<pre>"; print_r($_POST); echo "</pre>";exit;}
+    if (count($_POST)) {echo "<pre>"; print_r($_POST); echo "</pre>";exit;}
 
     if (count($_POST) && $_POST["POST_ACTION"] == "OK") {
 

@@ -1,8 +1,8 @@
 <?php
     /*
-     * admin.php
+     * vpn.php
      *
-     *  Copyright (C) 2013-2014 by Erland Hedman <erland@hedmanshome.se>
+     *  Copyright (C) 2013-2024 by Erland Hedman <erland@hedmanshome.se>
      *
      * This program is free software; you can redistribute it and/or
      * modify it under the terms of the GNU General Public License
@@ -16,12 +16,6 @@
 
      if (count($_POST) && $_POST["POST_ACTION"] == "OK") {
 
-         if ($_POST["ACTION_DO_FWS"] == 1 || $_POST["activate"] == "Stop") {
-            if (do_firewall_pw($_POST["SUPER_PASSWD"]) == false) {
-				header('Location: http://'. $_SERVER["SERVER_ADDR"]. $_SERVER['SCRIPT_NAME'].'?msg=noauth');
-                die();
-            }
-		}
         if (! function_exists('pcntl_fork')) die('PCNTL functions not available on this PHP installation');
         $pid = pcntl_fork();
         if ($pid == -1) {
@@ -47,7 +41,8 @@
             do_vpn(g_lan()." ".VPNET." ".$ns1." ".implode(" ", $_POST));
 
         } else { 
-            header('Location: http://'. $_SERVER["SERVER_ADDR"]. '/wait.php?seconds=14&loc='.$_SERVER['SCRIPT_NAME']);
+            //header('Location: http://'. $_SERVER["SERVER_ADDR"]. '/wait.php?seconds=24&loc='.$_SERVER['SCRIPT_NAME']);
+            header('Location: http://'. $_SERVER["SERVER_ADDR"]. '/wait.php?seconds=20&loc='.$_SERVER['SCRIPT_NAME']);
             exit;
         }
     }

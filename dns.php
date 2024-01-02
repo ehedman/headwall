@@ -2,7 +2,7 @@
     /*
      * dns.php
      *
-     *  Copyright (C) 2013-2014 by Erland Hedman <erland@hedmanshome.se>
+     *  Copyright (C) 2013-2024 by Erland Hedman <erland@hedmanshome.se>
      *
      * This program is free software; you can redistribute it and/or
      * modify it under the terms of the GNU General Public License
@@ -39,18 +39,18 @@
                                  $_POST["f_bl_enable"],$_POST["f_serving_zone"],g_lan(),g_lan1());
                     if (g_srvstat("dhcpd") == false) {
                         if (g_srvstat("named") == false)
-                            @system("/usr/sbin/service bind9 start");
+                            @system("/usr/bin/systemctl restart bind9");
 			            do_dbrecords(implode(" ", $_POST));
 				        sleep(5);
                     }
 				    @system("alleases ".g_domain().">/tmp/dmlist");
                 }
-                @system("/usr/sbin/update-rc.d bind9 enable");
-                @system("/usr/sbin/service bind9 restart");
+                @system("/usr/bin/systemctl enable bind9");
+                @system("/usr/bin/systemctl restart bind9");
                 do_updatedhcp($_POST["ip_local_host_1"]);
             } else {
                 do_updatedhcp($_POST["f_forwarder_1"], $_POST["f_forwarder_2"]);
-                @system("/usr/sbin/service bind9 stop");
+                @system("/usr/bin/systemctl stop bind9");
                 @system("/usr/sbin/update-rc.d bind9 disable");
             }
         } else {
@@ -261,11 +261,13 @@ function check_spamft()
 
 function check_blu()
 {
+/* works no more :-(
     var f=getObj("form");
     if (f.do_blu.checked == false)
         f.f_bl_updates.value = 0;
     else
         f.f_bl_updates.value = 1;
+*/
 }
 
 function check_ggj()

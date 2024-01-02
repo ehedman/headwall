@@ -36,7 +36,7 @@
 
             $dhs = g_srvstat("named");
 
-            @system("/usr/sbin/service isc-dhcp-server stop");
+            @system("/usr/bin/systemctl stop isc-dhcp-server");
 
             do_dhcpd(implode(" ", $_POST));
 
@@ -48,13 +48,13 @@
             ifsrv(g_srvlan().":srv", g_srvip());
 
             if($dhs == true)
-                @system("/usr/sbin/service bind9 start");
+                @system("/usr/bin/systemctl restart bind9");
 
             if ($_POST["f_dhcp_enable"] == 1) {
-                @system("/usr/sbin/update-rc.d isc-dhcp-server enable");
-                @system("/usr/sbin/service isc-dhcp-server start");
+                @system("/usr/bin/systemctl enable bind9");
+                @system("/usr/bin/systemctl restart bind9");
             } else {
-                @system("/usr/sbin/update-rc.d isc-dhcp-server disable");
+                @system("/usr/bin/systemctl disable bind9");
             }
 
             @system("alleases ".g_domain().">/tmp/dmlist &");

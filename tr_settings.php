@@ -2,7 +2,7 @@
     /*
      * advanced.php
      *
-     *  Copyright (C) 2013-2014 by Erland Hedman <erland@hedmanshome.se>
+     *  Copyright (C) 2013-2024 by Erland Hedman <erland@hedmanshome.se>
      *
      * This program is free software; you can redistribute it and/or
      * modify it under the terms of the GNU General Public License
@@ -25,13 +25,13 @@
             echo "</pre>\n"; exit;
         } else if (!$pid) {
             // We are the child
-            @system("/usr/sbin/service transmission-daemon stop");
+            @system("/usr/bin/systemctl stop transmission-daemon.service");
             do_transmission(implode(" ", $_POST));
             if ($_POST['f_tr_enabled'] == 0)
-                @system("/usr/sbin/update-rc.d transmission-daemon disable");
+                @system("/usr/bin/systemctl disable transmission-daemon.service");
             else {
-                @system("/usr/sbin/update-rc.d transmission-daemon enable");
-                @system("/usr/sbin/service transmission-daemon start");
+                @system("/usr/bin/systemctl enable transmission-daemon.service");
+                @system("/usr/bin/systemctl restart transmission-daemon.service");
             }
             if (g_srvstat("shorewall") == true)
                 do_firewall_mgm("restart");

@@ -1,115 +1,117 @@
 #!/bin/bash
 # Author: Erland@Hedmanshome.se
 
-. ${DOCUMENT_ROOT}/cgi-bin/functions
+. "${DOCUMENT_ROOT}"/cgi-bin/functions
 
 rval=0
 
 case $1 in
     status)
-        ifconfig $2 > /dev/null 2>&1
-        if [ $? -eq 0 ]; then echo -n Enabled; else echo -n Disabled; fi
+        if ifconfig "${2}" &>/dev/null; then echo -n Enabled; else echo -n Disabled; fi
     ;;
     connect)
-        ap=$(iwconfig $2 | grep 'Access Point:' | awk '{print $6}')
+        ap=$(iwconfig "${2}" | grep 'Access Point:' | awk '{print "${6}"}')
         res=$?
         if [ "$ap" = "Not-Associated" ]; then echo -n "not connected"; else
         if [ $res -eq 0 ]; then echo -n connected; else echo -n not connected; fi fi
     ;;
     bitrate)
-        br=$(iwconfig $2 | sed s/:/=/ | grep 'Bit Rate=' | awk '{print $2" "$3}' | cut -d= -f2)
-        if [ $? -eq 0 ]; then echo -n $br; else echo -n --; fi
+        br=$(hostapd_cli -i "${2}" all_sta | grep tx_rate_info= | cut -d= -f2)
+        if [ -n "$br" ]; then echo -n "$((br /10)) Mbit/s"; else echo -n "no connections"; fi
     ;;
     quality)
-        qa=$(iwconfig $2 | grep 'Link Quality=' | awk '{print $2}' | cut -d= -f2)
-        if [ $? -eq 0 ]; then echo -n $qa; else echo -n --; fi
+        sig=$(nmcli -f ssid,signal dev wifi | grep -m1 "${2}" | awk '{print "${2}"}')
+        if [ -n "$sig" ]; then echo -n "$sig%"; else echo -n --; fi
     ;;
     keytype)
         kt=$(grep key_mgmt /etc/wpa_supplicant/wpa_supplicant.conf | cut -d= -f2)
         res=$?
-        if [ $kt = "NONE" ]; then kt="WEP"; fi
-        if [ $res -eq 0 ]; then echo -n $kt; else echo -n --; fi
+        if [ "$kt" = "NONE" ]; then kt="WEP"; fi        
+        if (( "$res" = 0 )); then echo -n "$kt"; else echo -n --; fi
     ;;
     rangecheck)
-        do_rangecheck $2 $3 $4 $5
+        do_rangecheck "${2}" "${3}" "${4}" "${5}"
     ;;
     setdbhome)
-        do_dbhome $*
+        do_dbhome "$@"
     ;;
     setdbrev)
-        do_dbrev $*
+        do_dbrev "$@"
     ;;
     updatedhcp)
-        do_updatedhcp $2 $3
+        do_updatedhcp "${2}" "${3}"
     ;;
     ifopts)
-        do_ifopts $*
+        do_ifopts "$@"
+    ;;
+    wifopts)
+        do_wifopts "$@"
     ;;
     setvrules)
         shift 1
-        do_vrules $*
+        do_vrules "$@"
     ;;
     setddns)
-        do_ddns $*
+        do_ddns "$@"
     ;;
     setvpn)
-        do_vpn $*
+        do_vpn "$@"
     ;;
     setcifsdisk)
-        do_cifs_disk $*
+        do_cifs_disk "$@"
     ;;
     setcifs)
-        do_cifs $*
+        do_cifs "$@"
     ;;
     sethostopts)
-        do_hostopts $*
+        do_hostopts "$@"
     ;;
     setfirewallts)
-        do_firewall_ts $*
+        do_firewall_ts "$@"
     ;;
     setfirewallfws)
-        do_firewall_fws $*
+        do_firewall_fws "$@"
     ;;
     setfirewallmasqif)
-        do_firewall_masqif $*
+        do_firewall_masqif "$@"
     ;;
     wifilist)
         do_wifilist
     ;;
 	setdbrecords)
-		do_dbrecords $*
+		do_dbrecords "$@"
 	;;
     setupdatedns)
-        do_updatedns $*
+        do_updatedns "$@"
     ;;
     fwlog)
-        do_fwlog $*
+        do_fwlog "$@"
     ;;
     uptime)
        p_uptime 
     ;;
     setstatic)
-        do_setstatic $*
+        do_setstatic "$@"
     ;;
     setdhcp)
-        do_setdhcp $*
+        do_setdhcp "$@"
     ;;
     setwpapsk)
-        do_setwpapsk $2 $3 $4 $5 $6
+        do_setwpapsk "${2}" "${3}" "${4}" "${5}" "${6}"
     ;;
     setwep)
-        do_setwep $2 $3 $4
+        do_setwep "${2}" "${3}" "${4}"
     ;;
     sethostapd)
         shift 1
-        do_hostapd $*
+        do_hostapd "$@"
     ;;
     setdhcpd)
-        do_dhcpd $*
+        do_dhcpd "$@"
     ;;
     settransmission)
         shift 2
-        do_transmission $*
+        do_transmission "$@"
     ;;
     *)
         echo -n "illegal command"

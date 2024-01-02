@@ -2,7 +2,7 @@
     /*
      * wireless.php
      *
-     *  Copyright (C) 2013-2014 by Erland Hedman <erland@hedmanshome.se>
+     *  Copyright (C) 2013-2024 by Erland Hedman <erland@hedmanshome.se>
      *
      * This program is free software; you can redistribute it and/or
      * modify it under the terms of the GNU General Public License
@@ -13,14 +13,47 @@
     include 'cgi-bin/common.php';
     include 'cgi-bin/country.php';
 
-    //if (count($_POST)) {echo "<pre>"; print_r($_POST); echo "</pre>"; exit;}
+    //if (count($_POST)) {echo "<pre>"; print_r($_POST); echo "</pre>"; print_r($_GET); exit;}
     //echo "<pre>"; print_r($_GET); echo "</pre>";
 
     $connect = 0;
 
     isset($_GET['connect']) ?  $connect = $_GET['connect'] : $connect = 0;
 
-    if ( (count($_POST) && $_POST["POST_ACTION"] == "OK") || $connect == "1" ) {
+    if ((count($_POST) && $_POST["POST_ACTION"] == "OK") && $connect == 0) {
+        if (g_mode() == 1) {
+            do_sethostapd(  $_POST['f_auth_type'],
+                            $_POST['WIFIassignement'],
+                            urlencode($_POST['f_ssid']),
+                            $_POST['f_wpa_psk'],
+                            $_POST['f_cipher'],
+                            $_POST['WChannel'],
+                            $_POST['WMode'],
+                            $_POST['WCountry'],
+                            $_POST['WVisibility']);
+
+        }
+    }
+
+    if ((count($_POST) && $_POST["POST_ACTION"] == "OK") && $connect == 1) {
+        if (g_mode() == 2) {
+            switch ($_POST['f_auth_type']) {
+                 case '1':
+                        do_setwep(urlencode($_POST['f_ssid']), $_POST['f_wep_pw'], g_wlanif());
+                    break;
+                case '2':
+                        do_setwpapsk("WPA",urlencode($_POST['f_ssid']),$_POST['f_wpa_psk'],$_POST['f_cipher'], g_wlanif());
+                    break;   
+                case '3':
+                        do_setwpapsk("WPA2",urlencode($_POST['f_ssid']),$_POST['f_wpa_psk'],$_POST['f_cipher'], g_wlanif());
+                    break;
+                default:
+                break;
+            }
+        }
+    } 
+
+    if ((count($_POST) && $_POST["POST_ACTION"] == "OK") && $connect == 1) {
 
         if (! function_exists('pcntl_fork')) die('PCNTL functions not available on this PHP installation');
         $pid = pcntl_fork();
@@ -31,14 +64,14 @@
         } else if (!$pid) {
             // We are the child
             sleep(6);
-            if ($_GET[connect] == "1") {
+            if ($_GET['connect'] == "1") {
                 $a=array();
                 $fd = fopen("/tmp/scanlist", "r");
                 $indx=1;
                 while (!feof($fd)) {
                     $a=explode("," ,fgets($fd),7);
                     if (!strlen($a[1])) continue;
-                    if ($indx++ == $_GET[ckssidnum]) {
+                    if ($indx++ == $_GET['ckssidnum']) {
                         $indx = 0; 
                         break;
                     }   
@@ -48,40 +81,19 @@
                 if (!$indx && $a[1]) {
                     switch ($a[5]) {
                         case 'WPA-PSK': // TKIP(2) only
-                            do_setwpapsk("WPA",urlencode($a[1]),$_GET[ck_passp],$_GET[ck_cipher], g_wlanif());
+                            do_setwpapsk("WPA",urlencode($a[1]),$_GET['ck_passp'],$_GET['ck_cipher'], g_wlanif());
                         break;
                         case 'WPA2-PSK': // TKIP(2) and AES(3)
-                            do_setwpapsk("WPA2", urlencode($a[1]),$_GET[ck_passp],$_GET[ck_cipher], g_wlanif());
+                            do_setwpapsk("WPA2", urlencode($a[1]),$_GET['ck_passp'],$_GET['ck_cipher'], g_wlanif());
                         break;
                         default:
                             if (count($a) == 5)
-                                do_setwep(urlencode($a[1]),$_GET[ck_passp], g_wlanif());
+                                do_setwep(urlencode($a[1]),$_GET['ck_passp'], g_wlanif());
                         break;           
                     }
                 }
             }
-            if (count($_POST)) {
-                if (g_mode() == 1) {
-                    do_sethostapd($_POST['f_auth_type'], g_wlanif(), urlencode($_POST[f_ssid]),
-                                $_POST[f_wpa_psk],$_POST[f_cipher], $_POST['WChannel'],
-                                $_POST['WMode'], $_POST['WCountry'], $_POST['WVisibility'], $_POST['WDriver']);
 
-                } else if (g_mode() == 2) {
-                    switch ($_POST['f_auth_type']) {
-                         case '1':
-                                do_setwep(urlencode($_POST[f_ssid]), $_POST[f_wep_pw], g_wlanif());
-                            break;
-                        case '2':
-                                do_setwpapsk("WPA",urlencode($_POST[f_ssid]),$_POST[f_wpa_psk],$_POST[f_cipher], g_wlanif());
-                            break;   
-                        case '3':
-                                do_setwpapsk("WPA2",urlencode($_POST[f_ssid]),$_POST[f_wpa_psk],$_POST[f_cipher], g_wlanif());
-                            break;
-                        default:
-                        break;
-                    }
-                } 
-            }
             @system("echo 'DEST=127.0.0.1; INTERFACES=".g_lan().";' > /etc/default/watchdog.dest");                 
         } else {
             // We are the parent
@@ -89,6 +101,7 @@
             exit;
         }
     }
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -102,20 +115,127 @@
 
 <?php include 'inc/general.js.php' ?>
 
+<?php
+    ob_start();
+    $devs = @system("find /sys/devices/platform -name phy80211 | awk -F/ '{printf \$(NF - 1) \" \"}'", $rval);
+    ob_clean();
+    $dl = ' ';
+    $wdevs = explode($dl, $devs);
+    
+    foreach ($wdevs as $dev) {
+        echo "var arr_$dev = [];\n";
+        echo "arr_$dev.push({\n"; 
+        echo "    chan: '".g_chan($dev)."',\n"; 
+        echo "    ssid: '".g_ssid($dev)."',\n";
+        echo "    secm: '".g_secm($dev)."',\n";
+        echo "    wpam: '".g_wpam($dev)."',\n";
+        echo "    wcip: '".g_wcip($dev)."',\n";
+        echo "    wpsk: '".g_wpsk($dev)."',\n";
+        echo "    hmod: '".g_hmod($dev)."',\n";
+        echo "    ccod: '".g_ccod($dev)."',\n";
+        echo "    visi: '".g_visi($dev)."',\n";
+        echo "});\n\n";
+    }
+?>
+
+function changeWInterface(device)
+{
+
+    var arr_w = [];
+
+    switch (device) {
+<?php
+    foreach ($wdevs as $dev) {
+        echo "        case \"".$dev."\": arr_w = arr_".$dev."; break;\n";
+    }
+?>
+    }
+
+    for (var i = 0; i < arr_w.length; i++)
+    {
+        // retrieving a record
+        record = arr_w[i];
+        var item = document.getElementsByName("WChannel");
+        var opt = document.getElementById("WChannel");
+        item[0].options[opt.selectedIndex].innerHTML = item[0].options[opt.selectedIndex].value = record.chan;
+
+        document.getElementById('ssid').value = record.ssid;
+        var opt = document.getElementById("wpaMode");
+            switch (record.wpam) {
+            case "1" : opt.selectedIndex=0; break;
+            case "2" : opt.selectedIndex=1; break;
+        }
+
+        var opt = document.getElementById("chiperType");
+        switch (record.wcip) {
+            case "TKIP"     : opt.selectedIndex=0; break;
+            case "AES"      : opt.selectedIndex=1; break;
+            case "TKIP AES" : opt.selectedIndex=2; break;
+        }
+        
+        document.getElementById('wpaPPHstring').value = record.wpsk;
+
+        var opt = document.getElementById("WMode");
+        switch (record.hmod) {
+            case "a": opt.selectedIndex=0; break;
+            case "b": opt.selectedIndex=1; break;
+            case "g": opt.selectedIndex=2; break;
+        }
+
+        var opt = document.getElementById("WCountry");
+        switch (record.ccod) {
+            case "AU": opt.selectedIndex=0; break;
+            case "CA": opt.selectedIndex=1; break;
+            case "DE": opt.selectedIndex=2; break;
+            case "DK": opt.selectedIndex=3; break;
+            case "FI": opt.selectedIndex=4; break;
+            case "FR": opt.selectedIndex=5; break;
+            case "GB": opt.selectedIndex=6; break;
+            case "IT": opt.selectedIndex=7; break;
+            case "JP": opt.selectedIndex=8; break;
+            case "NO": opt.selectedIndex=9; break;
+            case "SE": opt.selectedIndex=10; break;
+            case "US": opt.selectedIndex=11; break;
+        }
+
+        var opt = document.getElementById("WVisibility");
+        switch (record.visi) {
+            case "0": opt.selectedIndex=0; break;
+            case "1": opt.selectedIndex=1; break;
+        }
+
+    }
+
+}
+
 function initPage()
 {
 	var f=getObj("form");
    
-	f.enable.checked = <?php echo empty(g_wlanif())==true? 'false':'true'; ?>;
-	f.ssid.value = "<?php p_wssid(); ?>";
+	f.enable.checked = <?php echo empty(g_wlanif(g_awifidev()))==true? 'false':'true'; ?>;
+
+<?php
+    if (g_mode() == 1) {
+        echo "    f.securityType.selectedIndex = 1;\n";
+        $dev = g_awifidev();
+        if (!empty($dev)) {
+            echo "    changeWInterface(\"".$dev."\");\n";
+            echo "    f.WIFIassignement.selectedIndex = 0;\n";
+        }
+    }
+?>
+    
+/*
+	f.ssid.value = "<?php //p_wssid(); ?>";
 		
      // WPA or WEP
-    f.securityType.selectedIndex = <?php echo g_security()==1? "0":"1"; ?>;	
+    f.securityType.selectedIndex = <?php echo g_security()==1? "1":"0"; ?>;	
     f.wepKeyLenght.selectedIndex = 0;
     f.wepPPHstring.value = "<?php g_passph('wep',1); ?>";
     f.chiperType.selectedIndex=<?php echo g_cipher(); ?>;
     f.wpaMode.selectedIndex ="<?php echo g_wpamode(); ?>";
 	f.wpaPPHstring.value ="<?php g_passph(); ?>";
+*/
 
 	checkWiFienable();
 }
@@ -128,6 +248,7 @@ function checkWiFienable()
 	getObj("showSecurityWEP").style.display = "none";
 	getObj("showSecurityWPA").style.display = "none";
 	getObj("showPSKpph").style.display = "none";
+    getObj("showWNetIF").style.display = "none";
     <?php if (g_mode() == 1) { ?>getObj("showMasterMode").style.display = "none";<?php }?>
 
 	if(f.enable.checked == true) {
@@ -147,6 +268,8 @@ function changeSecurityType()
 	getObj("showSecurityWEP").style.display = "none";
 	getObj("showSecurityWPA").style.display = "none";
 	getObj("showPSKpph").style.display = "none";
+
+    getObj("showWNetIF").style.display = "";
 
 	if(f.securityType.value == 1) {
 		getObj("showSecurityWEP").style.display = "";
@@ -209,11 +332,10 @@ function checkPage()
             alert("The Passphrase (WPA-PSK) field has invalid characters.");
 	        f.wpaPPHstring.focus();
 	        return false;
-        }
-        if (f.wpaMode.value == 1)      
-            f.f_auth_type.value = 3;
-        else
-            f.f_auth_type.value = 2;
+        } 
+    
+        f.f_auth_type.value = f.wpaMode.value;
+
     }
 
     f.f_cipher.value  = f.chiperType.value==""? "na":f.chiperType.value;
@@ -317,12 +439,14 @@ function checkPage()
 			            <h2 class="actionHeader">Wireless Security Mode</h2>
 			            <table>
 			                <tr>
-				                <td class="raCB" style="width: 40%">Security Mode :&nbsp;</td>
+				                <td class="raCB" style="width: 40%">Key Management :&nbsp;</td>
 				                <td class="laCB">
 				                    <div id="get_ap_sec">
 					                    <select id="securityType" onchange="changeSecurityType()">
                                             <option value="1"<?php if (g_mode() == 1) { ?> style="display:none"<?php }?>>WEP</option>
-                                            <option value="2">WPA-Personal</option>
+                                            <option value="2">WPA-PSK</option>
+                                            <option value="3">WPA-EAP</option>
+                                            <option value="4">WPA-PSK WPA-EAP</option>
                                         </select>
 				                    </div>
 				                </td>
@@ -360,8 +484,8 @@ function checkPage()
 				                <td class="raCB" style="width: 40%">WPA Mode :&nbsp;</td>
 				                <td class="laCB">
 					                <select id="wpaMode">
-						                <option value="1">WPA2</option>
-						                <option value="2">WPA</option>
+						                <option value="1">WPA</option>
+						                <option value="2">WPA2</option>
 					                </select>
 				                </td>
 			                </tr>
@@ -369,8 +493,9 @@ function checkPage()
 				                <td class="raCB">Cipher Type :&nbsp;</td>
 				                <td class="laCB">
 					                <select id="chiperType">
-					                    <option value="2">TKIP</option>
-					                    <option value="3">AES</option>
+					                    <option value="TKIP">TKIP</option>
+					                    <option value="AES">AES</option>
+                                        <option value="TKIP AES">TKIP AES</option>
 					                </select>
 				                </td>
 			                </tr>
@@ -388,7 +513,20 @@ function checkPage()
 					            </td>
 				            </tr>
 			            </table>
-		            </div>
+		            </div><div class="vbr"></div>
+                
+                    <div class="actionBox" id="showWNetIF">
+			            <h2 class="actionHeader">Wireless Network Interface Assignments</h2>
+                        Select which physical network interface that should be configured.<br><br>
+			            <table>
+                            <tr>
+                                <td class="raCB" style="width: 40%">Interface :</td>
+                                <td class="laCB">&nbsp;
+                                    <select id="WIFIassignement" name="WIFIassignement" onchange="changeWInterface(this.options[this.selectedIndex].value)"><?php p_wifopts("none") ?></select>
+                                </td>
+                            </tr>
+			            </table>
+		            </div><div class="vbr"></div>
 
                     <?php if (g_mode() == 1) { ?>
                     <div class="vbr"></div>
@@ -398,20 +536,8 @@ function checkPage()
 				             <tr>
 				                <td class="raCB" style="width: 40%">Wireless Channel :&nbsp;</td>
 				                <td class="laCB">
-					                <select id="WChannel" name="WChannel">
-					                    <option value="1"<?php p_chansel(1)?>>1</option>
-                                        <option value="2"<?php p_chansel(2)?>>2</option>
-                                        <option value="3"<?php p_chansel(3)?>>3</option>
-                                        <option value="4"<?php p_chansel(4)?>>4</option>
-                                        <option value="5"<?php p_chansel(5)?>>5</option>
-                                        <option value="6"<?php p_chansel(6)?>>6</option>
-                                        <option value="7"<?php p_chansel(7)?>>7</option>
-                                        <option value="8"<?php p_chansel(8)?>>8</option>
-                                        <option value="9"<?php p_chansel(9)?>>9</option>
-                                        <option value="10"<?php p_chansel(10)?>>10</option>
-                                        <option value="11"<?php p_chansel(11)?>>11</option>
-                                        <option value="12"<?php p_chansel(12)?>>12</option>
-                                        <option value="13"<?php p_chansel(13)?>>13</option>
+					                <select style="width: 14%" id="WChannel" name="WChannel">
+                                        <?php genChannels(); ?>
 					                </select>
 				                </td>
 			                </tr>
@@ -419,10 +545,9 @@ function checkPage()
 				                <td class="raCB" style="width: 40%">Wireless Mode :&nbsp;</td>
 				                <td class="laCB">
 					                <select id="WMode" name="WMode">
-                                        <option value="a"<?php p_modesel("a")?>>802.11a only</option>
-                                        <option value="b"<?php p_modesel("b")?>>802.11b only</option>
-                                        <option value="g"<?php p_modesel("g")?>>802.11g only</option>
-					                    <option value="gn"<?php p_modesel("gn")?>>Mixed 802.11g and 802.11n</option>    
+                                        <option value="a">802.11a only</option>
+                                        <option value="b">802.11b only</option>
+                                        <option value="g">802.11g only</option>  
 					                </select>
 				                </td>
 			                </tr>
@@ -432,12 +557,9 @@ function checkPage()
 					                <select id="WCountry" name="WCountry">
 
 <?php
-    $sel="";
-    $csel=g_countrysel();
     foreach ($ccodes as $cc => $name) {
-        if ($csel == $cc) $sel=' selected="selected"'; else $sel="";
 
-        echo  "                                        <option value=\"$cc\"$sel>$name</option>\n";
+        echo  "                                        <option value=\"$cc\">$name</option>\n";
     }
 ?> 
 					                </select>
@@ -447,17 +569,8 @@ function checkPage()
 				                <td class="raCB" style="width: 40%">Visibility Status :&nbsp;</td>
 				                <td class="laCB">
 					                <select id="WVisibility" name="WVisibility">
-                                        <option value="0"<?php echo g_hiddenssid()=="0"? ' selected="selected"':""?>>Visible</option>
-                                        <option value="1"<?php echo g_hiddenssid()=="1"? ' selected="selected"':""?>>Invisible</option>
-					                </select>
-				                </td>
-			                </tr>
-                            <tr>
-				                <td class="raCB" style="width: 40%">Driver :&nbsp;</td>
-				                <td class="laCB">
-					                <select id="WDriver" name="WDriver">
-                                        <option  title="Set to rtl871xdrv for Raspberry Pi" value="rtl871xdrv"<?php echo g_wdriver()=="0"? ' selected="selected"':""?>>rtl871xdrv</option>
-                                        <option value="nl80211"<?php echo g_wdriver()=="1"? ' selected="selected"':""?>>nl80211</option>
+                                        <option value="0">Visible</option>
+                                        <option value="1">Invisible</option>
 					                </select>
 				                </td>
 			                </tr>

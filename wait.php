@@ -2,7 +2,7 @@
     /*
      * wait.php
      *
-     *  Copyright (C) 2013-2014 by Erland Hedman <erland@hedmanshome.se>
+     *  Copyright (C) 2013-2024 by Erland Hedman <erland@hedmanshome.se>
      *
      * This program is free software; you can redistribute it and/or
      * modify it under the terms of the GNU General Public License
@@ -19,8 +19,8 @@
 	@system("alleases ".g_domain().">/tmp/dmlist &");
     @system("topspammers > /tmp/spamlist &");
 
-    //echo "<pre>"; print_r($_POST); echo "</pre>";
-    //echo "<pre>"; print_r($_GET); echo "</pre>";
+    //echo "<pre>"; print_r($_GET); echo "</pre>"; exit;
+
     touch("/tmp/keep_wd");
 ?>
 <!DOCTYPE html>
@@ -34,31 +34,27 @@
 <?php include 'inc/general.js.php' ?>
 
 window.location.hash="no-back-button";
-window.location.hash="Again-No-back-button";//again because google chrome don't insert first hash into history
+window.location.hash="Again-No-back-button";    //again because google chrome don't insert first hash into history
 window.onhashchange=function(){window.location.hash="no-back-button";}
 
 function get_burn_time(size)
 {
-	var burn_time, countdown;
+	var burn_time;
+    var downcount;
+    var seconds=60;
+
+    <?php if (!empty($_GET["seconds"])) echo "seconds = ".$_GET["seconds"]; ?>
+
 	var bsize = parseInt(size,[10]);
 
 	burn_time = parseInt((bsize+63)/64,[10]) * 2102;
 	burn_time = parseInt((burn_time+999)/1000,[10]);
-    countdown=<?php echo $_GET[seconds]?$_GET[seconds]:60 ?>
+    downcount=seconds;
 
-	return countdown;
+	return downcount;
 }
 
 var countdown = get_burn_time(64);
-function initPage()
-{
-    <?php
-        if ($_GET[reboot] == "y")
-        system("init 6&");
-    ?>
-	
-    nev();
-}
 
 function nev()
 {
@@ -66,17 +62,29 @@ function nev()
 	document.form.WaitInfo.value=countdown;
 	if(countdown < 1 ) {
         <?php 
-            if (isset($_GET[loc])) {
-                if (isset($_GET[ip]))
-                    $url="http://".$_GET[ip];
+            if (isset($_GET["loc"])) {
+                if (isset($_GET["ip"]))
+                    $url="http://".$_GET["ip"];
                 else $url="";
-                echo "top.location.href='".$url.$_GET[loc]."'";
+                echo "top.location.href='".$url.$_GET["loc"]."'";
             } else
                 echo 'history.go(-1);';
             echo "\n";
         ?>
     }
 	else setTimeout('nev()',1000);
+}
+
+function initPage()
+{
+    <?php
+        if (isset($_GET["reboot"]) && $_GET["reboot"] == "y") {
+            system("sync");
+            system("reboot -f");
+        }
+    ?>
+	
+    nev();
 }
         </script>
     </head>
@@ -102,7 +110,7 @@ function nev()
 			            <table>
 			                <tr>
 				                <td class="laCB" style="text-align: center; height:80px;">
-				                    <?php if ($_GET[reboot] == "y") { ?>
+				                    <?php if (isset($_GET["reboot"]) && $_GET["reboot"] == "y") { ?>
 			                        The device is rebooting...<br><br>
                                     Please <b style="color:red">DO NOT POWER OFF</b> the device.<br><br>
                                     <?php } else { ?>

@@ -1,9 +1,8 @@
 <?php
-
     /*
      * common.php
      *
-     *  Copyright (C) 2013-2014 by Erland Hedman <erland@hedmanshome.se>
+     *  Copyright (C) 2013-2024 by Erland Hedman <erland@hedmanshome.se>
      *
      * This program is free software; you can redistribute it and/or
      * modify it under the terms of the GNU General Public License
@@ -11,6 +10,7 @@
      * 2 of the License, or (at your option) any later version.
      */
 
+    $globals = $GLOBALS;
     $rval = 1;
     system("arp -n | grep -q ". $_SERVER['REMOTE_ADDR'], $rval);
     if ( $rval != 0) {
@@ -39,7 +39,7 @@
     define('VPNET', "192.168.255"); // Reserved for the VPN network range
    
     $CGI_BIN="cgi-bin";
-    $WRAPPER=$_SERVER["DOCUMENT_ROOT"] . $CGI_BIN . "/wrapper";
+    $WRAPPER=$_SERVER["DOCUMENT_ROOT"] . "/" .$CGI_BIN . "/wrapper";
 
     putenv('PATH='.getenv('PATH').':'.$_SERVER["DOCUMENT_ROOT"].'/'.$CGI_BIN);
     putenv('DOCUMENT_ROOT='.$_SERVER["DOCUMENT_ROOT"]);
@@ -76,10 +76,12 @@ function p_title($page="HOME")
 
     echo HOMENAME ." | $type | $page";
 }
+
 function p_productHome()
 {
     echo HOMEURL;
 }
+
 function p_copyRight()
 {
     echo "2013-" . date("Y", time()) . ' <a target="_blank" href="'.HOMEURL.'">'.HOMENAME.'</a>';
@@ -87,11 +89,12 @@ function p_copyRight()
 
 function g_mode()
 {
-    if (g_haswifi())
+    if (g_haswifi() == 1)
         return MODE;
     else
         return 1;
 }
+
 function p_mode()
 {
     if (g_mode() == 1)
@@ -163,16 +166,14 @@ function ifsrv($if, $ip)
         do_firewall_mgm("restart");*/
 }
 
-function g_wdriver()
+function g_awifidev()
 {
-    @system("grep -q driver=rtl871xdrv /etc/hostapd/hostapd.conf 2>/dev/null", $var);
-    if ($var > 1) $var=1;
-    return $var;
+    $dev=trim(exec('find /sys/devices/platform -name phy80211 | awk -F/ \'{printf $(NF - 1) "\n"}\' | sort | awk \'{printf $(NF) " "}\'| cut -d\' \' -f1'));
+    return $dev;
 }
 
-function g_wlanif()
+function g_wlanif($if)
 {
-    $if=trim(exec("/sbin/iwconfig 2> /dev/null | head -1 | awk '{printf \"%s\", $1}'"));
     if (!strcmp(LAN, $if))
         return $if;
     if (!strcmp(WAN, $if))
@@ -190,9 +191,8 @@ function g_haswifi()
 {
     $val = trim(exec("/sbin/iwconfig 2>/dev/null | grep 802.11"));
     if (empty($val))
-        return false;
-
-    return true;
+        return 0;
+    return 1;
 }
 function do_wifilist()
 {
@@ -211,6 +211,11 @@ function p_ifopts($if)
     bash("ifopts $if");
 }
 
+function p_wifopts($if)
+{
+    bash("wifopts $if");
+}
+
 function setTimeout($cond=1)
 {
     if ($cond) {
@@ -227,6 +232,7 @@ function timer()
     if (document.getElementById("timer"))
         document.getElementById("timer").innerHTML="Logout "+ timeoutCount + " s";
 }
+
 function restartTimeout()
 {
     timeoutCount=240;
@@ -237,27 +243,33 @@ function restartTimeout()
 
 function bash($args)
 {
-    system ($GLOBALS['WRAPPER'] . " " . $args, $rval);
+    global $WRAPPER;
+    system("$WRAPPER" . " " . $args, $rval);
     return $rval;
 }
+
 function p_firmware($args)
 {
     $val=exec("uname " . $args);
     echo trim($val);
 }
+
 function p_nodeName()
 {
     echo gethostname();
 }
+
 function p_uptime()
 {
     bash("uptime");
 }
+
 function p_serverName()
 {
-    $var=exec("grep Hardware /proc/cpuinfo | cut -d: -f2");
+    $var=exec("grep Model /proc/cpuinfo | cut -d: -f2");
     echo trim($var);
 }
+
 function  g_iftype($if)
 {
     system("grep -q $if /proc/net/wireless", $rval);
@@ -271,11 +283,10 @@ function g_wmode($if)
     return $val;
 }
 
-
 function p_keyType($if)
 {
     if (g_wmode($if) == "Access Point") {
-        $res=exec("grep wpa_key_mgmt /etc/hostapd/hostapd.conf | cut -d= -f2");
+        $res=exec("grep wpa_key_mgmt= /etc/hostapd/$if.conf | cut -d= -f2");
         echo trim($res);
     } else 
         bash("keytype");
@@ -301,7 +312,6 @@ function g_nclients($if)
 	return $ret;
 }
 
-
 function g_connectionType($if)
 {
     $val = trim(exec("grep -m1 \"iface $if\" /etc/network/interfaces | awk '{print $4}'"));
@@ -310,6 +320,7 @@ function g_connectionType($if)
 
     return $val;
 }
+
 function p_connectionType($if)
 {
     echo strtoupper(g_connectionType($if));
@@ -329,6 +340,7 @@ function p_denycount()
     $var = exec("cat /tmp/deny_counter | sed ':a;N;$!ba;s/\\n/ /g' | awk '{ print $1\" since \"$2 }'");
     echo trim($var);
 }
+
 function g_ifip($if)
 {
     $val=exec("ip addr show $if | grep -v secondary | awk -F/ '/inet /{ print $1 }' | awk '{ print \$NF }'");
@@ -340,8 +352,12 @@ function g_ifip($if)
 
 function g_mac($if)
 {
+    if (substr("$if", -1) == ":")
+        $if = substr("$if", 0, -1); 
+    
     return trim(exec("cat /sys/class/net/$if/address"));
 }
+
 function p_mac($if)
 {    
     echo g_mac($if);
@@ -353,6 +369,7 @@ function g_ip($if)
     if ($val == "") $val="0.0.0.0";
     return $val;
 }
+
 function p_ip($if)
 {
     echo g_ip($if);
@@ -364,6 +381,7 @@ function g_mask($if)
 
     return trim($val);
 }
+
 function p_mask($if)
 {
     echo g_mask($if);
@@ -374,32 +392,33 @@ function g_gateway()
     $val=exec("route -n | grep UG |  awk '{print $2}'");
     return trim($val);
 }
+
 function p_gateway()
 {
     echo g_gateway();
 }
 
-function p_wstatus()
+function p_wstatus($if)
 {
-    bash("connect ". g_wlanif());
+    bash("connect ". g_wlanif($if));
 }
 
-function g_wssid()
+function g_wssid($if)
 {
     $val="unknown";
 
     if (MODE == 1)
-        $val=exec("grep -m1 ssid= /etc/hostapd/hostapd.conf | cut -d= -f2");
+        $val=exec("grep -m1 ssid= /etc/hostapd/$if.conf | cut -d= -f2");
     else if (MODE == 2)
         $val=exec("grep ssid= /etc/wpa_supplicant/wpa_supplicant.conf | cut -d\\\" -f2");
         
     return trim($val);
 }
-function p_wssid()
-{
-    echo g_wssid();
-}
 
+function p_wssid($if)
+{
+    echo g_wssid($if);
+}
 
 function g_passph($how="wpa",$indx=1)
 {
@@ -417,7 +436,8 @@ function g_passph($how="wpa",$indx=1)
     echo $val;
     
 }
-function g_security($type="ap")
+
+function g_security()
 {
     $rval = "1";
     system("grep -iq wpa /etc/wpa_supplicant/wpa_supplicant.conf",$rval);
@@ -425,11 +445,12 @@ function g_security($type="ap")
     system("grep -iq wep /etc/wpa_supplicant/wpa_supplicant.conf",$rval);
     if (!$rval) return "0";
 }
+
 function g_wpamode()
 {
     if (MODE == 1) {
         $val=trim(exec("grep wpa= /etc/hostapd/hostapd.conf | cut -d= -f2"));
-        if ($val == "3") return "0"; return "1";
+        if ($val == "2") return "0"; return "1";
     } else if (MODE == 2) {
         system("egrep -iq 'wpa2|rsn' /etc/wpa_supplicant/wpa_supplicant.conf",$rval);
         if (!$rval) return "0";
@@ -438,13 +459,14 @@ function g_wpamode()
         return "0";
     }
 }
+
 function g_cipher()
 {
     $rval = 0;
 
     if (MODE == 1) {
-        $val=trim(exec("grep wpa_pairwise= /etc/hostapd/hostapd.conf | cut -d= -f2"));
-        if ($val == "CCMP TKIP") return "0"; return "1";
+        $val=trim(exec("grep _pairwise= /etc/hostapd/hostapd.conf | awk -F= '{printf \$2}'"));
+        if ($val == "TKIPCCMP") return "0"; return "1";
     } else if (MODE == 2) {
         system("grep -iq tkip /etc/wpa_supplicant/wpa_supplicant.conf",$rval);
         if (!$rval) return "0";
@@ -458,47 +480,90 @@ function g_cipher()
     }
     return "1";
 }
-function p_chansel($ch)
+
+function g_ssid($if)
 {
-    $val=trim(exec("grep channel= /etc/hostapd/hostapd.conf | cut -d= -f2"));
-    if ($val==$ch)
-        echo (" selected=\"selected\"");
-}
-function p_modesel($mode)
-{
-    $val=trim(exec("grep hw_mode= /etc/hostapd/hostapd.conf | cut -d= -f2"));
-    if ($mode=="gn" && $val=="g") {
-        $valn=trim(exec("egrep 'ieee80211n=1|wmm_enabled=1' /etc/hostapd/hostapd.conf | wc -l"));
-           if ($valn=="2") echo (" selected=\"selected\""); 
-    } else if ($val==$mode)
-        echo (" selected=\"selected\"");
-}
-function g_countrysel()
-{
-    $val=trim(exec("grep country_code= /etc/hostapd/hostapd.conf | cut -d= -f2"));
+    $val=trim(exec("grep -m 1 ssid= /etc/hostapd/$if.conf | cut -d= -f2"));
     return $val;
 }
-function g_hiddenssid()
+
+function g_secm($if)
 {
-    $val=trim(exec("grep ignore_broadcast_ssid= /etc/hostapd/hostapd.conf | cut -d= -f2"));
+    $val=trim(exec("grep wpa_key_mgmt= /etc/hostapd/$if.conf | cut -d= -f2"));
     return $val;
 }
-function p_wbitrate()
+
+function g_wpam($if)
 {
-    bash("bitrate ". g_wlanif());
+    $val=trim(exec("grep -m 1 wpa= /etc/hostapd/$if.conf | cut -d= -f2"));
+    return $val;
 }
-function p_wquality()
+
+function g_wcip($if)
 {
-    bash("quality ". g_wlanif());
+    $val=trim(exec("grep wpa_pairwise= /etc/hostapd/$if.conf | cut -d= -f2"));
+    return $val;
 }
+
+function g_wpsk($if)
+{
+    $val=trim(exec("grep wpa_passphrase= /etc/hostapd/$if.conf | cut -d= -f2"));
+    return $val;
+}
+
+function g_chan($if)
+{
+    $val=trim(exec("grep channel= /etc/hostapd/$if.conf | cut -d= -f2"));
+    return $val;
+}
+
+function g_hmod($if) 
+{
+    $val=trim(exec("grep hw_mode= /etc/hostapd/$if.conf | cut -d= -f2"));
+    return $val;
+}
+
+function g_ccod($if)
+{
+    $val=trim(exec("grep country_code= /etc/hostapd/$if.conf | cut -d= -f2"));
+    return $val;
+}
+
+function g_visi($if)
+{
+    $val=trim(exec("grep ignore_broadcast_ssid= /etc/hostapd/$if.conf | cut -d= -f2"));
+    return $val;
+}
+
+function genChannels()
+{
+    $array = array(1,2,3,4,5,6,7,8,9,10,11,12,13,32,36,40,44,48,52,56,60,64,68,96,100,104,108,112,116,120,124,128,132,136,140,144,149,153,157,161,165,169,173,177);
+
+    foreach ($array as $i => $value) {
+        echo '<option value="'.$value.'">'.$value.'</option>';
+    }
+}
+
+function p_wbitrate($if)
+{
+    bash("bitrate $if");
+}
+
+function p_wquality($if)
+{
+    bash("quality $if");
+}
+
 function do_fwlog($args)
 {
     bash("fwlog $args");
 }
+
 function p_blist()
 {
     bash("logs");
 }
+
 function do_rangeCheck($dip,$msk,$sip,$eip)
 {
     bash ("rangecheck $dip $msk $sip $eip");
@@ -506,52 +571,61 @@ function do_rangeCheck($dip,$msk,$sip,$eip)
     @unlink("/tmp/netrange");
     return $var;
 }
+
 function do_setwpapsk($wpx,$ssid,$pp,$cipher,$if)
 {
     bash("setwpapsk $wpx $ssid $pp $cipher $if");
 }
+
 function do_setwep($ssid,$key, $if)
 {
     bash("setwep $ssid $key $if");
 }
-function do_sethostapd($aut,$if,$ssid,$pp,$cipher,$ch,$mode,$country,$visi, $drv)
+function do_sethostapd($aut,$if,$ssid,$pp,$cipher,$ch,$mode,$country,$visi)
 {
-    bash("sethostapd $aut $if $ssid $pp $cipher $ch $mode $country $visi $drv");
+    bash("sethostapd $aut $if $ssid $pp $cipher $ch $mode $country $visi");
 }
 
 function p_srvip()
 {
-    $var = trim(exec("grep -m1 routers /etc/dhcp/dhcpd.conf | awk '{print $3}' | cut -d\; -f1"));
+    $var = trim(exec("grep -m1 routers /etc/dhcp/dhcpd.conf| awk '{print $3}' | cut -d\; -f1"));
     echo $var;
 }
+
 function p_startip()
 {
-    $var = trim(exec("grep -m1 range /etc/dhcp/dhcpd.conf | awk '{print $2}'"));
+    $var = trim(exec("grep -m1 range /etc/dhcp/dhcpd.conf| awk '{print $2}'"));
     echo $var;
 }
+
 function p_endip()
 {
-    $var = trim(exec("grep -m1 range /etc/dhcp/dhcpd.conf | awk '{print $3}' | cut -d\; -f1"));
+    $var = trim(exec("grep -m1 range /etc/dhcp/dhcpd.conf| awk '{print $3}' | cut -d\; -f1"));
     echo $var;
 }
+
 function p_leasetime()
 {
-    $var = trim(exec("grep -m1 default-lease-time /etc/dhcp/dhcpd.conf | awk '{print $2}' | cut -d\; -f1"));
+    $var = trim(exec("grep -m1 default-lease-time /etc/dhcp/dhcpd.conf| awk '{print $2}' | cut -d\; -f1"));
     echo $var;
 }
+
 function g_domain()
 {
+    $var="";
+
     if (g_srvstat("dhcpd") && g_srvstat("named"))
-        $var = trim(exec("grep -m1 \"domain-name \" /etc/dhcp/dhcpd.conf | awk -F".'\"'." '{print $2}'"));
+        $var = trim(exec("grep -m1 \"domain-name \" /etc/dhcp/dhcpd.conf| awk -F".'\"'." '{print $2}'"));
     else if (g_srvstat("named"))
         $var = trim(exec("grep zone /etc/bind/named.conf.local | awk -F".'\"'." 'NR>1{printf ".'"'."%s".'\n"'.", $2}'| head -1"));
-    if ($var == "")
-        $var = trim(exec("grep -m1 \"domain-name \" /etc/dhcp/dhcpd.conf | awk -F".'\"'." '{print $2}'"));
-    if ($var == "")
+    if (empty($var))
+        $var = trim(exec("grep -m1 \"domain-name \" /etc/dhcp/dhcpd.conf| awk -F".'\"'." '{print $2}'"));
+    if (empty($var))
         $var = "unknown";
 
     return $var;
 }
+
 function p_domain()
 {
     echo g_domain();
@@ -592,9 +666,9 @@ function p_domains($indx=1)
             $var=exec("grep -A2 'forwarders {' /etc/bind/named.conf.options | awk -F".'\;'." 'NR>2{print ".'$1'."}'");
     } else {
     if ($indx == 1)
-        $var=exec("grep \"option domain-name-servers\" /etc/dhcp/dhcpd.conf | awk '{print $3}' | cut -d, -f1 | cut -d".'\;'." -f1");
+        $var=exec("grep \"option domain-name-servers\" /etc/dhcp/dhcpd.conf| awk '{print $3}' | cut -d, -f1 | cut -d".'\;'." -f1");
     else if ($indx == 2)
-        $var=exec("grep \"option domain-name-servers\" /etc/dhcp/dhcpd.conf | awk '{print $4}' | cut -d".'\;'." -f1");
+        $var=exec("grep \"option domain-name-servers\" /etc/dhcp/dhcpd.conf| awk '{print $4}' | cut -d".'\;'." -f1");
     }
 
     echo trim($var);
@@ -658,19 +732,23 @@ function do_firewall_ts($args)
 {
     bash("setfirewallts $args");
 }
+
 function do_firewall_pw($args)
 {
     @system("ckpwroot $args", $rval);
     return $rval==0? true : false;
 }
+
 function do_firewall_fws($args)
 {
    bash("setfirewallfws $args");
 }
+
 function do_firewall_masqif($ifs)
 {
     bash("setfirewallmasqif $ifs");
 }
+
 function g_dnsrelay()
 {
     system('grep -q "dns-relay true" /etc/dhcp/dhcpd.conf',$var);
@@ -686,14 +764,17 @@ function do_dbhome($args)
 {
     bash("setdbhome $args");
 }
+
 function do_dbrev($args)
 {
     bash("setdbrev $args");
 }
+
 function do_dbrecords($args)
 {
 	bash ("setdbrecords $args");
 }
+
 function do_updatedns($fwd1="0",$fwd2="0",$redir="0",$here="0",$dom="0",$ble="0",$zone="0",$lan="eth0",$lan1="eth0:1")
 {
     bash("setupdatedns $fwd1 $fwd2 $redir $here $dom $ble $zone $lan $lan1");
@@ -703,6 +784,7 @@ function do_ddns($en, $dom, $acco, $pw, $prov, $if)
 {
     bash("setddns $en $dom $acco $pw $prov $if");
 }
+
 function do_vpn($args)
 {
     bash("setvpn $args");
@@ -740,11 +822,11 @@ function g_spfredir()
 {
      return trim(exec("grep '*' /etc/bind/null.zone.file | awk '{print $4}'"));
 }
+
 function p_spfredir()
 {
      echo g_spfredir();
 }
-
 
 function g_spfhere()
 {
@@ -760,8 +842,9 @@ function g_spfhere()
 function g_srvzone()
 {
     $dm=g_domain();
-    return trim(exec("grep -m1 subnet /etc/dhcp/dhcpd.conf | awk '{print $2}'"));
+    return trim(exec("grep -m1 subnet /etc/dhcp/dhcpd.conf| awk '{print $2}'"));
 }
+
 function p_srvzone()
 {
     echo g_srvzone();
@@ -772,13 +855,12 @@ function do_vrules($args)
     bash("setvrules $args");
 }
 
-
 function snCheck($args)
 {
-    $dip=$args[f_server_ip];
-    $msk=$args[f_server_nmsk];
-    $sip=$args[f_start_ip];
-    $eip=$args[f_end_ip];
+    $dip=$args['f_server_ip'];
+    $msk=$args['f_server_nmsk'];
+    $sip=$args['f_start_ip'];
+    $eip=$args['f_end_ip'];
     if (($snet = do_rangeCheck($dip,$msk,$sip,$eip)) !=NULL) {
 ?>
 <html>
@@ -788,6 +870,7 @@ function snCheck($args)
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <title>BAD RANGE</title>
 <script>
+
 function init()
 {
     alert("DHCP Adress Range: <?php echo $sip; ?> to <?php echo $eip; ?> not in subnet <?php echo $snet; ?> as of netmask <?php echo $msk; ?>");
