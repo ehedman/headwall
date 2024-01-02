@@ -166,10 +166,19 @@ function ifsrv($if, $ip)
         do_firewall_mgm("restart");*/
 }
 
+function g_allwifidev()
+{
+    $devs=trim(exec('find /sys/devices/platform -name phy80211 | awk -F/ \'{printf $(NF - 1) "\n"}\' | sort | awk \'{printf $(NF) " "}\''));
+    $devices = explode(" ", $devs);
+
+$emptyArray = (array) null; 
+
+    return $devices;
+}
+
 function g_awifidev()
 {
     $dev=trim(exec('find /sys/devices/platform -name phy80211 | awk -F/ \'{printf $(NF - 1) "\n"}\' | sort | awk \'{printf $(NF) " "}\'| cut -d\' \' -f1'));
-    return $dev;
 }
 
 function g_wlanif($if)
