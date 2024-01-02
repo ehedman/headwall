@@ -1,11 +1,11 @@
 # headwall
-README Jan-2018
+README Jan-2024
 
 Headwall is a home gateway, firewall and network bridge that is designed to
 run on hardware that is widely available to anyone with an interest in
 embedded systems and Linux.
 
-Exampled hardware could be an Rasperry Pi, a PandaBoard, a BeagleBoardord or similar
+Exampled hardware could be an Rasperry Pi, a BeagleBoardord or similar
 systems that can be purchased over the counter.
 
 The goal of the design of this system is that it should be easy to use and
@@ -20,7 +20,7 @@ guidance during configuration.
 * DNS Server in stand alone mode
 * DDNS (DNS and DHCP integrated)
 * Firewall based on shorewall
-* URL outgoing filtering with tracker jump over
+* URL outgoing filtering with counter of hits to blocked sites controlled by a DNS blacklist.
 * Watchdog (hard) surveillance of network connectivity
 * VPN Server for the LAN
 * Mass storage CIFS server for the LAN
