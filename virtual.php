@@ -264,12 +264,13 @@ function onsrv(n)
                         The Virtual Server option allows you to define a single public port on your <?php p_mode(); ?> for
                         redirection to an internal LAN IP Address and Private LAN port if required.
                         This feature is useful for hosting online services such as FTP or Web Servers.
-                        <br><br>
+                        <br><br><?php if (g_srvstat("shorewall") == true) { ?>
                         <input value="Save Settings" type="submit">&nbsp;
-                        <input value="Don't Save Settings" onclick="cancelSettings()" type="button">
+                        <input value="Don't Save Settings" onclick="cancelSettings()" type="button"><?php } ?>
                         <div style="text-align:right"><?php echo g_srvstat("shorewall")? '<b style="color:#090;">Firewall: active</b>':'<b style="color:#f00;">Firewall: stopped</b>' ?></div>
 		            </div><div class="vbr"></div>
-		            <div class="actionBox" style="overflow-y:auto;max-height:600px;">
+                    <?php if (g_srvstat("shorewall") == true) { ?>
+		            <div class="actionBox" style="overflow-y:auto;max-height:600px;">        
 	                    <h2 class="actionHeader">VIRTUAL SERVERS RULES</h2>
 			            <table id="vtable"> 
                         <tr>       
@@ -359,7 +360,7 @@ function onsrv(n)
                                 <?php if ($first == true ) { ?>
                                     <b style="color:#378">Add<br>New</b>
                                 <?php } else { ?>    <img alt="deleted" src="/img/deleted.png" style="height:12px">
-                                <?php }?></div>
+                                </div><?php }?>
                             </td>
                         </tr>
                         <tr>         
@@ -390,7 +391,7 @@ function onsrv(n)
 ?>
 
 			            </table>
-		            </div>
+		            </div><?php } ?>
                 </td>
 	            <td id="quickHelpContent"><strong>Help...</strong><br>
                   <br>
