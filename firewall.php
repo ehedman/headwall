@@ -12,7 +12,7 @@
 
     include 'cgi-bin/common.php';
 
-    if (count($_POST)) {echo "<pre>"; print_r($_POST); echo "</pre>";exit;}
+    //if (count($_POST)) {echo "<pre>"; print_r($_POST); echo "</pre>";exit;}
 
     if (count($_POST) && $_POST["POST_ACTION"] == "OK") {
 
@@ -32,17 +32,13 @@
             // We are the child
             if ($_POST["activate"] == "Activate") {
                 do_firewall_masqif(g_wan()." ".g_lan()." ".g_srvlan()." ".g_srvip());
-                do_firewall_mgm("restart");
-            } else if ($_POST["activate"] == "Stop") {
-                do_firewall_mgm("stop");
-            } else {
-
                 if ($_POST["ACTION_DO_TS"] == 1)
                     do_firewall_ts($_POST['ts_enabled']." ".$_POST['dl_speed']." ".$_POST['ul_speed']." ".g_wan());
                 if ($_POST["ACTION_DO_FWS"] == 1)
                     do_firewall_fws($_POST['ssh_enabled']." ".$_POST['nfs_enabled']." ".$_POST['vpn_enabled']);
-                if (g_srvstat("shorewall") == true)
-                    do_firewall_mgm("restart");
+                do_firewall_mgm("restart");
+            } else if ($_POST["activate"] == "Stop") {
+                do_firewall_mgm("stop");
             }
         } else { 
             header('Location: http://'. $_SERVER["SERVER_ADDR"]. '/wait.php?seconds=14&loc='.$_SERVER['SCRIPT_NAME']);
@@ -75,8 +71,12 @@ function initPage()
 {
 	var f=getObj("form");
     f.ts_enable.checked = <?php echo @stat("/etc/shorewall/tcinterfaces")==false? "false":"true" ?>;
+    <?php if (file_exists("/etc/shorewall/tcinterfaces"))  {?>
+
     f.dl_speed.value="<?php echo exec ("cat /etc/shorewall/tcinterfaces | awk 'NR>5{gsub(".'"mbit",""); printf "%s"'.", $3}'"); ?>";
     f.ul_speed.value="<?php echo exec ("cat /etc/shorewall/tcinterfaces | awk 'NR>5{gsub(".'"mbit",""); printf "%s"'.", $4}'"); ?>";
+
+    <?php } if (g_srvstat("shorewall") == true) { echo 'f.activate.value = "Activate";'; } ?>
 
     f.PASSWD.value == "00000000";
 

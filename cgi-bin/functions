@@ -19,29 +19,26 @@ p_uptime()
 doMkKey()
 (
     if [ -s /etc/dhcp/ddns.key ] && [ -s /etc/bind/rndc.key ]; then
-        return
+       return
     fi
 
     cd /tmp || return
 
-    /usr/sbin/dnssec-keygen -a HMAC-MD5 -b 128 -r /dev/urandom -n USER DDNS_UPDATE  >/dev/null 2>&1
-    key=$(grep Key: Kddns_update*.private | cut -d: -f2 | sed s/" "//)
+    key=$(tsig-keygen -a HMAC-MD5 DDNS_UPDATE |  awk '/secret/ {print $2}')
 
 cat <<End-of-message>/etc/dhcp/ddns.key
 key DDNS_UPDATE {
     algorithm HMAC-MD5.SIG-ALG.REG.INT;
-    secret "${key}";
+    secret ${key}
 };
 End-of-message
 
 cat <<End-of-message>/etc/bind/rndc.key
 key "rndc-key" {
         algorithm hmac-md5;
-        secret "${key}";
+        secret ${key}
 };
 End-of-message
-
-    rm -f Kddns*
 
     cd -  >/dev/null 2>&1 || return
 )
@@ -49,7 +46,8 @@ End-of-message
 do_nlist()
 {
     if=$3
-    nw=$(ip addr show "${if}" | grep -v secondary | awk -F/ '/inet /{ print $1 }' | awk '{ print $NF }' | cut -d. -f1-3)
+    nw=$(ifconfig "${if}" | grep -m1 inet | awk '{printf $2}' | cut -d. -f1-3)
+
     if [ -z "${nw}" ]; then
         echo "" > /tmp/hostopts
         return
@@ -163,8 +161,13 @@ End-of-message
 
     echo "${4}" > /etc/hostname; hostname -F /etc/hostname
     
-    /sbin/shorewall stop
-    /sbin/shorewall clear
+    swrestart=0
+
+    if shorewall status | grep -q running; then
+        echo    /sbin/shorewall stop
+        echo    /sbin/shorewall clear
+        swrestart=1
+    fi
 
     if ! diff --ignore-blank-lines /etc/network/interfaces /etc/network/interfaces.old > /dev/null; then
         /sbin/ifdown -a --force
@@ -184,15 +187,15 @@ End-of-message
         if [ -n "${dhif}" ]; then
             sed /"${dhif}"/s//"${lan}"/g /etc/dhcp/dhcpd.conf > /tmp/dhif
             if [ -f /tmp/dhif ]; then
-                cp /tmp/dhif /etc/dhcp/dhcpd.conf
+                mv /tmp/dhif /etc/dhcp/dhcpd.conf
                 if pidof -s -q dhcpd; then
                     /usr/bin/systemctl stop isc-dhcp-server
                 fi
             fi
         fi
 
-        newlan=$(tail -n 4 /etc/network/interfaces)
-        oldlan=$(tail -n 4 /etc/network/interfaces.old)
+        newlan=$(md5sum /etc/network/interfaces | awk '{printf $1}')
+        oldlan=$(md5sum /etc/network/interfaces.old | awk '{printf $1}')
 
         if [ "${oldlan}" != "${newlan}" ]; then
             /usr/bin/systemctl stop bind9 isc-dhcp-server
@@ -219,13 +222,12 @@ End-of-message
 
     if [ -f /etc/shorewall/tcinterfaces ]; then
         data=$(grep mbit /etc/shorewall/tcinterfaces | awk '{printf "%s %s\n", $3,$4}' | sed /mbit/s///g)
-        do_firewall_ts na 1  "${data}" "${wan}"
+# shellcheck disable=SC2086 # this is intentional
+        do_firewall_ts na 1 ${wan} "${data}" 
     fi
 
-    if diff --ignore-blank-lines /etc/network/interfaces /etc/network/interfaces.old > /dev/null; then
-        if grep -q "startup=1" /etc/default/shorewall; then
-            /sbin/shorewall start
-        fi
+    if (( "$swrestart" == 1 )); then
+        /sbin/shorewall start
     fi
 }
 
@@ -273,10 +275,18 @@ End-of-message
 
     echo "${1}" > /etc/hostname; hostname -F /etc/hostname
 
-    /sbin/shorewall stop
-    /sbin/shorewall clear
+    swrestart=0
 
-    if ! diff --ignore-blank-lines /etc/network/interfaces /etc/network/interfaces.old &> /dev/null; then
+    if shorewall status | grep -q running; then
+        echo    /sbin/shorewall stop
+        echo    /sbin/shorewall clear
+        swrestart=1
+    fi
+
+    newlan=$(md5sum /etc/network/interfaces | awk '{printf $1}')
+    oldlan=$(md5sum /etc/network/interfaces.old | awk '{printf $1}')
+
+    if [ "${oldlan}" != "${newlan}" ]; then
         /sbin/ifdown -a --force
         sleep 1
         /sbin/ifup -a --force
@@ -294,21 +304,16 @@ End-of-message
         if [ -n "${dhif}" ]; then
             sed /"${dhif}"/s//"${lan}"/g /etc/dhcp/dhcpd.conf > /tmp/dhif
             if [ -f /tmp/dhif ]; then
-                cp /tmp/dhif /etc/dhcp/dhcpd.conf 
+                mv /tmp/dhif /etc/dhcp/dhcpd.conf 
                 if pidof -s -q dhcpd; then
                     /usr/bin/systemctl stop isc-dhcp-server
                 fi
             fi
         fi
 
-        newlan=$(tail -n 4 /etc/network/interfaces)
-        oldlan=$(tail -n 4 /etc/network/interfaces.old)
-
-        if [ "${oldlan}" != "${newlan}" ]; then
-            /usr/bin/systemctl stop bind9 isc-dhcp-server stop
-            echo "" > /var/lib/dhcp*/dhcpd.leases
-            rm -f /etc/bind/db*.jnl
-        fi
+        /usr/bin/systemctl stop bind9 isc-dhcp-server
+        echo "" > /var/lib/dhcp*/dhcpd.leases
+        rm -f /etc/bind/db*.jnl
 
         hapconf="/etc/hostapd/${lan}.conf"
         hapserv="hostapd@${lan}.service"
@@ -318,7 +323,7 @@ End-of-message
             if [ -n "${haif}" ]; then
                 sed /"${haif}"/s//"${lan}"/g "${hapconf}" > /tmp/haif
                 if [ -f /tmp/haif ]; then
-                    cp /tmp/haif  "${hapconf}"
+                    mv /tmp/haif  "${hapconf}"
                     /usr/bin/systemctl restart "${hapserv}"
                 fi
             fi
@@ -330,14 +335,14 @@ End-of-message
 
     if [ -f /etc/shorewall/tcinterfaces ]; then
         data=$(grep mbit /etc/shorewall/tcinterfaces | awk '{printf "%s %s\n", $3,$4}' | sed /mbit/s///g)
-        do_firewall_ts na 1  "${data}" "${wan}"
+# shellcheck disable=SC2086 # this is intentional
+        do_firewall_ts na 1  ${data} "${wan}"
     fi
 
-    if diff --ignore-blank-lines /etc/network/interfaces /etc/network/interfaces.old > /dev/null; then
-        if grep -q "startup=1" /etc/default/shorewall; then
-            /sbin/shorewall start
-        fi
+    if (( "$swrestart" == 1 )); then
+        /sbin/shorewall start
     fi
+
 }
 
 do_hostapd()
@@ -462,8 +467,8 @@ do_setwpapsk()
     urldecode "${2}"
 
     if [ "${1}" = "WPA2" ]; then proto="RSN"; else proto="WPA"; fi
-    if (( "${4}" = 2 )); then cipher="TKIP"; fi
-    if (( "${4}" = 3 )); then
+    if (( "${4}" == 2 )); then cipher="TKIP"; fi
+    if (( "${4}" == 3 )); then
         if [ "${1}" = "WPA2" ];
             then cipher=""
         fi
@@ -487,8 +492,8 @@ End-of-message
 do_dhcpd()
 {
     doMkKey
-    
-    if (( "${3}" = 1 )); then server=true; else server=false; fi
+   
+    if (( "${3}" == 1 )); then server=true; else server=false; fi
     shift 3
 
     lan_ip=${1}
@@ -498,7 +503,7 @@ do_dhcpd()
     lan_if=${12}
     lan1_if=${13}
    
-    if (( "${10}" = 1 )); then
+    if (( "${10}" == 1 )); then
         relay="# dns-relay true" 
         resolv=$(grep -m1 nameserver /etc/resolv.conf | awk '{printf "%s", $2}')
         r2=$(grep nameserver /etc/resolv.conf | awk '{printf "%s ", $2}' | awk '{print $2}')
@@ -513,7 +518,7 @@ do_dhcpd()
         fi
     fi  
 
-    sub=$(ipcalc -b "${lan_ip}" "${lan_mask} "| grep Network: | awk '{print $2 }' | cut -d/ -f1)
+    sub=$(ipcalc -b "${lan_ip}" "${lan_mask}" | grep Network: | awk '{print $2 }' | cut -d/ -f1)
     broadc=$(ipcalc "${sub}"/"${lan_mask}" | grep Broadcast | awk '{print $2}')
     iprev=$(echo "${sub}" | sed s/"\."/" "/g | awk '{print $3"."$2"."$1}')
 
@@ -522,6 +527,9 @@ do_dhcpd()
 
     if [ ${server} = true ]; then
         file="/etc/dhcp/dhcpd.conf"
+        grep -v INTERFACESv4 /etc/default/isc-dhcp-server > /tmp/isc-dhcpd.tmp
+        echo "INTERFACESv4=\"${lan_if}\"" >>  /tmp/isc-dhcpd.tmp
+        mv /tmp/isc-dhcpd.tmp /etc/default/isc-dhcp-server
     else
         file=/dev/null
     fi
@@ -579,24 +587,24 @@ End-of-message
         echo "update delete ${rv}. PTR ${4}.${domain}." >> "${filedns}"
         echo "send" >> "${filedns} "      
 
-        if (( ${1} = 3 )); then
+        if (( ${1} == 3 )); then
             shift 4
             cnt=$(("${cnt}"-4))         
             continue;
         fi
 
-        if (( "${1}" = 2 )) || (( "${1}" = 0 )); then
+        if (( "${1}" == 2 )) || (( "${1}" == 0 )); then
             rmadynlease "${2}" "${lan_if}"
         fi
         
-        if (( "${1}" = 0 )); then d="#"; else d=""; fi
+        if (( "${1}" == 0 )); then d="#"; else d=""; fi
 
         echo "${d}host ${4}.${domain} {" >> "${file}"
         echo "${d}    hardware ethernet ${2};" >> "${file}"
         echo "${d}    fixed-address ${3};" >> "${file}"
         echo "${d}}" >> "${file}"
 
-       if (( "${1}" = 1 )); then
+       if (( "${1}" == 1 )); then
             echo "zone ${domain}" >> "${filedns} "    
             echo "update add ${4}.${domain} 86400 A ${3}" >> "${filedns}"
             echo "send" >> "${filedns}"
@@ -610,7 +618,7 @@ End-of-message
     done
 
     cip=$(grep -m1 -A1 "iface ${lan_if} inet static" /etc/network/interfaces | grep address | awk '{print $2}')
-    sed /etc/network/interfaces /"${cip}"/s//"${lan_ip}"/ >/tmp/ifs
+    sed  /"${cip}"/s//"${lan_ip}"/ /etc/network/interfaces >/tmp/ifs
     
     if [ -s /tmp/ifs ]; then
         cp /etc/network/interfaces  /etc/network/interfaces.old
@@ -622,10 +630,13 @@ End-of-message
     if pidof -s -q named; then 
         key=$(grep key /etc/dhcp/ddns.key | awk '{print $2}')
         sec=$(grep secret /etc/dhcp/ddns.key | awk -F\" '{print $2}')
-#        /usr/bin/nsupdate -y "${key}:${sec}" "${filedns}"
+        /usr/bin/nsupdate -y "${key}:${sec}" "${filedns}"
     fi
 
-    if ! diff --ignore-blank-lines /etc/network/interfaces /etc/network/interfaces.old > /dev/null; then
+    newlan=$(md5sum /etc/network/interfaces | awk '{printf $1}')
+    oldlan=$(md5sum /etc/network/interfaces.old | awk '{printf $1}')
+
+    if [ "${oldlan}" != "${newlan}" ]; then
         /sbin/ifdown -a --force
         sleep 1
         /sbin/ifup -a --force
@@ -639,14 +650,10 @@ End-of-message
             fi
         fi
 
-        newlan=$(tail -n 4 /etc/network/interfaces)
-        oldlan=$(tail -n 4 /etc/network/interfaces.old)
+        /usr/bin/systemctl stop bind9 isc-dhcp-server
+        echo "" > /var/lib/dhcp*/dhcpd.leases
+        rm -f /etc/bind/db*.jnl
 
-        if [ "${oldlan}" != "${newlan}" ]; then
-            /usr/bin/systemctl stop bind9 isc-dhcp-server stop
-            echo "" > /var/lib/dhcp*/dhcpd.leases
-            rm -f /etc/bind/db*.jnl
-        fi
     fi
 }
 
@@ -654,16 +661,19 @@ do_updatedhcp()
 {
     primary=${1}
     secondary=${2}
+
+    file=/etc/dhcp/dhcpd.conf
+
+    opattern="$(grep -m1 "option domain-name-servers" ${file})"
+
     if [ -n  "${secondary}" ]; then
-        npattern="${primary}, ${secondary};"
-        pattern=$(grep 'option domain-name-servers' /etc/dhcp/dhcpd.conf| awk '{print $2" "$3" "$4}')
+        npattern="${primary}, ${secondary}"
     else
-        npattern="${primary},"
-        pattern=$(grep 'option domain-name-servers' /etc/dhcp/dhcpd.conf| awk '{print $2" "$3}')
+        npattern="${primary}"
     fi
 
     if pidof -s -q dhcpd; then
-        sed /etc/dhcp/dhcpd.confs/"${pattern}"/"domain-name-servers ${npattern}"/ >/tmp/udhcp
+        sed "s/${opattern}/  option domain-name-servers ${npattern};/" "${file}" > /tmp/udhcp
         if [ -s /tmp/udhcp ]; then
             cp /etc/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf.old
             cp /tmp/udhcp /etc/dhcp/dhcpd.conf
@@ -696,10 +706,10 @@ do_dbhome()
 {
     doMkKey
 
-    if (( "${3}" = 1 )); then dns_enable=true; else dns_enable=false; fi
-    if (( "${4}" = 1 )); then bl_enable=true; else bl_enable=false; fi
-#    if (( "${5}" = 1 )); then bl_updates=true; else bl_updates=false; fi
-#    if (( "${6}" = 1 )); then gg_jumps=true; else gg_jumps=false; fi
+    if (( "${3}" == 1 )); then dns_enable=true; else dns_enable=false; fi
+    if (( "${4}" == 1 )); then bl_enable=true; else bl_enable=false; fi
+#    if (( "${5}" == 1 )); then bl_updates=true; else bl_updates=false; fi
+#    if (( "${6}" == 1 )); then gg_jumps=true; else gg_jumps=false; fi
     dnsfw_1=${7}
     dnsfw_2=${8}
     serving_net=${9}
@@ -711,7 +721,7 @@ do_dbhome()
 
     
     thishost=$(hostname)
-    thisip=$(ip addr show "${lan_if}" | grep -v secondary | awk -F/ '/inet /{ print $1 }' | awk '{ print $NF }')
+    thisip=$(ifconfig "${lan_if}" | grep -m1 inet | awk '{printf $2}')
 
     file=/etc/bind/db.${domain}
 
@@ -737,7 +747,7 @@ End-of-message
     do
     
     if (( "${cnt}" <= 0 )); then break; fi
-        if (( "${1}" = 1 )); then
+        if (( "${1}" == 1 )); then
             echo -e "${2}"'\t'"A"'\t'"${3}">> "${file}"
         fi
         shift 3
@@ -749,10 +759,10 @@ do_dbrev()
 {
     doMkKey 
 
-    if (( "${3}" = 1 )); then dns_enable=true; else dns_enable=false; fi
-    if (( "${4}" = 1 )); then bl_enable=true; else bl_enable=false; fi
-#    if (( "${5}" = 1 )); then bl_updates=true; else bl_updates=false; fi
-#    if (( "${6}" = 1 )); then gg_jumps=true; else gg_jumps=false; fi
+    if (( "${3}" == 1 )); then dns_enable=true; else dns_enable=false; fi
+    if (( "${4}" == 1 )); then bl_enable=true; else bl_enable=false; fi
+#    if (( "${5}" == 1 )); then bl_updates=true; else bl_updates=false; fi
+#    if (( "${6}" == 1 )); then gg_jumps=true; else gg_jumps=false; fi
 
     dnsfw_1=${7}
     dnsfw_2=${8}
@@ -762,11 +772,11 @@ do_dbrev()
     lan_if=${13}
     lan1_if=${14}
 
-    if (( "${12}" = 1 )); then spf_here="redir_here=y"; else spf_here="redir_here=n"; fi
+    if (( "${12}" == 1 )); then spf_here="redir_here=y"; else spf_here="redir_here=n"; fi
 
     shift 8
 
-    thisip=$(ip addr show "${lan_if}" | grep -v secondary | awk -F/ '/inet /{ print $1 }' | awk '{ print $NF }')
+    thisip=$(ifconfig "${lan_if}" | grep -m1 inet | awk '{printf $2}')
     iprev=$(echo "${serving_net}" | sed s/"\."/" "/g | awk '{print $3"."$2"."$1}')
    
     thishost="$(hostname)"
@@ -795,7 +805,7 @@ End-of-message
     while true
     do
     if (( "${cnt}" <= 0 )); then break; fi
-        if (( "${1}" = 1 )); then
+        if (( "${1}" == 1 )); then
             tail=$(echo "${3}" | cut -d. -f4)
             echo -e "${tail}"'\t'"IN"'\t'"PTR"'\t'"${2}"."${domain}".>> "${file}"
         fi
@@ -924,9 +934,9 @@ do_updatedns()
     lan_if=${8}
     lan1_if=${9}
 
-    if (( "${4}" = 1 )); then spf_here="redir_here=y"; else spf_here="redir_here=n"; fi
-    if (( "${6}" = 1 )); then bl_enable=true; else bl_enable=false; fi
-    thisip=$(ip addr show "${lan_if}" | grep -v secondary | awk -F/ '/inet /{ print $1 }' | awk '{ print $NF }')
+    if (( "${4}" == 1 )); then spf_here="redir_here=y"; else spf_here="redir_here=n"; fi
+    if (( "${6}" == 1 )); then bl_enable=true; else bl_enable=false; fi
+    thisip=$(ifconfig "${lan_if}" | grep -m1 inet | awk '{printf $2}')
     thishost=$(hostname)
     if [ ${bl_enable} = true ]; then
         blist='include "/etc/bind/blacklist";'
@@ -1038,7 +1048,7 @@ do_dbrecords()
             echo "zone ${rzn}" >> "${file}"
             echo "update delete ${rv}. PTR ${2}.${domain}." >> "${file}"
             echo "send" >> "${file}"       
-            if (( "${1}" = 1 )); then
+            if (( "${1}" == 1 )); then
                 echo "zone ${domain}" >> "${file} "    
                 echo "update add ${2}.${domain} 86400 A ${3}" >> "${file}"
                 echo "send" >> "${file}"
@@ -1135,9 +1145,7 @@ password='${password}'
 ${domain} 
 End-of-message
 
-return
-
-     if (("${enable}" = 0 )); then
+     if (("${enable}" == 0 )); then
         /usr/bin/systemctl stop ddclient
         sleep 3
         if [ -f /var/run/ddclient.pid ]; then
@@ -1175,7 +1183,7 @@ do_vpn()
             file4="/etc/ppp/ip-down.d/100forwarding"
             file5="/etc/ppp/chap-secrets"
             nconn=$(( "${nconn}" +2 ))
-            if (( "${how}" = 1 )); then enc="require-mppe-128"; fi
+            if (( "${how}" == 1 )); then enc="require-mppe-128"; fi
         ;;
         *)
             return
@@ -1256,14 +1264,14 @@ End-of-message
     do      
         if (("${cnt}" <= 0 )); then break; fi
         cnt=$(("${cnt}"-3 ))
-        if (("${3}" = 0 )); then continue; fi
+        if (("${3}" == 0 )); then continue; fi
         echo "${1}	*	${2}	*" >> "${file5}"
         shift 3      
     done
 
     chmod 754 "${file3}" "${file4}"
    
-    if (("${enable}" = 0 )); then
+    if (("${enable}" == 0 )); then
         /usr/bin/systemctl stop pptpd
         /usr/bin/systemctl disable pptpd
     else
@@ -1275,12 +1283,11 @@ End-of-message
 
 do_firewall_masqif()
 {
-
     wan=${2}
     lan=${3}
-    mask=$(/sbin/ifconfig "${lan} "| grep -i netmask | awk -F' ' '{print $4}')
-    ip=$(ip addr show eth0 | grep -v secondary | awk -F/ '/inet /{ print $1 }' | awk '{ print $NF }')
-    net=$(ipcalc -b "${ip}" "${mask} "| grep Network: | awk '{print $2 }')
+    mask=$(ifconfig "${lan}"| grep -i netmask | awk -F' ' '{print $4}')
+    ip=$(ifconfig "${wan}" | grep -m1 inet | awk '{printf $2}')
+    net=$(ipcalc -b "${ip}" "${mask}"| grep Network: | awk '{print $2 }')
 
     if [ -f /etc/shorewall/tunnels ]; then
        vpnif="loc	ppp+"
@@ -1335,9 +1342,10 @@ End-of-message
 
 do_firewall_ts()
 {
+
     file=/etc/shorewall/tcinterfaces
     
-    if (( ${2} = 0 )); then rm -f "${file}"; return; fi
+    if (( ${2} == 0 )); then rm -f "${file}"; return; fi
 
 cat <<End-of-message>"${file}"
 # Shorewall version 5.1 - Traffic shaping file
@@ -1360,13 +1368,13 @@ do_firewall_fws()
 
     cp "${base}/bridge/rules" /tmp/rules
    
-    if (( ${1} = 1 )); then
+    if (( ${1} == 1 )); then
         echo "SSH(ACCEPT)		loc	\$FW" >> /tmp/rules
     else
         echo "SSH(REJECT)		loc	\$FW" >> /tmp/rules
     fi
   
-    if (( ${2} = 1 )); then                         
+    if (( ${2} == 1 )); then                         
         echo "ACCEPT			loc	\$FW	udp	111	# portmap" >> /tmp/rules
         echo "ACCEPT			loc	\$FW	tcp	111	# portmap" >> /tmp/rules
         echo "ACCEPT			loc	\$FW	udp	2049	# nfs" >> /tmp/rules
@@ -1383,7 +1391,7 @@ do_firewall_fws()
     fi
 
     
-    if (( ${3} = 1 )); then
+    if (( ${3} == 1 )); then
         echo "ACCEPT			net	\$FW	tcp	1723	# VPN (pptpd)" >> /tmp/rules
 
         echo "# DO NOT EDIT THIS FILE BY HAND -- YOUR CHANGES WILL BE OVERWRITTEN" > ${base}/tunnels
@@ -1441,7 +1449,7 @@ do_cifs_disk()
             osize=$(wc -l /etc/fstab | awk '{ print $1 }')
             grep -v "${uuid}" /etc/fstab > /tmp/fstab
             nsize=$(($(wc -l /etc/fstab | awk '{print $1}' ) +1))
-            if (( "${osize}" = "${nsize}" )); then
+            if (( "${osize}" == "${nsize}" )); then
                 cp /tmp/fstab /etc/fstab
             fi
             return          
@@ -1494,7 +1502,7 @@ do_cifs_disk()
             cp /tmp/fstab.orig /etc/fstab
             mkdir -p /media/"${ext}/${curdisk}"
             chmod -R 755 /media/"${ext}/${curdisk}"
-            if (( "${ismount}" = 0 )); then
+            if (( "${ismount}" == 0 )); then
                 mount /media/"${ext}/${curdisk}"
             fi
             return
@@ -1552,8 +1560,8 @@ End-of-message
         if (( "${cnt}" < 0 )); then break; fi
         cnt=$(("${cnt}"-5))
 
-        if (( "${5}" = 3 )); then
-            if (( "${4}" = 1 )); then
+        if (( "${5}" == 3 )); then
+            if (( "${4}" == 1 )); then
                 smbpasswd -x "${2}"
                 userdel "${2}"
             fi
@@ -1561,14 +1569,14 @@ End-of-message
         fi
         
         echo "[${1}]" >> "${file}"
-        if (( "${4}" = 1 )); then
+        if (( "${4}" == 1 )); then
             echo "    valid users = ${2}" >> "${file}"
         else
             echo "    guest ok = yes" >> "${file}"
         fi
         echo "    path = ${root}/${1}" >> "${file}"
         echo "    writeable = yes" >> "${file}"
-        if (( "${4}" = 1 )); then
+        if (( "${4}" == 1 )); then
             echo "    read only = no" >> "${file}"
             echo "    guest ok = no" >> "${file}"
             echo "    create  mask = 0640" >> "${file}"
@@ -1576,7 +1584,7 @@ End-of-message
             echo "    comment = ${2}'s private folder" >> "${file}"
             mkdir -p "${root}/${1}"
             chmod -R 0750 "${root}/${1}"
-            if (( "${5}" = 1 )); then
+            if (( "${5}" == 1 )); then
                 $SHELL -c "useradd ${2} -p ${3} -M -s /bin/false"
                 echo -ne "${3}\n${3}\n" | smbpasswd -a -s "${2}"
             fi
@@ -1601,7 +1609,7 @@ End-of-message
 do_transmission()
 {
     enab=${1}   
-    if (( "${2}"= 1 )); then auth="true"; else auth="false"; fi
+    if (( "${2}"== 1 )); then auth="true"; else auth="false"; fi
     port=${3}
     dlp="${4}/transmission"
     user=${5}
@@ -1696,7 +1704,7 @@ End-of-message
         rm -f /tmp/rules*
     fi
 
-    if (( "${enab}" = 1 )); then
+    if (( "${enab}" == 1 )); then
         sed "8aACCEPT			loc	\$FW 	tcp	${port}	# transmission on fw" /etc/shorewall/rules > /tmp/rules.tmp
         sed "9aACCEPT			net	\$FW 	tcp	${port}	# transmission on fw" /tmp/rules.tmp  > /tmp/rules
         if [ -s /tmp/rules ]; then
@@ -1717,8 +1725,8 @@ do_fwlog()
 {
     shift 2
     
-    if (( "${1}" = 1 )); then dlog="\$LOG_LEVEL"; else dlog=""; fi
-    if (( "${2}" = 1 )); then rlog="\$LOG_LEVEL"; else rlog=""; fi
+    if (( "${1}" == 1 )); then dlog="\$LOG_LEVEL"; else dlog=""; fi
+    if (( "${2}" == 1 )); then rlog="\$LOG_LEVEL"; else rlog=""; fi
 
     file=/etc/shorewall/policy
 

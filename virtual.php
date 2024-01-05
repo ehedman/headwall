@@ -387,7 +387,7 @@ function onsrv(n)
     $first=false;
 	}
 	@fclose($fd);
-    @unlink("/tmp/rlist");
+    //@unlink("/tmp/rlist");
 ?>
 
 			            </table>

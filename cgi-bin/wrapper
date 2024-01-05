@@ -16,7 +16,7 @@ case $1 in
         if [ $res -eq 0 ]; then echo -n connected; else echo -n not connected; fi fi
     ;;
     bitrate)
-        br=$(hostapd_cli -i "${2}" all_sta | grep tx_rate_info= | cut -d= -f2)
+        br=$(hostapd_cli -i "${2}" all_sta | grep tx_rate_info= | cut -d= -f2 | awk  '{print $1}')
         if [ -n "$br" ]; then echo -n "$((br /10)) Mbit/s"; else echo -n "no connections"; fi
     ;;
     quality)
@@ -27,7 +27,7 @@ case $1 in
         kt=$(grep key_mgmt /etc/wpa_supplicant/wpa_supplicant.conf | cut -d= -f2)
         res=$?
         if [ "$kt" = "NONE" ]; then kt="WEP"; fi        
-        if (( "$res" = 0 )); then echo -n "$kt"; else echo -n --; fi
+        if (( "$res" == 0 )); then echo -n "$kt"; else echo -n --; fi
     ;;
     rangecheck)
         do_rangecheck "${2}" "${3}" "${4}" "${5}"

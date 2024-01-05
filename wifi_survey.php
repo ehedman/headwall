@@ -147,7 +147,7 @@ td
     $indx=1;
     while (!feof($fd)) {     
         $a=explode("," ,fgets($fd),7);
-        if (!strlen($a[1])) continue;
+        if (empty($a[1]) || $a[1][0] == '\\') continue; // 00:24:01:6B:54:53, pegasus_media, Master, 36, CCMP, WPA2-PSK, 63%
         if (count($a) == 5) {
             $a[6] = $a[4];
             $a[4] = "";
@@ -185,7 +185,7 @@ td
                     <input type="button" value="OK" name="connect" onclick="do_connect()">
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
    	 		        <input type="button" value="Cancel" name="exit" onclick="do_exit()">
-                    <input type="hidden" id="cnt" name="cnt" value="0<?php echo $_GET['cnt']; ?>">
+                    <input type="hidden" id="cnt" name="cnt" value="0<?php echo isset($_GET['cnt'])? $_GET['cnt']: 1; ?>">
    	            </td>
             </tr>
         </table>

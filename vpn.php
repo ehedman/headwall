@@ -225,6 +225,17 @@ function checkPage()
 
 	return true;
 }
+
+function showPass(id)
+{
+    var obj = document.getElementById(id);
+    if (obj.type === "password") {
+        obj.type = "text";
+    } else {
+        obj.type = "password";
+    }
+}
+
 </script>
     </head>
     <body onload="initPage();"><script>onbody();</script>
@@ -316,15 +327,21 @@ function checkPage()
 			                </tr>
                             <tr>
 				                <td class="raCN"><b>Account Login :</b></td>
-				                <td>&nbsp;<input style="width:50%" type="text" name="ddns_account" maxlength="60" value=""></td>
+				                <td>
+                                    &nbsp;<input style="width:50%" type="password" name="ddns_account" id="ddns_account" maxlength="60" value="">
+                                    <input type="checkbox" style="width: 20px;" onclick="showPass('ddns_account');">Show
+                                    </td>
 			                </tr>
 			                <tr>
 				                <td class="raCN"><b>Password :</b></td>
-				                <td>&nbsp;<input style="width:50%" type="text" name="ddns_pw1" maxlength="40" onFocus="this.select();"></td>
+				                <td>
+                                    &nbsp;<input style="width:50%" type="password" name="ddns_pw1" id="ddns_pw1" maxlength="40" onFocus="this.select();">
+                                    <input type="checkbox" style="width: 20px;" onclick="showPass('ddns_pw1');">Show
+                                </td>
 			                </tr>
 			                <tr>
 				                <td class="raCN"><b>Verify Password :</b></td>
-				                <td>&nbsp;<input style="width:50%" type="text" name="ddns_pw2" maxlength="40" onFocus="this.select();"></td>
+				                <td>&nbsp;<input style="width:50%" type="password" name="ddns_pw2" maxlength="40" onFocus="this.select();"></td>
 			                </tr>
 			            </table>
 		            </div><div class="vbr"></div>

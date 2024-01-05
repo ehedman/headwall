@@ -13,47 +13,14 @@
     include 'cgi-bin/common.php';
     include 'cgi-bin/country.php';
 
-    //if (count($_POST)) {echo "<pre>"; print_r($_POST); echo "</pre>"; print_r($_GET); exit;}
-    //echo "<pre>"; print_r($_GET); echo "</pre>";
+    //if (count($_POST)) {echo "<pre>"; print_r($_POST); echo "</pre>"; exit;}
+    //if (count($_GET)) {echo "<pre>"; print_r($_GET); echo "</pre>"; exit;}
 
     $connect = 0;
 
     isset($_GET['connect']) ?  $connect = $_GET['connect'] : $connect = 0;
 
-    if ((count($_POST) && $_POST["POST_ACTION"] == "OK") && $connect == 0) {
-        if (g_mode() == 1) {
-            do_sethostapd(  $_POST['f_auth_type'],
-                            $_POST['WIFIassignement'],
-                            urlencode($_POST['f_ssid']),
-                            $_POST['f_wpa_psk'],
-                            $_POST['f_cipher'],
-                            $_POST['WChannel'],
-                            $_POST['WMode'],
-                            $_POST['WCountry'],
-                            $_POST['WVisibility']);
-
-        }
-    }
-
-    if ((count($_POST) && $_POST["POST_ACTION"] == "OK") && $connect == 1) {
-        if (g_mode() == 2) {
-            switch ($_POST['f_auth_type']) {
-                 case '1':
-                        do_setwep(urlencode($_POST['f_ssid']), $_POST['f_wep_pw'], g_wlanif());
-                    break;
-                case '2':
-                        do_setwpapsk("WPA",urlencode($_POST['f_ssid']),$_POST['f_wpa_psk'],$_POST['f_cipher'], g_wlanif());
-                    break;   
-                case '3':
-                        do_setwpapsk("WPA2",urlencode($_POST['f_ssid']),$_POST['f_wpa_psk'],$_POST['f_cipher'], g_wlanif());
-                    break;
-                default:
-                break;
-            }
-        }
-    } 
-
-    if ((count($_POST) && $_POST["POST_ACTION"] == "OK") && $connect == 1) {
+    if ( (count($_POST) && $_POST["POST_ACTION"] == "OK") || $connect == 1 ) {
 
         if (! function_exists('pcntl_fork')) die('PCNTL functions not available on this PHP installation');
         $pid = pcntl_fork();
@@ -64,12 +31,12 @@
         } else if (!$pid) {
             // We are the child
             sleep(6);
-            if ($_GET['connect'] == "1") {
+            if ($connect == 1) {
                 $a=array();
                 $fd = fopen("/tmp/scanlist", "r");
                 $indx=1;
                 while (!feof($fd)) {
-                    $a=explode("," ,fgets($fd),7);
+                    $a=explode("," ,fgets($fd),100);
                     if (!strlen($a[1])) continue;
                     if ($indx++ == $_GET['ckssidnum']) {
                         $indx = 0; 
@@ -78,22 +45,50 @@
                 }
                 @fclose($fd);
                 @unlink("/tmp/scanlist");
-                if (!$indx && $a[1]) {
+                if (!$indx) {
                     switch ($a[5]) {
                         case 'WPA-PSK': // TKIP(2) only
-                            do_setwpapsk("WPA",urlencode($a[1]),$_GET['ck_passp'],$_GET['ck_cipher'], g_wlanif());
+                            do_setwpapsk("WPA",urlencode($a[1]),$_GET['ck_passp'],$_GET['ck_cipher'], g_wan());
                         break;
                         case 'WPA2-PSK': // TKIP(2) and AES(3)
-                            do_setwpapsk("WPA2", urlencode($a[1]),$_GET['ck_passp'],$_GET['ck_cipher'], g_wlanif());
+                            do_setwpapsk("WPA2", urlencode($a[1]),$_GET['ck_passp'],$_GET['ck_cipher'], g_wan());
                         break;
                         default:
-                            if (count($a) == 5)
-                                do_setwep(urlencode($a[1]),$_GET['ck_passp'], g_wlanif());
+                            if (count($a) == 5) {
+                                do_setwep(urlencode($a[1]),$_GET['ck_passp'], g_wan());
+                            }
                         break;           
                     }
                 }
             }
+            if (count($_POST)) {
+                if (g_mode() == 1) {
+                    do_sethostapd(  $_POST['f_auth_type'],
+                                    $_POST['WIFIassignement'],
+                                    urlencode($_POST['f_ssid']),
+                                    $_POST['f_wpa_psk'],
+                                    $_POST['f_cipher'],
+                                    $_POST['WChannel'],
+                                    $_POST['WMode'],
+                                    $_POST['WCountry'],
+                                    $_POST['WVisibility']);
 
+                } else if (g_mode() == 2) {
+                    switch ($_POST['f_auth_type']) {
+                         case '1':
+                                do_setwep(urlencode($_POST['f_ssid']), $_POST['f_wep_pw'], g_wan());
+                            break;
+                        case '2':
+                                do_setwpapsk("WPA",urlencode($_POST['f_ssid']),$_POST['f_wpa_psk'],$_POST['f_cipher'], g_wan());
+                            break;   
+                        case '3':
+                                do_setwpapsk("WPA2",urlencode($_POST['f_ssid']),$_POST['f_wpa_psk'],$_POST['f_cipher'], g_wan());
+                            break;
+                        default:
+                        break;
+                    }
+                } 
+            }
             @system("echo 'DEST=127.0.0.1; INTERFACES=".g_lan().";' > /etc/default/watchdog.dest");                 
         } else {
             // We are the parent
@@ -225,8 +220,10 @@ function initPage()
     }
 ?>
     
-/*
-	f.ssid.value = "<?php //p_wssid(); ?>";
+<?php
+    if (g_mode() == 2) {?>
+
+	f.ssid.value = "<?php p_wssid(WAN); ?>";
 		
      // WPA or WEP
     f.securityType.selectedIndex = <?php echo g_security()==1? "1":"0"; ?>;	
@@ -235,7 +232,7 @@ function initPage()
     f.chiperType.selectedIndex=<?php echo g_cipher(); ?>;
     f.wpaMode.selectedIndex ="<?php echo g_wpamode(); ?>";
 	f.wpaPPHstring.value ="<?php g_passph(); ?>";
-*/
+<?php }?>
 
 	checkWiFienable();
 }
@@ -346,6 +343,16 @@ function checkPage()
 	f.submit();
 
 	return true;
+}
+
+function showPass()
+{
+    var obj = document.getElementById("wpaPPHstring");
+    if (obj.type === "password") {
+        obj.type = "text";
+    } else {
+        obj.type = "password";
+    }
 }
         </script> 
     </head>
@@ -509,7 +516,8 @@ function checkPage()
 				            <tr>
 					            <td class="raCB" style="width: 40%">Passphrase (WPA-PSK) :&nbsp;</td>
 					            <td class="laCB">
-						            <input id="wpaPPHstring" size="40" maxlength="64" value="" type="text">
+						            <input id="wpaPPHstring" size="18" maxlength="64" value="" type="password">
+                                    <input type="checkbox" style="width: 20px;" onclick="showPass()">Show
 					            </td>
 				            </tr>
 			            </table>

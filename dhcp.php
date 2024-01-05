@@ -51,10 +51,10 @@
                 @system("/usr/bin/systemctl restart bind9");
 
             if ($_POST["f_dhcp_enable"] == 1) {
-                @system("/usr/bin/systemctl enable bind9");
-                @system("/usr/bin/systemctl restart bind9");
+                @system("/usr/bin/systemctl enable isc-dhcp-server");
+                @system("/usr/bin/systemctl restart isc-dhcp-server");
             } else {
-                @system("/usr/bin/systemctl disable bind9");
+                @system("/usr/bin/systemctl disable isc-dhcp-server");
             }
 
             @system("alleases ".g_domain().">/tmp/dmlist &");

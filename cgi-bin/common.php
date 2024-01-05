@@ -347,13 +347,17 @@ function do_setDhcp($hn,$sip,$smask,$mode,$wan,$lan,$lan1)
 
 function p_denycount()
 {
-    $var = exec("cat /tmp/deny_counter | sed ':a;N;$!ba;s/\\n/ /g' | awk '{ print $1\" since \"$2 }'");
+    $var = "0";
+
+    if (file_exists("/tmp/deny_counter")) {
+        $var = exec("cat /tmp/deny_counter | sed ':a;N;$!ba;s/\\n/ /g' | awk '{ print $1\" since \"$2 }'");      
+    }
     echo trim($var);
 }
 
 function g_ifip($if)
 {
-    $val=exec("ip addr show $if | grep -v secondary | awk -F/ '/inet /{ print $1 }' | awk '{ print \$NF }'");
+    $val=exec("ifconfig $if | grep -m1 inet | awk '{printf $2}'");
 
     if (strlen(trim($val)))
         return true;
@@ -375,7 +379,7 @@ function p_mac($if)
 
 function g_ip($if)
 {
-    $val=trim(exec("ip addr show $if | grep -v secondary | awk -F/ '/inet /{ print \$1 }' | awk '{ print \$NF }'"));
+    $val=trim(exec("ifconfig $if | grep -m1 inet | awk '{printf $2}'"));
     if ($val == "") $val="0.0.0.0";
     return $val;
 }
@@ -675,10 +679,10 @@ function p_domains($indx=1)
         else if ($indx == 2)
             $var=exec("grep -A2 'forwarders {' /etc/bind/named.conf.options | awk -F".'\;'." 'NR>2{print ".'$1'."}'");
     } else {
-    if ($indx == 1)
-        $var=exec("grep \"option domain-name-servers\" /etc/dhcp/dhcpd.conf| awk '{print $3}' | cut -d, -f1 | cut -d".'\;'." -f1");
-    else if ($indx == 2)
-        $var=exec("grep \"option domain-name-servers\" /etc/dhcp/dhcpd.conf| awk '{print $4}' | cut -d".'\;'." -f1");
+        if ($indx == 1)
+            $var=exec("grep \"option domain-name-servers\" /etc/dhcp/dhcpd.conf| awk '{print $3}' | cut -d, -f1 | cut -d".'\;'." -f1");
+        else if ($indx == 2)
+            $var=exec("grep \"option domain-name-servers\" /etc/dhcp/dhcpd.conf| awk '{print $4}' | cut -d".'\;'." -f1");
     }
 
     echo trim($var);
@@ -695,32 +699,21 @@ function do_firewall_mgm($action)
     if ($action == NULL)
         return;
 
-	$rval=0;
-
     switch ($action) {
         case 'stop':
-                exec("/sbin/shorewall stop");
-                exec("/sbin/shorewall clear");
-                exec("cat /etc/default/shorewall | sed /startup=1/s//startup=0/ > /tmp/shw; cp /tmp/shw /etc/default/shorewall");
+                exec("/usr/bin/systemctl stop shorewall");
+                exec("/usr/bin/systemctl disable shorewall");
                 exec("/sbin/ifdown ".g_wan()."; sleep 3; /sbin/ifup ".g_wan()); // restore forwarding as of /etc/network/interfaces
             break;
         case 'start':
-                exec("cat /etc/default/shorewall | sed /startup=0/s//startup=1/ > /tmp/shw; cp /tmp/shw /etc/default/shorewall");
-                system("/sbin/shorewall start >/tmp/shwlog 2>&1", $rval);
+                exec("/usr/bin/systemctl start shorewall");
+                exec("/usr/bin/systemctl enable shorewall");
             break;
         case 'restart':
-                exec("cat /etc/default/shorewall | sed /startup=0/s//startup=1/ > /tmp/shw; cp /tmp/shw /etc/default/shorewall");
-                system("/sbin/shorewall restart  >/tmp/shwlog 2>&1", $rval);
+                exec("/usr/bin/systemctl restart shorewall");
             break;
     }
-	if ($rval) {
-		exec("/sbin/shorewall stop");
-       	exec("/sbin/shorewall clear");
-       	exec("cat /etc/default/shorewall | sed /startup=1/s//startup=0/ > /tmp/shw; cp /tmp/shw /etc/default/shorewall");
-     	exec("/sbin/ifdown ".g_wan()."; sleep 3; /sbin/ifup ".g_wan());
-	} else { unlink("/tmp/shwlog"); }
-    
-} 
+}
 
 function g_srvstat($srv="nop")
 {

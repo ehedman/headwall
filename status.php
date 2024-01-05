@@ -247,11 +247,11 @@ function initPage()
 			            <table>
 			                <tr>
 				                <td class="raCB" style="width:40%">Wireless Radio&nbsp;:</td>
-				                <td class="laCB">&nbsp;<?php echo g_wstatus(g_wlanif($wifidev))? 'Enabled':'Disabled'; ?></td>
+				                <td class="laCB">&nbsp;<?php echo g_wstatus($wifidev)? 'Enabled':'Disabled'; ?></td>
 			                </tr>
                             <tr>
 				                <td class="raCB" style="width:40%">Wireless Mode&nbsp;:</td>
-				                <td class="laCB">&nbsp;<?php echo g_wmode(g_wlanif($wifidev)) ?></td>
+				                <td class="laCB">&nbsp;<?php echo g_wmode($wifidev) ?></td>
 			                </tr>                     		
 			                <tr>
 				                <td class="raCB">Network Name(SSID)&nbsp;:</td>

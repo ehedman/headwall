@@ -1,3 +1,4 @@
+
 <?php 
     /*
      * network.php
@@ -12,7 +13,7 @@
 
     include 'cgi-bin/common.php';
 
-    //if (count($_POST)) {echo "<pre>"; print_r($_POST); echo "</pre>";exit;}
+    //if (count($_POST)) {echo "<pre>"; print_r($_POST); echo "</pre>"; phpinfo(); exit;}
 
     if (count($_POST) && isset($_POST["POST_ACTION"])) {
 
@@ -56,7 +57,7 @@
         } else {
             // We are the parent
             $dest="&ip=".g_destip($_SERVER["SERVER_ADDR"], $_POST["staticSRVIP"], $_POST["SRVLANassignement"].':srv'); 
-            echo "<pre>". 'Location: http://'. $_SERVER["SERVER_ADDR"]. '/wait.php?seconds=40&loc='.$_SERVER['SCRIPT_NAME'].$dest."</pre>"; exit;  
+            //echo "<pre>". 'Location: http://'. $_SERVER["SERVER_ADDR"]. '/wait.php?seconds=40&loc='.$_SERVER['SCRIPT_NAME'].$dest."</pre>"; exit;  
             header('Location: http://'. $_SERVER["SERVER_ADDR"]. '/wait.php?seconds=40&loc='.$_SERVER['SCRIPT_NAME'].$dest);
             exit;
         }
