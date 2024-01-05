@@ -14,6 +14,8 @@
 
     //if (count($_POST)) {echo "<pre>"; print_r($_POST); echo "</pre>";exit;}
 
+    $dest="";
+
     if (count($_GET) && $_GET["refresh"] == 1) {
         @system("leases " .g_lan()." ".g_domain().">/tmp/reslist");
     }

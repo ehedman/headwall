@@ -164,12 +164,15 @@ End-of-message
     swrestart=0
 
     if shorewall status | grep -q running; then
-        echo    /sbin/shorewall stop
-        echo    /sbin/shorewall clear
+        /sbin/shorewall stop
+        /sbin/shorewall clear
         swrestart=1
     fi
 
-    if ! diff --ignore-blank-lines /etc/network/interfaces /etc/network/interfaces.old > /dev/null; then
+    newlan=$(md5sum /etc/network/interfaces | awk '{printf $1}')
+    oldlan=$(md5sum /etc/network/interfaces.old | awk '{printf $1}')
+
+    if [ "${oldlan}" != "${newlan}" ]; then
         /sbin/ifdown -a --force
         sleep 1
         /sbin/ifup -a --force
@@ -233,6 +236,7 @@ End-of-message
 
 do_setdhcp()
 {
+
     cp /etc/network/interfaces /etc/network/interfaces.old
     shift 1
 
@@ -274,14 +278,6 @@ iface ${lan} inet static
 End-of-message
 
     echo "${1}" > /etc/hostname; hostname -F /etc/hostname
-
-    swrestart=0
-
-    if shorewall status | grep -q running; then
-        echo    /sbin/shorewall stop
-        echo    /sbin/shorewall clear
-        swrestart=1
-    fi
 
     newlan=$(md5sum /etc/network/interfaces | awk '{printf $1}')
     oldlan=$(md5sum /etc/network/interfaces.old | awk '{printf $1}')
@@ -339,8 +335,8 @@ End-of-message
         do_firewall_ts na 1  ${data} "${wan}"
     fi
 
-    if (( "$swrestart" == 1 )); then
-        /sbin/shorewall start
+     if shorewall status | grep -q running; then
+        /sbin/shorewall restart
     fi
 
 }
@@ -492,7 +488,7 @@ End-of-message
 do_dhcpd()
 {
     doMkKey
-   
+
     if (( "${3}" == 1 )); then server=true; else server=false; fi
     shift 3
 
@@ -518,6 +514,8 @@ do_dhcpd()
         fi
     fi  
 
+    swrestart=0
+
     sub=$(ipcalc -b "${lan_ip}" "${lan_mask}" | grep Network: | awk '{print $2 }' | cut -d/ -f1)
     broadc=$(ipcalc "${sub}"/"${lan_mask}" | grep Broadcast | awk '{print $2}')
     iprev=$(echo "${sub}" | sed s/"\."/" "/g | awk '{print $3"."$2"."$1}')
@@ -525,10 +523,36 @@ do_dhcpd()
     rzone="${iprev}.in-addr.arpa"
     filedns="/tmp/dnsbatch-1.txt"
 
+    extrainc=""
+    extraif=""
+    if [ -f /etc/dhcp/extra.conf ]; then
+        # include subnet declarations outside the config scoop of this app
+        extraif=$(grep  interface /etc/dhcp/extra.conf | awk -F\" '{print $2}')
+        if [ -n "${extraif}" ]; then
+            extrainc=$(cat /etc/dhcp/extra.conf)
+        else
+            extraif=""
+        fi
+    fi
+
+    if [ -n "${extraif}" ]; then
+        if ! grep "${extraif}" /etc/shorewall/interfaces; then
+            if shorewall status | grep -q running; then
+                swrestart=1
+            fi
+            echo "loc	LOC_IF1		dhcp,tcpflags,nosmurfs,routefilter,logmartians=0,physical=${extraif}" >> /etc/shorewall/interfaces
+        fi
+    fi
+
     if [ ${server} = true ]; then
         file="/etc/dhcp/dhcpd.conf"
         grep -v INTERFACESv4 /etc/default/isc-dhcp-server > /tmp/isc-dhcpd.tmp
-        echo "INTERFACESv4=\"${lan_if}\"" >>  /tmp/isc-dhcpd.tmp
+        if [ -n "${extraif}" ]; then
+            if="${lan_if} ${extraif}"
+        else
+            if="${lan_if}"
+        fi
+        echo "INTERFACESv4=\"${if}\"" >>  /tmp/isc-dhcpd.tmp
         mv /tmp/isc-dhcpd.tmp /etc/default/isc-dhcp-server
     else
         file=/dev/null
@@ -567,6 +591,7 @@ subnet ${sub} netmask ${lan_mask} {
   option broadcast-address ${broadc};
   default-lease-time ${5};
 }
+${extrainc}
 End-of-message
     shift 13
 
@@ -622,10 +647,8 @@ End-of-message
     
     if [ -s /tmp/ifs ]; then
         cp /etc/network/interfaces  /etc/network/interfaces.old
-        cp /tmp/ifs /etc/network/interfaces
+        mv /tmp/ifs /etc/network/interfaces
     fi
-    rm -f /tmp/ifs
-
      
     if pidof -s -q named; then 
         key=$(grep key /etc/dhcp/ddns.key | awk '{print $2}')
@@ -637,7 +660,7 @@ End-of-message
     oldlan=$(md5sum /etc/network/interfaces.old | awk '{printf $1}')
 
     if [ "${oldlan}" != "${newlan}" ]; then
-        /sbin/ifdown -a --force
+       /sbin/ifdown -a --force
         sleep 1
         /sbin/ifup -a --force
         sleep 1
@@ -654,6 +677,10 @@ End-of-message
         echo "" > /var/lib/dhcp*/dhcpd.leases
         rm -f /etc/bind/db*.jnl
 
+    fi
+
+    if (( "$swrestart" == 1 )); then
+        /sbin/shorewall restart
     fi
 }
 
