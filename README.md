@@ -43,6 +43,9 @@ guidance during configuration.
 * CIFS management of attached disks
 * Bittorrent client
 
+### DEPENDENCIES
+apt install nbtscan ipcalc bind9 isc-dhcp-server hostapd ppp bcrelay wireless-tools shorewall lighttpd php-cgi
+
 ### Screenshots
 <img src="http://www.hedmanshome.se/components/com_ponygallery/img_pictures/status.png" width=100%></br>
 <img src="http://www.hedmanshome.se/components/com_ponygallery/img_pictures/wifi.png" width=100%></br>
