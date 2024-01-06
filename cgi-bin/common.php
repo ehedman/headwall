@@ -706,11 +706,9 @@ function do_firewall_mgm($action)
                 exec("/sbin/ifdown ".g_wan()."; sleep 3; /sbin/ifup ".g_wan()); // restore forwarding as of /etc/network/interfaces
             break;
         case 'start':
+        case 'restart':
                 exec("/usr/bin/systemctl start shorewall");
                 exec("/usr/bin/systemctl enable shorewall");
-            break;
-        case 'restart':
-                exec("/usr/bin/systemctl restart shorewall");
             break;
     }
 }

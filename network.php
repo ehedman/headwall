@@ -56,9 +56,12 @@
             @system("echo 'DEST=127.0.0.1; INTERFACES=".g_lan().";' > /etc/default/watchdog.dest");
         } else {
             // We are the parent
-            $dest="&ip=".g_destip($_SERVER["SERVER_ADDR"], $_POST["staticSRVIP"], $_POST["SRVLANassignement"].':srv'); 
-            //echo "<pre>". 'Location: http://'. $_SERVER["SERVER_ADDR"]. '/wait.php?seconds=40&loc='.$_SERVER['SCRIPT_NAME'].$dest."</pre>"; exit;  
-            header('Location: http://'. $_SERVER["SERVER_ADDR"]. '/wait.php?seconds=40&loc='.$_SERVER['SCRIPT_NAME'].$dest);
+            if ($_POST["SRVLANassignement"] == "0") {
+                header('Location: http://'. $_SERVER["SERVER_ADDR"]. '/wait.php?seconds=40&loc='.$_SERVER['SCRIPT_NAME']);
+            } else {
+                $dest="&ip=".g_destip($_SERVER["SERVER_ADDR"], $_POST["staticSRVIP"], $_POST["SRVLANassignement"].':srv');
+                header('Location: http://'. $_SERVER["SERVER_ADDR"]. '/wait.php?seconds=40&loc='.$_SERVER['SCRIPT_NAME'].$dest);
+            }
             exit;
         }
     }

@@ -86,7 +86,7 @@ do_wifilist()
         done
         echo -n '"0"]'
     else
-        echo -n '["0"]'
+t           echo -n '["0"]'
     fi
 }
 
@@ -530,17 +530,6 @@ do_dhcpd()
         extraif=$(grep  interface /etc/dhcp/extra.conf | awk -F\" '{print $2}')
         if [ -n "${extraif}" ]; then
             extrainc=$(cat /etc/dhcp/extra.conf)
-        else
-            extraif=""
-        fi
-    fi
-
-    if [ -n "${extraif}" ]; then
-        if ! grep "${extraif}" /etc/shorewall/interfaces; then
-            if shorewall status | grep -q running; then
-                swrestart=1
-            fi
-            echo "loc	LOC_IF1		dhcp,tcpflags,nosmurfs,routefilter,logmartians=0,physical=${extraif}" >> /etc/shorewall/interfaces
         fi
     fi
 
@@ -1313,19 +1302,31 @@ do_firewall_masqif()
     wan=${2}
     lan=${3}
     mask=$(ifconfig "${lan}"| grep -i netmask | awk -F' ' '{print $4}')
-    ip=$(ifconfig "${wan}" | grep -m1 inet | awk '{printf $2}')
+    ip=$(ifconfig "${lan}" | grep -m1 inet | awk '{printf $2}')
     net=$(ipcalc -b "${ip}" "${mask}"| grep Network: | awk '{print $2 }')
 
     if [ -f /etc/shorewall/tunnels ]; then
        vpnif="loc	ppp+"
     fi
     
-    if (("${4}" != 0 )); then
+    if [ "${4}" != "0" ]; then
         srvif="${4}"
         srvip="${5}"
         srvnet=$(ipcalc -b "${srvip}" 255.255.255.0 | grep Network: | awk '{print $2 }')
     fi
 
+    extraloc=""
+    extrasnat=""
+    if [ -f /etc/dhcp/extra.conf ]; then
+        # include subnet declarations outside the config scoop of this app
+        extraif=$(grep  interface /etc/dhcp/extra.conf | awk -F\" '{print $2}')
+        if [ -n "${extraif}" ]; then
+            extraloc="loc	LOC_IF1		dhcp,tcpflags,nosmurfs,routefilter,logmartians=0,physical=${extraif}"
+            srvip=$(grep subnet /etc/dhcp/extra.conf | awk '{printf $2}')
+            enet=$(ipcalc -b "${srvip}" 255.255.255.0 | grep Network: | awk '{print $2 }')
+            extrasnat=$(echo -e "MASQUERADE\t${enet}\t${wan}")
+        fi
+    fi
     
     file=/etc/shorewall/interfaces
 
@@ -1338,7 +1339,8 @@ cat <<End-of-message>"${file}"
 ###############################################################################
 #ZONE   INTERFACE       OPTIONS
 net	NET_IF 		dhcp,tcpflags,nosmurfs,routefilter,logmartians=0,sourceroute=0,physical=${wan}
-loc	LOC_IF		dhcp,tcpflags,nosmurfs,routefilter,logmartians=0,physical=${lan}
+loc	LOC_IF0		dhcp,tcpflags,nosmurfs,routefilter,logmartians=0,physical=${lan}
+${extraloc}
 ${vpnif}
 End-of-message
 
@@ -1359,12 +1361,12 @@ cat <<End-of-message>"${file}"
 ###############################################################################
 #ACTION		SOURCE		DEST
 MASQUERADE	${net}	${wan}
+${extrasnat}
 End-of-message
 
     if [ -n "${srvnet}" ]; then
         echo "SNAT(${srvip})	${srvnet}	${srvif}:srv" >> "${file}"
     fi
-
 }
 
 do_firewall_ts()
