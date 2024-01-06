@@ -52,7 +52,7 @@
     if ($ret == 'loc$FW') $sshsts="checked ";
     $ret=exec("grep -m1 portmap /etc/shorewall/rules | awk '{printf \"%s%s%s\", \$1,\$2,\$3}'");
     if ($ret == 'ACCEPTloc$FW') $nfssts="checked ";
-    if (stat("/etc/shorewall/tunnels") != false)
+    if (file_exists ("/etc/shorewall/tunnels") == true)
         $vpnsts="checked ";
 ?>
 <!DOCTYPE html>
@@ -242,7 +242,7 @@ function do_ts()
 	            <td id="contentHeading">
                     <div id="contentBox">
 		                <h1>Firewall</h1>
-                        <?php if (g_srvstat("shorewall") || stat("/tmp/shwlog") !=false) { ?>
+                        <?php if (g_srvstat("shorewall") || file_exists("/tmp/shwlog") == true) { ?>
                         <br>
                         <input value="Save Settings" type="submit">&nbsp;
                         <input value="Don't Save Settings" onclick="cancelSettings()" type="button">
@@ -256,11 +256,8 @@ function do_ts()
                                     echo '<br>Start using the public LAN (address='.g_ip(g_lan()).'/interface='.g_lan().') instead.&nbsp;&nbsp;';
                                     if (g_srvip() != "0")
                                         echo '<br>Also disable the Fixed Static Address in the <b>SETUP=>Network</b> menu.&nbsp;&nbsp;';
-                                    
-                                    $dis=' disabled';
                                 }
-                                if (stat("/tmp/shwlog") !=false)
-                                    $dis=' disabled';
+                                $dis = file_exists("/tmp/shwlog") == true? ' disabled' : '';
                                 echo '<input type="button"'.$dis.' onclick="return do_activate();" value="Activate">';
                             } else {
                                 echo '<b style="color:#090;">Firewall: active</b>&nbsp;&nbsp;';
