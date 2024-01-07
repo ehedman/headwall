@@ -133,6 +133,11 @@ function checkPage()
 	return true;
 }
 
+function  onshowstatic(obj)
+{
+       getObj("show_static").style.display = obj.checked? "block" : "none";
+}
+
 function onenable(n)
 {
     var cb=getObj("cb_enable_"+n);
@@ -333,6 +338,7 @@ function onsrv(n)
                                     <option value="21/21/TCP">FTP</option>
                                     <option value="9418/9418/TCP">GIT</option>
                                     <option value="80/80/TCP">HTTP</option>
+                                    <option value="8080/8080/TCP">PROXY</option>
                                     <option value="443/443/TCP">HTTPS</option>
                                     <option value="1723/1723/TCP">PPTP-VPN</option>
                                     <option value="22/22/TCP">SSH</option>
@@ -359,8 +365,8 @@ function onsrv(n)
                                 <div id="show_status_<?php echo $i ?>" style="display:<?php echo $first==true? "inline":"none" ?>">
                                 <?php if ($first == true ) { ?>
                                     <b style="color:#378">Add<br>New</b>
-                                <?php } else { ?>    <img alt="deleted" src="/img/deleted.png" style="height:12px">
-                                </div><?php }?>
+                                <?php } else { ?>    <img alt="deleted" src="/img/deleted.png" style="height:12px"><?php }?>
+                                </div>
                             </td>
                         </tr>
                         <tr>         
@@ -387,11 +393,51 @@ function onsrv(n)
     $first=false;
 	}
 	@fclose($fd);
-    //@unlink("/tmp/rlist");
+    @unlink("/tmp/rlist");
 ?>
 
 			            </table>
 		            </div><?php } ?>
+		            <div class="actionBox" style="overflow-y:auto;max-height:600px;">       
+	                    <h2 title="/etc/shorewall/rules" class="actionHeader">STATIC SERVERS RULES</h2>
+                        <div id="show_static" style="display:none;">
+			            <table id="stable"> 
+                            <tr>       
+                                <td><b>Service</b></td>
+                                <td><b>From</b></td>
+                                <td><b>To</b></td>
+                                <td><b>Protocol</b></td>
+                                <td><b>Port</b></td>
+                            </tr>
+                            <?php
+                                $str1="grep \"ACCEPT\" /etc/shorewall/rules|grep -E -v 'dnat|DROP'|sed s/loc/LAN/g|sed s/\\\$FW/Firewall/g|";
+                                $str2="sed s/net/Internet/g|awk '{printf \$1 \"|\" \$2 \"|\" \$3 \"|\" \$4 \"|\" \$5 \"\\n\"}'>/tmp/srules";
+                                @system($str1.$str2);
+
+                          	if (($fd = fopen("/tmp/srules", "r")) == NULL) {
+                            	die("bummer");
+                            }
+
+	                        while (!feof($fd)) {
+                                
+                                $str=trim(fgets($fd));
+                                $a=preg_split("/\|/", $str);
+                                if (count($a) <3) continue;
+                                echo "\r                            <tr>\n";
+                                foreach ($a as &$value) {
+                                    echo '                                <td>';
+                                    echo $value = empty($value)? "-": $value;
+                                    echo "</td>\n";
+                                }
+                                echo "\n                            </tr>\n";
+                            }
+                            @fclose($fd);
+                            @unlink("/tmp/srules");
+                        ?>  
+                        </table>                       
+                        </div>
+                        <b>Show/Hide </b><input type="checkbox" onChange="onshowstatic(this)">
+                    </div>
                 </td>
 	            <td id="quickHelpContent"><strong>Help...</strong><br>
                   <br>
