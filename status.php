@@ -129,7 +129,7 @@ function initPage()
                         <table>
 				            <tr>
 					            <td class="raCB" style="width:40%"><b>Firmware Version&nbsp;:</b></td>
-					            <td class="laCB"><b>&nbsp;<?php p_firmware("-rv"); ?></b></td>
+					            <td class="laCB"><b>&nbsp;<?php p_firmware("-ro"); ?></b></td>
 				            </tr>
 				            <tr>
 					            <td class="raCB"><b>Uptime&nbsp;:</b></td>
@@ -137,7 +137,7 @@ function initPage()
 				            </tr>
                             <tr>
 					            <td class="raCB"><b>System&nbsp;:</b></td>
-					            <td class="laCB"><b>&nbsp;<?php p_serverName(); ?></b></td>
+					            <td class="laCB"><b>&nbsp;<?php p_osrel(); echo "@"; p_serverName(); ?></b></td>
 				            </tr>
 							<tr>
 					            <td class="raCB"><b>Firewall&nbsp;:</b></td>
@@ -243,7 +243,7 @@ function initPage()
                     </div>
                     <?php  $allwifi=g_allwifidev();  foreach ($allwifi as $wifidev) { ?><div class="vbr"></div>
                     <div class="actionBox">
-			            <h2 class="actionHeader">Wireless Connection for <?php echo $wifidev; ?></h2>
+			            <h2 class="actionHeader">Wireless Connection for <?php echo $wifidev."@".g_wifiband($wifidev); ?></h2>
 			            <table>
 			                <tr>
 				                <td class="raCB" style="width:40%">Wireless Radio&nbsp;:</td>

@@ -264,6 +264,12 @@ function p_firmware($args)
     echo trim($val);
 }
 
+function p_osrel()
+{
+    $val=exec("grep VERSION= /etc/os-release | awk -F'[(,)]' '{print $2}'");
+    echo ucfirst(trim($val));
+}
+
 function p_nodeName()
 {
     echo gethostname();
@@ -449,6 +455,12 @@ function g_passph($how="wpa",$indx=1)
     }
     echo $val;
     
+}
+
+function g_wifiband($if)
+{
+    $val=exec("grep band /etc/hostapd/$if.conf | awk '{print $2}'");
+    return $val;
 }
 
 function g_security()
